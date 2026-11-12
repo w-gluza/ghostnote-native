@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { BeatPattern, type BeatKind } from "@/components/beat-pattern";
 import { PlayButton } from "@/components/play-button";
 import { ScreenHeader } from "@/components/screen-header";
 import { TempoDial } from "@/components/tempo-dial";
@@ -22,6 +23,7 @@ const MAX_DIAL_SIZE = 300;
 const tempo = { bpm: 120, position: 0.7 };
 const timeSignature = { beats: 4, noteValue: 4 };
 const subdivision = "Eighth notes";
+const beatPattern: BeatKind[] = ["accent", "normal", "normal", "skipped"];
 
 export default function MetronomeScreen() {
   const { width } = useWindowDimensions();
@@ -106,6 +108,7 @@ export default function MetronomeScreen() {
             />
           </Pressable>
         </View>
+        <BeatPattern beats={beatPattern} playingBeat={2} />
       </View>
 
       <View style={styles.transport}>
@@ -168,6 +171,7 @@ const styles = StyleSheet.create({
   stage: {
     flex: 1,
     justifyContent: "center",
+    gap: 4,
   },
   dialRow: {
     flexDirection: "row",
