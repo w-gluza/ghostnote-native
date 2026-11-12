@@ -37,17 +37,19 @@ Use what iOS provides before drawing an imitation of it in JavaScript.
 
 Tokens live in `src/theme/colors.ts`. Components use tokens, never raw hex values.
 
-| Token            | Value     | Purpose                                            |
-| ---------------- | --------- | -------------------------------------------------- |
-| `background`     | `#111318` | Main screen and navigation background              |
-| `surface`        | `#192037` | Midnight-blue practice panel                       |
-| `accent`         | `#E85C3A` | Start Practice, active navigation, completed goals |
-| `text.primary`   | `#F3F0EA` | Headings and main content                          |
-| `text.secondary` | `#8E95A3` | Metadata, labels, inactive navigation              |
-| `border`         | `#30343D` | Subtle dividers and separators                     |
-| `disabled`       | `#666A73` | Incomplete weekly goals and inactive elements      |
+| Token            | Value     | Purpose                                                     |
+| ---------------- | --------- | ----------------------------------------------------------- |
+| `background`     | `#151619` | Near-black: main screen and navigation background           |
+| `surface`        | `#26272B` | Charcoal practice panel                                     |
+| `accent`         | `#E77A4C` | Apricot: Start Practice, active navigation, completed goals |
+| `violet`         | `#B19AD8` | Soft lavender-violet: rudiment position numbers             |
+| `text.primary`   | `#F5F3F0` | Headings and main content                                   |
+| `text.secondary` | `#A5A5AB` | Metadata, labels, inactive navigation                       |
+| `text.onAccent`  | `#191919` | Text on the accent colour                                   |
+| `border`         | `#3B3D43` | Subtle dividers and separators                              |
+| `disabled`       | `#696B72` | Incomplete weekly goals and inactive elements               |
 
-The first five are the chosen palette. `border` and `disabled` are supporting tokens.
+`border` and `disabled` are supporting tokens for lines and marks; they do not have enough contrast for text.
 
 The app is dark only: `userInterfaceStyle` is `dark` in `app.json`. There is no light theme.
 
@@ -67,7 +69,7 @@ Tokens live in `src/theme/typography.ts`.
 
 ### Visual direction
 
-An oversized editorial serif heading, a numbered rudiment list, monochrome photography and restrained vermilion accents. Screens are built from reusable components, not traced from the mock-up.
+An oversized editorial serif heading, a numbered rudiment list, monochrome photography and restrained apricot and violet accents on near-black. Screens are built from reusable components, not traced from the mock-up.
 
 ## Stack
 
@@ -88,14 +90,15 @@ Expo SDK 58, Expo Router, React Native 0.88, React 19 with the React Compiler, T
 
 ## Decisions
 
-| Date       | Decision                                       | Why                                                                           |
-| ---------- | ---------------------------------------------- | ----------------------------------------------------------------------------- |
-| 2026-11-12 | Expo with Expo Router and TypeScript, iOS only | Fastest route to the App Store for a first native app                         |
-| 2026-11-12 | Splash screen is native config only            | No JavaScript is needed to show or hide it                                    |
-| 2026-11-12 | Bodoni Moda and Inter, embedded at build time  | Editorial direction of the design; no loading state                           |
-| 2026-11-12 | Native tabs replace the JavaScript tab bar     | Native-first; the bar no longer matches the flat bar in the mock-up           |
-| 2026-11-12 | Dark appearance only                           | The design has one theme, and the system tab bar follows the app's appearance |
-| 2026-11-12 | Bundle identifier `dev.wiola.ghostnote`        | Reverse of the owner's domain                                                 |
+| Date       | Decision                                                                                                                                 | Why                                                                                  |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| 2026-11-12 | Expo with Expo Router and TypeScript, iOS only                                                                                           | Fastest route to the App Store for a first native app                                |
+| 2026-11-12 | Splash screen is native config only                                                                                                      | No JavaScript is needed to show or hide it                                           |
+| 2026-11-12 | Bodoni Moda and Inter, embedded at build time                                                                                            | Editorial direction of the design; no loading state                                  |
+| 2026-11-12 | Native tabs replace the JavaScript tab bar                                                                                               | Native-first; the bar no longer matches the flat bar in the mock-up                  |
+| 2026-11-12 | Dark appearance only                                                                                                                     | The design has one theme, and the system tab bar follows the app's appearance        |
+| 2026-11-12 | Near-black, charcoal and apricot palette with a violet secondary accent, chosen after trying sand with cobalt and ice blue with midnight | Owner's choice; the only palette tried where every text pair passes WCAG AA contrast |
+| 2026-11-12 | Bundle identifier `dev.wiola.ghostnote`                                                                                                  | Reverse of the owner's domain                                                        |
 
 ## Open
 

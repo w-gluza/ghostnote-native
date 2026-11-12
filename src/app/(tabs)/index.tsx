@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   startLabel: {
-    color: colors.text.primary,
+    color: colors.text.onAccent,
     fontFamily: typography.fontFamily.semibold,
     fontSize: typography.fontSize.body,
   },

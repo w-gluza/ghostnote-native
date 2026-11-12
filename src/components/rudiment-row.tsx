@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.disabled,
   },
   position: {
-    color: colors.text.secondary,
+    color: colors.violet,
     fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.caption,
   },
