@@ -1,3 +1,4 @@
+import { SymbolView } from "expo-symbols";
 import { StyleSheet, Text, View } from "react-native";
 
 import { colors } from "@/theme/colors";
@@ -33,7 +34,13 @@ export function RudimentRow({ rudiment, position, isLast }: RudimentRowProps) {
           <Text style={styles.bpm}>{rudiment.bpm}</Text>
           <Text style={styles.bpmLabel}>BPM</Text>
         </View>
-        <View style={styles.thumbnail} />
+        <View style={styles.thumbnail}>
+          <SymbolView
+            name="play.circle.fill"
+            size={28}
+            tintColor={colors.accent}
+          />
+        </View>
       </View>
     </View>
   );
@@ -101,5 +108,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 12,
     backgroundColor: colors.background,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
