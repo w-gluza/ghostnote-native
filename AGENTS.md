@@ -1,4 +1,4 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+This is Ghostnote, an iOS app built with Expo and React Native. Read `docs/ghostnote.md` first: it holds this project's principles, decisions and conventions, and it takes precedence over the general guidance below.
 
 ## Expo has changed — do not trust your training data
 
