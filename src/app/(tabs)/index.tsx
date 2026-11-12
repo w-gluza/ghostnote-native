@@ -1,7 +1,7 @@
-import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { RudimentRow, type Rudiment } from "@/components/rudiment-row";
+import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -19,22 +19,7 @@ export default function PracticeScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}
     >
-      <View style={styles.header}>
-        <Text style={styles.wordmark}>ghostnote</Text>
-        <View style={styles.headerRule} />
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Settings"
-          hitSlop={12}
-        >
-          <SymbolView
-            name="gearshape"
-            size={24}
-            weight="light"
-            tintColor={colors.text.secondary}
-          />
-        </Pressable>
-      </View>
+      <ScreenHeader />
 
       <Text accessibilityRole="header" style={styles.title}>
         {"Today's\nPractice"}
@@ -83,21 +68,6 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingHorizontal: 24,
     paddingBottom: 24,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  wordmark: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
-  },
-  headerRule: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.border,
   },
   title: {
     marginTop: 30,

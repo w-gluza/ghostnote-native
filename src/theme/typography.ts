@@ -8,6 +8,7 @@ export const typography = {
   },
 
   fontSize: {
+    numeral: 72,
     display: 44,
     heading: 28,
     title: 20,
