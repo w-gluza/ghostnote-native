@@ -95,10 +95,10 @@ Expo SDK 58, Expo Router, React Native 0.88, React 19 with the React Compiler, T
 | 2026-11-12 | Bodoni Moda and Inter, embedded at build time  | Editorial direction of the design; no loading state                           |
 | 2026-11-12 | Native tabs replace the JavaScript tab bar     | Native-first; the bar no longer matches the flat bar in the mock-up           |
 | 2026-11-12 | Dark appearance only                           | The design has one theme, and the system tab bar follows the app's appearance |
+| 2026-11-12 | Bundle identifier `dev.wiola.ghostnote`        | Reverse of the owner's domain                                                 |
 
 ## Open
 
-- Bundle identifier is still `com.anonymous.ghostnote-native`. It must be final before the first App Store submission.
 - App icon is still the Expo placeholder.
 - The rudiment photographs are placeholders.
 - Screens have layout only. Practice, metronome, rudiment library and insights have no behaviour yet.
