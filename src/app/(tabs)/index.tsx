@@ -41,7 +41,7 @@ export default function PracticeScreen() {
       </Text>
 
       <View style={styles.summary}>
-        <Text style={styles.summaryText}>20 min • 3 rudiments • Beginner</Text>
+        <Text style={styles.summaryText}>20 min • 3 rudiments • Lvl 1</Text>
         <WeekProgress done={2} goal={3} />
       </View>
 

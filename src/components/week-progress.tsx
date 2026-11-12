@@ -24,7 +24,7 @@ export function WeekProgress({ done, goal }: WeekProgressProps) {
         ))}
       </View>
       <Text style={styles.label}>
-        {done}/{goal} this week
+        {done}/{goal} sessions
       </Text>
     </View>
   );
