@@ -1,6 +1,8 @@
 import { SymbolView } from "expo-symbols";
+import type { VideoSource } from "expo-video";
 import { StyleSheet, Text, View } from "react-native";
 
+import { RudimentVideo } from "@/components/rudiment-video";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -9,6 +11,7 @@ export type Rudiment = {
   minutes: number;
   rounds: number;
   bpm: number;
+  video?: VideoSource;
 };
 
 type RudimentRowProps = {
@@ -35,11 +38,15 @@ export function RudimentRow({ rudiment, position, isLast }: RudimentRowProps) {
           <Text style={styles.bpmLabel}>BPM</Text>
         </View>
         <View style={styles.thumbnail}>
-          <SymbolView
-            name="play.circle.fill"
-            size={28}
-            tintColor={colors.accent}
-          />
+          {rudiment.video ? (
+            <RudimentVideo source={rudiment.video} label={rudiment.name} />
+          ) : (
+            <SymbolView
+              name="play.circle.fill"
+              size={28}
+              tintColor={colors.accent}
+            />
+          )}
         </View>
       </View>
     </View>
@@ -107,6 +114,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 80,
     borderRadius: 12,
+    overflow: "hidden",
     backgroundColor: colors.background,
     alignItems: "center",
     justifyContent: "center",

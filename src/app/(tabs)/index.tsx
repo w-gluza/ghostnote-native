@@ -7,9 +7,27 @@ import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 const rudiments: Rudiment[] = [
-  { name: "Single Stroke Roll", minutes: 4, rounds: 3, bpm: 80 },
-  { name: "Double Stroke Roll", minutes: 4, rounds: 3, bpm: 70 },
-  { name: "Single Paradiddle", minutes: 4, rounds: 3, bpm: 60 },
+  {
+    name: "Single Stroke Roll",
+    minutes: 4,
+    rounds: 3,
+    bpm: 80,
+    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
+  },
+  {
+    name: "Double Stroke Roll",
+    minutes: 4,
+    rounds: 3,
+    bpm: 70,
+    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
+  },
+  {
+    name: "Single Paradiddle",
+    minutes: 4,
+    rounds: 3,
+    bpm: 60,
+    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
+  },
 ];
 
 export default function PracticeScreen() {

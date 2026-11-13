@@ -1,29 +1,43 @@
 import { SymbolView } from "expo-symbols";
+import type { VideoSource } from "expo-video";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { RudimentVideo } from "@/components/rudiment-video";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 export type RudimentSummary = {
+  id?: string;
   name: string;
   category: string;
   level: number;
   sticking: string;
+  video?: VideoSource;
 };
 
-export function RudimentListItem({ rudiment }: { rudiment: RudimentSummary }) {
+type RudimentListItemProps = {
+  rudiment: RudimentSummary;
+  onPress?: () => void;
+};
+
+export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
   return (
     <Pressable
       accessibilityRole="button"
+      onPress={onPress}
       accessibilityLabel={`${rudiment.name}, ${rudiment.category}, level ${rudiment.level}`}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.thumbnail}>
-        <SymbolView
-          name="play.circle.fill"
-          size={28}
-          tintColor={colors.accent}
-        />
+        {rudiment.video ? (
+          <RudimentVideo source={rudiment.video} label={rudiment.name} />
+        ) : (
+          <SymbolView
+            name="play.circle.fill"
+            size={28}
+            tintColor={colors.accent}
+          />
+        )}
       </View>
       <View style={styles.details}>
         <Text style={styles.name}>{rudiment.name}</Text>
@@ -56,6 +70,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 12,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.surface,

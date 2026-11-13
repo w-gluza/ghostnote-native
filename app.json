@@ -32,6 +32,15 @@
             "./node_modules/@expo-google-fonts/inter/600SemiBold/Inter_600SemiBold.ttf"
           ]
         }
+      ],
+      "expo-video",
+      [
+        "react-native-audio-api",
+        {
+          "iosBackgroundMode": false,
+          "androidForegroundService": false,
+          "androidPermissions": []
+        }
       ]
     ],
     "experiments": {

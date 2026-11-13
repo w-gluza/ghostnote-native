@@ -4,9 +4,28 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-export function ScreenHeader() {
+type ScreenHeaderProps = {
+  onBack?: () => void;
+};
+
+export function ScreenHeader({ onBack }: ScreenHeaderProps) {
   return (
     <View style={styles.header}>
+      {onBack ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          hitSlop={12}
+          onPress={onBack}
+        >
+          <SymbolView
+            name="chevron.left"
+            size={20}
+            weight="medium"
+            tintColor={colors.text.primary}
+          />
+        </Pressable>
+      ) : null}
       <Text style={styles.wordmark}>ghostnote</Text>
       <View style={styles.rule} />
       <Pressable

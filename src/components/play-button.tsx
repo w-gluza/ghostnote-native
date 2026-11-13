@@ -5,13 +5,15 @@ import { colors } from "@/theme/colors";
 
 type PlayButtonProps = {
   isPlaying: boolean;
+  onPress?: () => void;
 };
 
-export function PlayButton({ isPlaying }: PlayButtonProps) {
+export function PlayButton({ isPlaying, onPress }: PlayButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={isPlaying ? "Pause" : "Play"}
+      onPress={onPress}
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
       <SymbolView

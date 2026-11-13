@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
@@ -16,12 +17,14 @@ const categories = ["All", "Rolls", "Diddles", "Flams", "Drags"];
 
 const rudiments: RudimentSummary[] = [
   {
+    id: "single-stroke-roll",
     name: "Single Stroke Roll",
     category: "Rolls",
     level: 1,
     sticking: "R L R L R L R L",
   },
   {
+    id: "double-stroke-roll",
     name: "Double Stroke Roll",
     category: "Rolls",
     level: 1,
@@ -34,10 +37,12 @@ const rudiments: RudimentSummary[] = [
     sticking: "R R R L L L",
   },
   {
+    id: "single-paradiddle",
     name: "Single Paradiddle",
     category: "Diddles",
     level: 2,
     sticking: "R L R R L R L L",
+    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
   },
   { name: "Flam", category: "Flams", level: 2, sticking: "lR L rL R" },
   { name: "Drag", category: "Drags", level: 2, sticking: "llR rrL" },
@@ -51,6 +56,7 @@ export default function RudimentsScreen() {
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState("");
 
+  const router = useRouter();
   const term = query.trim().toLowerCase();
   const results = term
     ? rudiments.filter((rudiment) => rudiment.name.toLowerCase().includes(term))
@@ -65,7 +71,20 @@ export default function RudimentsScreen() {
     <FlatList
       data={results}
       keyExtractor={(rudiment) => rudiment.name}
-      renderItem={({ item }) => <RudimentListItem rudiment={item} />}
+      renderItem={({ item }) => {
+        const { id } = item;
+        return (
+          <RudimentListItem
+            rudiment={item}
+            onPress={
+              id
+                ? () =>
+                    router.push({ pathname: "/rudiment/[id]", params: { id } })
+                : undefined
+            }
+          />
+        );
+      }}
       ItemSeparatorComponent={Separator}
       style={styles.screen}
       contentContainerStyle={styles.content}
