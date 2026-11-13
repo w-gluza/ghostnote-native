@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -9,6 +10,8 @@ type ScreenHeaderProps = {
 };
 
 export function ScreenHeader({ onBack }: ScreenHeaderProps) {
+  const router = useRouter();
+
   return (
     <View style={styles.header}>
       {onBack ? (
@@ -32,6 +35,7 @@ export function ScreenHeader({ onBack }: ScreenHeaderProps) {
         accessibilityRole="button"
         accessibilityLabel="Profile"
         hitSlop={12}
+        onPress={() => router.push("/profile")}
       >
         <SymbolView
           name="person"

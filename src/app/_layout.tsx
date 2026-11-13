@@ -17,7 +17,9 @@ const theme = {
 export default function RootLayout() {
   return (
     <ThemeProvider value={theme}>
-      <Stack screenOptions={{ headerShown: false, statusBarStyle: "light" }} />
+      <Stack screenOptions={{ headerShown: false, statusBarStyle: "light" }}>
+        <Stack.Screen name="profile" options={{ presentation: "modal" }} />
+      </Stack>
     </ThemeProvider>
   );
 }
