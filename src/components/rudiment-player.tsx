@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   useAnimatedValue,
+  useWindowDimensions,
   View,
 } from "react-native";
 
@@ -35,9 +36,11 @@ type RudimentPlayerProps = {
   pattern: RudimentPattern;
   initialBpm: number;
   sound?: StrokeSound;
+  padScale?: number;
 };
 
 const BPM_STEP = 5;
+const COMPACT_HEIGHT = 850;
 const MAX_RETURN_MS = 500;
 const RETURN_SHARE = 0.55;
 const RIPPLE_MS = 280;
@@ -46,7 +49,10 @@ export function RudimentPlayer({
   pattern,
   initialBpm,
   sound,
+  padScale = 1,
 }: RudimentPlayerProps) {
+  const { height } = useWindowDimensions();
+  const isCompact = height < COMPACT_HEIGHT;
   const [bpm, setBpm] = useState(clampBpm(initialBpm));
 
   const left: StickMotion = {
@@ -113,12 +119,13 @@ export function RudimentPlayer({
   const sticking = pattern.strokes.map((stroke) => stroke.hand).join(" ");
 
   return (
-    <View style={styles.player}>
+    <View style={[styles.player, isCompact && styles.playerCompact]}>
       <PadAnimation
         left={left}
         right={right}
         activeHand={playback.isPlaying ? (activeStroke?.hand ?? null) : null}
         label={`Practice pad animation, sticking ${sticking}`}
+        scale={padScale}
       />
 
       <StickingPattern
@@ -174,6 +181,9 @@ const styles = StyleSheet.create({
   player: {
     alignItems: "center",
     gap: 24,
+  },
+  playerCompact: {
+    gap: 16,
   },
   tempo: {
     flexDirection: "row",

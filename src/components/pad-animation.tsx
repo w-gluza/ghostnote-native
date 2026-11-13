@@ -14,10 +14,11 @@ type PadAnimationProps = {
   right: StickMotion;
   activeHand: Hand | null;
   label: string;
+  scale?: number;
 };
 
 const STAGE_WIDTH = 280;
-const STAGE_HEIGHT = 300;
+export const STAGE_HEIGHT = 300;
 const PAD_SIZE = 200;
 const STICK_LENGTH = 197;
 const STICK_WIDTH = 8;
@@ -91,19 +92,26 @@ export function PadAnimation({
   right,
   activeHand,
   label,
+  scale = 1,
 }: PadAnimationProps) {
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={label}>
-      <View style={styles.stage}>
-        <View style={styles.pad}>
-          <View style={styles.padRing} />
+      <View
+        style={{ width: STAGE_WIDTH * scale, height: STAGE_HEIGHT * scale }}
+      >
+        <View style={[styles.stage, { transform: [{ scale }] }]}>
+          <View style={styles.pad}>
+            <View style={styles.padRing} />
+          </View>
+          <Ripple hand="L" motion={left} />
+          <Ripple hand="R" motion={right} />
+          <Stick hand="L" motion={left} isActive={activeHand === "L"} />
+          <Stick hand="R" motion={right} isActive={activeHand === "R"} />
         </View>
-        <Ripple hand="L" motion={left} />
-        <Ripple hand="R" motion={right} />
-        <Stick hand="L" motion={left} isActive={activeHand === "L"} />
-        <Stick hand="R" motion={right} isActive={activeHand === "R"} />
       </View>
-      <View style={styles.hands}>
+      <View
+        style={[styles.hands, { paddingHorizontal: (BUTT_INSET - 6) * scale }]}
+      >
         <Text style={[styles.hand, activeHand === "L" && styles.handActive]}>
           L
         </Text>
@@ -119,6 +127,7 @@ const styles = StyleSheet.create({
   stage: {
     width: STAGE_WIDTH,
     height: STAGE_HEIGHT,
+    transformOrigin: "0% 0%",
   },
   pad: {
     position: "absolute",
@@ -190,7 +199,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: BUTT_INSET - 6,
   },
   hand: {
     color: colors.text.secondary,

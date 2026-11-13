@@ -1,36 +1,26 @@
+import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { RudimentRow, type Rudiment } from "@/components/rudiment-row";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
+import { findRudiment } from "@/rudiments/library";
+import { routineMinutes, todaysRoutine } from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const rudiments: Rudiment[] = [
-  {
-    name: "Single Stroke Roll",
-    minutes: 4,
-    rounds: 3,
-    bpm: 80,
-    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
-  },
-  {
-    name: "Double Stroke Roll",
-    minutes: 4,
-    rounds: 3,
-    bpm: 70,
-    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
-  },
-  {
-    name: "Single Paradiddle",
-    minutes: 4,
-    rounds: 3,
-    bpm: 60,
-    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
-  },
-];
+const video = require("@/assets/videos/accent_single_paraddilde_85.mp4");
+const rudiments: Rudiment[] = todaysRoutine.exercises.map((exercise) => ({
+  name: findRudiment(exercise.id)?.name ?? "",
+  minutes: exercise.minutes,
+  rounds: exercise.rounds,
+  bpm: exercise.bpm,
+  video,
+}));
 
 export default function PracticeScreen() {
+  const router = useRouter();
+
   return (
     <ScrollView
       style={styles.screen}
@@ -44,7 +34,10 @@ export default function PracticeScreen() {
       </Text>
 
       <View style={styles.summary}>
-        <Text style={styles.summaryText}>20 min • 3 rudiments • Lvl 1</Text>
+        <Text style={styles.summaryText}>
+          {routineMinutes(todaysRoutine)} min • {rudiments.length} rudiments •
+          Lvl {todaysRoutine.level}
+        </Text>
         <WeekProgress done={2} goal={3} />
       </View>
 
@@ -55,12 +48,14 @@ export default function PracticeScreen() {
             rudiment={rudiment}
             position={index + 1}
             isLast={index === rudiments.length - 1}
+            onPress={() => router.push("/routine")}
           />
         ))}
       </View>
 
       <Pressable
         accessibilityRole="button"
+        onPress={() => router.push("/routine")}
         style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >
         <Text style={styles.startLabel}>Start Practice</Text>

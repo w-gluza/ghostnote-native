@@ -6,15 +6,18 @@ import { typography } from "@/theme/typography";
 type WeekProgressProps = {
   done: number;
   goal: number;
+  unit?: string;
+  description?: string;
 };
 
-export function WeekProgress({ done, goal }: WeekProgressProps) {
+export function WeekProgress({
+  done,
+  goal,
+  unit = "sessions",
+  description = `${done} of ${goal} sessions this week`,
+}: WeekProgressProps) {
   return (
-    <View
-      accessible
-      accessibilityLabel={`${done} of ${goal} sessions this week`}
-      style={styles.container}
-    >
+    <View accessible accessibilityLabel={description} style={styles.container}>
       <View style={styles.marks}>
         {Array.from({ length: goal }, (_, index) => (
           <View
@@ -24,7 +27,7 @@ export function WeekProgress({ done, goal }: WeekProgressProps) {
         ))}
       </View>
       <Text style={styles.label}>
-        {done}/{goal} sessions
+        {done}/{goal} {unit}
       </Text>
     </View>
   );

@@ -1,6 +1,6 @@
 import { SymbolView } from "expo-symbols";
 import type { VideoSource } from "expo-video";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { RudimentVideo } from "@/components/rudiment-video";
 import { colors } from "@/theme/colors";
@@ -18,9 +18,15 @@ type RudimentRowProps = {
   rudiment: Rudiment;
   position: number;
   isLast: boolean;
+  onPress?: () => void;
 };
 
-export function RudimentRow({ rudiment, position, isLast }: RudimentRowProps) {
+export function RudimentRow({
+  rudiment,
+  position,
+  isLast,
+  onPress,
+}: RudimentRowProps) {
   return (
     <View style={styles.row}>
       <View style={styles.timeline}>
@@ -29,14 +35,19 @@ export function RudimentRow({ rudiment, position, isLast }: RudimentRowProps) {
         <View style={styles.line} />
       </View>
       <View style={[styles.body, !isLast && styles.bodyDivider]}>
-        <View style={styles.details}>
+        <Pressable
+          accessibilityRole={onPress ? "button" : undefined}
+          disabled={!onPress}
+          onPress={onPress}
+          style={({ pressed }) => [styles.details, pressed && styles.pressed]}
+        >
           <Text style={styles.name}>{rudiment.name}</Text>
           <Text style={styles.meta}>
             {rudiment.minutes} min • {rudiment.rounds} rounds
           </Text>
           <Text style={styles.bpm}>{rudiment.bpm}</Text>
           <Text style={styles.bpmLabel}>BPM</Text>
-        </View>
+        </Pressable>
         <View style={styles.thumbnail}>
           {rudiment.video ? (
             <RudimentVideo source={rudiment.video} label={rudiment.name} />
@@ -54,6 +65,9 @@ export function RudimentRow({ rudiment, position, isLast }: RudimentRowProps) {
 }
 
 const styles = StyleSheet.create({
+  pressed: {
+    opacity: 0.7,
+  },
   row: {
     flexDirection: "row",
     gap: 12,
