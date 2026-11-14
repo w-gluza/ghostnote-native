@@ -7,11 +7,11 @@ const GROUP_KINDS = ["phrase", "diddle"];
 
 type Fields = Record<string, unknown>;
 
-function isFields(value: unknown): value is Fields {
+export function isFields(value: unknown): value is Fields {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isName(value: unknown): value is string {
+export function isName(value: unknown): value is string {
   return typeof value === "string" && value.length > 0;
 }
 
@@ -24,7 +24,7 @@ function isFraction(value: unknown): value is Fraction {
   );
 }
 
-function isPositive(value: unknown): value is Fraction {
+export function isPositive(value: unknown): value is Fraction {
   return isFraction(value) && compare(value, ZERO) > 0;
 }
 

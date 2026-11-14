@@ -41,7 +41,8 @@
           "androidForegroundService": false,
           "androidPermissions": []
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,

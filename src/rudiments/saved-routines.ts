@@ -1,9 +1,13 @@
 import { useSyncExternalStore } from "react";
 
+import { load, save } from "./storage";
+import { isRoutine, validItems } from "./stored";
 import { presetExercise, todaysRoutine } from "./todays-routine";
 import type { Routine } from "./types";
 
-let savedRoutines: Routine[] = [
+const ROUTINES_KEY = "routines";
+
+const starterRoutines: Routine[] = [
   {
     id: "quick-warm-up",
     name: "Quick Warm-up",
@@ -31,6 +35,9 @@ let savedRoutines: Routine[] = [
   },
 ];
 
+let savedRoutines: Routine[] =
+  validItems(load(ROUTINES_KEY), isRoutine) ?? starterRoutines;
+
 const listeners = new Set<() => void>();
 
 function subscribe(listener: () => void) {
@@ -45,6 +52,7 @@ export function saveRoutine(routine: Routine) {
   savedRoutines = exists
     ? savedRoutines.map((saved) => (saved.id === routine.id ? routine : saved))
     : [...savedRoutines, routine];
+  save(ROUTINES_KEY, savedRoutines);
   listeners.forEach((listener) => listener());
 }
 
