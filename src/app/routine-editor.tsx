@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,12 +13,14 @@ import {
 
 import { NoteValuePicker } from "@/components/note-value-picker";
 import { fraction, multiply } from "@/rudiments/fraction";
+import { newId } from "@/rudiments/ids";
 import {
   availableRudiments,
   defaultBpm,
   findRudiment,
   resolvePattern,
 } from "@/rudiments/library";
+import { removeRoutine } from "@/rudiments/practice-session";
 import { findRoutine, saveRoutine } from "@/rudiments/saved-routines";
 import { evenStep, scaleToStep } from "@/rudiments/timeline";
 import { clampBpm } from "@/rudiments/timing";
@@ -319,7 +322,7 @@ export default function RoutineEditorScreen() {
   const [saveFailed, setSaveFailed] = useState(false);
   const save = () => {
     const isSaved = saveRoutine({
-      id: source && !isCopy ? source.id : `routine-${Date.now()}`,
+      id: source && !isCopy ? source.id : newId("routine"),
       name: name.trim(),
       exercises,
     });
@@ -328,6 +331,33 @@ export default function RoutineEditorScreen() {
     } else {
       setSaveFailed(true);
     }
+  };
+
+  const canDelete = source !== undefined && !isCopy;
+  const [deleteFailed, setDeleteFailed] = useState(false);
+  const confirmDelete = () => {
+    if (!source) {
+      return;
+    }
+    Alert.alert(
+      `Delete "${source.name}"?`,
+      "The routine is removed. Practice you already did with it stays in Insights.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            const isDeleted = removeRoutine(source.id);
+            if (isDeleted) {
+              router.dismissTo("/routines");
+            } else {
+              setDeleteFailed(true);
+            }
+          },
+        },
+      ],
+    );
   };
 
   if (open) {
@@ -486,6 +516,22 @@ export default function RoutineEditorScreen() {
               </Pressable>
             ))
           : null}
+
+        {canDelete ? (
+          <Pressable
+            accessibilityRole="button"
+            hitSlop={12}
+            onPress={confirmDelete}
+            style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
+          >
+            <Text style={styles.removeLabel}>Delete routine</Text>
+          </Pressable>
+        ) : null}
+        {deleteFailed ? (
+          <Text accessibilityRole="alert" style={styles.deleteFailed}>
+            This routine could not be deleted. Try again.
+          </Text>
+        ) : null}
       </ScrollView>
     </View>
   );
@@ -527,6 +573,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 24,
     paddingBottom: 40,
+  },
+  deleteFailed: {
+    marginTop: 12,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.label,
+    textAlign: "center",
   },
   saveFailed: {
     marginTop: 12,

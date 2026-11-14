@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 
+import { removeWithSession, withoutRoutine, withRoutine } from "./routine-list";
 import { load, save } from "./storage";
 import { isRoutine, validItems } from "./stored";
 import { presetExercise, todaysRoutine } from "./todays-routine";
@@ -47,17 +48,26 @@ function subscribe(listener: () => void) {
   };
 }
 
-export function saveRoutine(routine: Routine) {
-  const exists = savedRoutines.some((saved) => saved.id === routine.id);
-  const next = exists
-    ? savedRoutines.map((saved) => (saved.id === routine.id ? routine : saved))
-    : [...savedRoutines, routine];
+function replaceRoutines(next: Routine[]) {
   if (!save(ROUTINES_KEY, next)) {
     return false;
   }
   savedRoutines = next;
   listeners.forEach((listener) => listener());
   return true;
+}
+
+export function saveRoutine(routine: Routine) {
+  return replaceRoutines(withRoutine(savedRoutines, routine));
+}
+
+export function deleteRoutine(id: string, finishSession: () => boolean) {
+  const previous = savedRoutines;
+  return removeWithSession({
+    remove: () => replaceRoutines(withoutRoutine(previous, id)),
+    finishSession,
+    restore: () => replaceRoutines(previous),
+  });
 }
 
 export function useSavedRoutines() {

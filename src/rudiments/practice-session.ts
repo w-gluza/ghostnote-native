@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 
+import { deleteRoutine } from "./saved-routines";
 import { createSessionStore } from "./session-store";
 import { load, save } from "./storage";
 
@@ -27,6 +28,12 @@ export function useActiveSession(routineId: string) {
 
 export function useActiveSessions() {
   return useSyncExternalStore(store.subscribe, store.activeSessions);
+}
+
+export function removeRoutine(routineId: string) {
+  return deleteRoutine(routineId, () =>
+    store.finishSession(routineId, Date.now()),
+  );
 }
 
 export function useUnfinishedPractice() {
