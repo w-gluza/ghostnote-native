@@ -43,7 +43,9 @@ export function undoRound(routineId: string, exerciseId: string) {
 export function willCompleteRoutine(routine: Routine, exerciseId: string) {
   return routine.exercises.every((exercise) => {
     const done = doneIn(routine.id, exercise.id);
-    return (exercise.id === exerciseId ? done + 1 : done) >= exercise.rounds;
+    return (
+      (exercise.id === exerciseId ? done + 1 : done) >= exercise.rounds.length
+    );
   });
 }
 
@@ -61,7 +63,7 @@ export function useRoundsDone(routineId: string, exerciseId: string) {
 export function useRoutineComplete(routine: Routine) {
   return useSyncExternalStore(subscribe, () =>
     routine.exercises.every(
-      (exercise) => doneIn(routine.id, exercise.id) >= exercise.rounds,
+      (exercise) => doneIn(routine.id, exercise.id) >= exercise.rounds.length,
     ),
   );
 }

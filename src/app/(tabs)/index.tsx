@@ -5,16 +5,20 @@ import { RudimentRow, type Rudiment } from "@/components/rudiment-row";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
 import { findRudiment } from "@/rudiments/library";
-import { routineMinutes, todaysRoutine } from "@/rudiments/todays-routine";
+import {
+  exerciseMinutes,
+  routineMinutes,
+  todaysRoutine,
+} from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 const video = require("@/assets/videos/accent_single_paraddilde_85.mp4");
 const rudiments: Rudiment[] = todaysRoutine.exercises.map((exercise) => ({
   name: findRudiment(exercise.id)?.name ?? "",
-  minutes: exercise.minutes,
-  rounds: exercise.rounds,
-  bpm: exercise.bpm,
+  minutes: exerciseMinutes(exercise),
+  rounds: exercise.rounds.length,
+  bpm: exercise.rounds[0]?.bpm ?? 0,
   video,
 }));
 

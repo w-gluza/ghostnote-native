@@ -16,7 +16,7 @@ import {
   useRoundsDone,
   willCompleteRoutine,
 } from "@/rudiments/round-log";
-import { findRoutine } from "@/rudiments/saved-routines";
+import { useRoutine } from "@/rudiments/saved-routines";
 import { useStrokeSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -31,22 +31,25 @@ export default function RudimentScreen() {
   const rudiment = findRudiment(id);
   const router = useRouter();
   const sound = useStrokeSound();
-  const activeRoutine = routine ? findRoutine(routine) : undefined;
+  const openedRoutine = useRoutine(routine);
+  const activeRoutine = routine ? openedRoutine : undefined;
   const exercise = activeRoutine?.exercises.find((item) => item.id === id);
   const roundsDone = useRoundsDone(activeRoutine?.id ?? "", id);
-  const isComplete = exercise ? roundsDone >= exercise.rounds : false;
+  const roundGoal = exercise?.rounds.length ?? 0;
+  const isComplete = exercise ? roundsDone >= roundGoal : false;
+  const round = exercise?.rounds[Math.min(roundsDone, roundGoal - 1)];
   const finishRound = () => {
     if (!exercise || !activeRoutine) {
       return;
     }
     const finishesRoutine = willCompleteRoutine(activeRoutine, exercise.id);
-    logRound(activeRoutine.id, exercise.id, exercise.rounds);
+    logRound(activeRoutine.id, exercise.id, roundGoal);
     if (finishesRoutine) {
       router.replace({
         pathname: "/summary",
         params: { routine: activeRoutine.id },
       });
-    } else if (roundsDone + 1 >= exercise.rounds) {
+    } else if (roundsDone + 1 >= roundGoal) {
       router.back();
     }
   };
@@ -111,9 +114,9 @@ export default function RudimentScreen() {
               />
             </View>
             <RudimentPlayer
-              key={rudiment.id}
+              key={`${rudiment.id}-${round?.bpm ?? ""}`}
               pattern={pattern}
-              initialBpm={exercise?.bpm ?? rudiment.defaultBpm}
+              initialBpm={round?.bpm ?? rudiment.defaultBpm}
               sound={sound}
               padScale={padScale}
             />
@@ -126,9 +129,9 @@ export default function RudimentScreen() {
         <View style={styles.rounds}>
           <WeekProgress
             done={roundsDone}
-            goal={exercise.rounds}
+            goal={roundGoal}
             unit="rounds"
-            description={`${roundsDone} of ${exercise.rounds} rounds done`}
+            description={`${roundsDone} of ${roundGoal} rounds done`}
           />
           {roundsDone > 0 ? (
             <Pressable

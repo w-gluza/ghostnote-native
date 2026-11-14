@@ -5,8 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment } from "@/rudiments/library";
 import { useRoundsDone, useRoutineComplete } from "@/rudiments/round-log";
-import { findRoutine } from "@/rudiments/saved-routines";
+import { useRoutine } from "@/rudiments/saved-routines";
 import {
+  exerciseMinutes,
   routineMinutes,
   todaysRoutine,
   type Exercise,
@@ -30,7 +31,7 @@ function SetlistRow({
   if (!rudiment) {
     return null;
   }
-  const isComplete = roundsDone >= exercise.rounds;
+  const isComplete = roundsDone >= exercise.rounds.length;
   const sticking = rudiment.pattern.strokes
     .map((stroke) => stroke.hand)
     .join(" ");
@@ -38,7 +39,7 @@ function SetlistRow({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${rudiment.name}, ${exercise.minutes} minutes, ${roundsDone} of ${exercise.rounds} rounds done, sticking ${sticking}`}
+      accessibilityLabel={`${rudiment.name}, ${exerciseMinutes(exercise)} minutes, ${roundsDone} of ${exercise.rounds.length} rounds done, sticking ${sticking}`}
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
@@ -50,9 +51,9 @@ function SetlistRow({
         <Text style={styles.sticking}>{sticking}</Text>
       </View>
       <View style={styles.rowStatus}>
-        <Text style={styles.minutes}>{exercise.minutes} min</Text>
+        <Text style={styles.minutes}>{exerciseMinutes(exercise)} min</Text>
         <Text style={[styles.minutes, roundsDone > 0 && styles.roundsStarted]}>
-          {roundsDone}/{exercise.rounds} rounds
+          {roundsDone}/{exercise.rounds.length} rounds
         </Text>
       </View>
       <SymbolView
@@ -68,7 +69,7 @@ function SetlistRow({
 export default function RoutineScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string }>();
-  const routine = findRoutine(params.id) ?? todaysRoutine;
+  const routine = useRoutine(params.id) ?? todaysRoutine;
   const isToday = routine.id === todaysRoutine.id;
   const totalMinutes = routineMinutes(routine);
   const openExercise = (id: string) =>
@@ -90,7 +91,16 @@ export default function RoutineScreen() {
           headerTintColor: colors.text.primary,
           headerStyle: { backgroundColor: colors.background },
           headerRight: () => (
-            <Pressable accessibilityRole="button" hitSlop={12}>
+            <Pressable
+              accessibilityRole="button"
+              hitSlop={12}
+              onPress={() =>
+                router.push({
+                  pathname: "/routine-editor",
+                  params: { id: routine.id },
+                })
+              }
+            >
               <Text style={styles.edit}>Edit</Text>
             </Pressable>
           ),

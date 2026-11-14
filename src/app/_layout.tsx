@@ -19,6 +19,10 @@ export default function RootLayout() {
     <ThemeProvider value={theme}>
       <Stack screenOptions={{ headerShown: false, statusBarStyle: "light" }}>
         <Stack.Screen name="profile" options={{ presentation: "modal" }} />
+        <Stack.Screen
+          name="routine-editor"
+          options={{ presentation: "modal" }}
+        />
       </Stack>
     </ThemeProvider>
   );

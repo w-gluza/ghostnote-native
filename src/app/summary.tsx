@@ -5,9 +5,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment } from "@/rudiments/library";
 import { clearRounds, useRoundsDone } from "@/rudiments/round-log";
-import { findRoutine } from "@/rudiments/saved-routines";
+import { useRoutine } from "@/rudiments/saved-routines";
 import {
   routineMinutes,
+  tempoLabel,
   todaysRoutine,
   type Exercise,
 } from "@/rudiments/todays-routine";
@@ -30,7 +31,7 @@ function SummaryRow({
   return (
     <View
       accessible
-      accessibilityLabel={`${rudiment.name}, ${roundsDone} of ${exercise.rounds} rounds at ${exercise.bpm} beats per minute`}
+      accessibilityLabel={`${rudiment.name}, ${roundsDone} of ${exercise.rounds.length} rounds at ${tempoLabel(exercise)} beats per minute`}
       style={styles.row}
     >
       <SymbolView
@@ -41,10 +42,10 @@ function SummaryRow({
       />
       <View style={styles.rowText}>
         <Text style={styles.name}>{rudiment.name}</Text>
-        <Text style={styles.detail}>{exercise.bpm} BPM</Text>
+        <Text style={styles.detail}>{tempoLabel(exercise)} BPM</Text>
       </View>
       <Text style={styles.rounds}>
-        {roundsDone}/{exercise.rounds} rounds
+        {roundsDone}/{exercise.rounds.length} rounds
       </Text>
     </View>
   );
@@ -62,9 +63,9 @@ function Stat({ value, label }: { value: string; label: string }) {
 export default function SummaryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ routine?: string }>();
-  const routine = findRoutine(params.routine) ?? todaysRoutine;
+  const routine = useRoutine(params.routine) ?? todaysRoutine;
   const totalRounds = routine.exercises.reduce(
-    (total, exercise) => total + exercise.rounds,
+    (total, exercise) => total + exercise.rounds.length,
     0,
   );
   const finish = () => {

@@ -2,7 +2,7 @@ import { Stack, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { savedRoutines } from "@/rudiments/saved-routines";
+import { useSavedRoutines } from "@/rudiments/saved-routines";
 import { routineMinutes, type Routine } from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -51,6 +51,8 @@ function RoutineRow({
 
 export default function RoutinesScreen() {
   const router = useRouter();
+  const savedRoutines = useSavedRoutines();
+  const create = () => router.push("/routine-editor");
 
   return (
     <View style={styles.screen}>
@@ -76,6 +78,7 @@ export default function RoutinesScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Create new routine"
+            onPress={create}
             style={({ pressed }) => [styles.add, pressed && styles.pressed]}
           >
             <SymbolView
@@ -108,6 +111,7 @@ export default function RoutinesScreen() {
             </Text>
             <Pressable
               accessibilityRole="button"
+              onPress={create}
               style={({ pressed }) => [
                 styles.create,
                 pressed && styles.pressed,
