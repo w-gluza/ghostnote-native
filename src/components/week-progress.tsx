@@ -13,8 +13,8 @@ type WeekProgressProps = {
 export function WeekProgress({
   done,
   goal,
-  unit = "sessions",
-  description = `${done} of ${goal} sessions this week`,
+  unit = goal === 1 ? "session" : "sessions",
+  description = `${done} of ${goal} ${unit} this week`,
 }: WeekProgressProps) {
   return (
     <View accessible accessibilityLabel={description} style={styles.container}>

@@ -9,11 +9,13 @@ import {
   periodStart,
   playedTime,
   practiceSessions,
+  sessionsLabel,
   sessionsSince,
   techniqueShares,
   todayIndex,
   totalMs,
   weekDayMs,
+  weeklyGoalFrom,
 } from "./insights.ts";
 import type { PracticeSession } from "./types.ts";
 
@@ -220,4 +222,14 @@ test("practice that runs past midnight belongs to the day it ended", () => {
     "0",
   ]);
   assert.equal(lastPractisedLabel(played, monday), "Today");
+});
+
+test("the weekly goal is one to seven sessions and falls back to three", () => {
+  assert.equal(weeklyGoalFrom(5), 5);
+  assert.equal(weeklyGoalFrom(undefined), 3);
+  assert.equal(weeklyGoalFrom(0), 3);
+  assert.equal(weeklyGoalFrom(8), 3);
+  assert.equal(weeklyGoalFrom("4"), 3);
+  assert.equal(sessionsLabel(1), "1 session");
+  assert.equal(sessionsLabel(4), "4 sessions");
 });

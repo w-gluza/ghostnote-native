@@ -7,6 +7,17 @@ import type {
 } from "./types";
 
 export const WEEKLY_SESSION_GOAL = 3;
+export const WEEKLY_GOAL_CHOICES = [1, 2, 3, 4, 5, 6, 7];
+
+export function weeklyGoalFrom(stored: unknown) {
+  return typeof stored === "number" && WEEKLY_GOAL_CHOICES.includes(stored)
+    ? stored
+    : WEEKLY_SESSION_GOAL;
+}
+
+export function sessionsLabel(count: number) {
+  return count === 1 ? "1 session" : `${count} sessions`;
+}
 
 export const CATEGORIES: RudimentCategory[] = [
   "Rolls",

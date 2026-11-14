@@ -1,15 +1,45 @@
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { LinkRow } from "@/components/link-row";
+import { OptionMenu } from "@/components/option-menu";
 import { StatRow } from "@/components/stat-row";
-import { WEEKLY_SESSION_GOAL } from "@/rudiments/insights";
-import { routineLevel, todaysRoutine } from "@/rudiments/todays-routine";
+import { links } from "@/links";
+import {
+  minutesLabel,
+  playedTime,
+  sessionsLabel,
+  WEEKLY_GOAL_CHOICES,
+  weekDayMs,
+} from "@/rudiments/insights";
+import {
+  useActiveSessions,
+  usePracticeHistory,
+  useUnfinishedPractice,
+} from "@/rudiments/practice-session";
+import { setWeeklyGoal, useWeeklyGoal } from "@/rudiments/weekly-goal";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
+const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
+  key: count,
+  label: sessionsLabel(count),
+}));
+
 export default function ProfileScreen() {
   const router = useRouter();
+  const weeklyGoal = useWeeklyGoal();
+  const [goalSaveFailed, setGoalSaveFailed] = useState(false);
+  const history = usePracticeHistory();
+  const active = useActiveSessions();
+  const unfinished = useUnfinishedPractice();
+  const playedThisWeek = weekDayMs(
+    playedTime([...history, ...Object.values(active)], unfinished),
+    new Date(),
+  ).reduce((total, ms) => total + ms, 0);
 
   return (
     <ScrollView
@@ -35,29 +65,39 @@ export default function ProfileScreen() {
         <Text accessibilityRole="header" style={styles.sectionTitle}>
           YOUR PRACTICE
         </Text>
+        <View style={styles.goalRow}>
+          <SymbolView
+            name="calendar"
+            size={24}
+            weight="light"
+            tintColor={colors.text.secondary}
+          />
+          <Text style={styles.goalLabel}>Weekly goal</Text>
+          <OptionMenu
+            name="Weekly goal"
+            options={GOAL_OPTIONS}
+            selected={weeklyGoal}
+            onChange={(goal) => setGoalSaveFailed(!setWeeklyGoal(goal))}
+            align="end"
+          >
+            <Text style={styles.goalValue}>{sessionsLabel(weeklyGoal)}</Text>
+            <SymbolView
+              name="chevron.down"
+              size={12}
+              weight="medium"
+              tintColor={colors.text.secondary}
+            />
+          </OptionMenu>
+        </View>
+        {goalSaveFailed ? (
+          <Text accessibilityRole="alert" style={styles.problem}>
+            Your weekly goal could not be saved. Choose it again to retry.
+          </Text>
+        ) : null}
         <StatRow
-          symbol="chart.bar"
-          label="Level"
-          value={`Lvl ${routineLevel(todaysRoutine)}`}
-        />
-        <StatRow
-          symbol="calendar"
-          label="Weekly goal"
-          value={`${WEEKLY_SESSION_GOAL} sessions`}
-        />
-        <StatRow symbol="clock" label="Session length" value="20 min" isLast />
-      </View>
-
-      <View style={styles.section}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
-          PREFERENCES
-        </Text>
-        <StatRow symbol="music.note" label="Default note value" value="1/4" />
-        <StatRow symbol="speaker.wave.2" label="Click sound" value="Click" />
-        <StatRow
-          symbol="hand.raised"
-          label="Leading hand"
-          value="Right"
+          symbol="clock"
+          label="Played this week"
+          value={`${minutesLabel(playedThisWeek)} min`}
           isLast
         />
       </View>
@@ -66,6 +106,18 @@ export default function ProfileScreen() {
         <Text accessibilityRole="header" style={styles.sectionTitle}>
           ABOUT
         </Text>
+        <LinkRow
+          symbol="person"
+          label="Made by Wiola Gluza"
+          detail="London-based engineer, up for interesting work."
+          url={links.author}
+        />
+        <LinkRow
+          symbol="questionmark.circle"
+          label="Support"
+          url={links.support}
+        />
+        <LinkRow symbol="lock" label="Privacy policy" url={links.privacy} />
         <StatRow
           symbol="info.circle"
           label="Version"
@@ -113,6 +165,32 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.medium,
     fontSize: typography.fontSize.caption,
     letterSpacing: 0.5,
+  },
+  goalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    minHeight: 56,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  goalLabel: {
+    flex: 1,
+    color: colors.text.secondary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.body,
+  },
+  goalValue: {
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.body,
+    fontVariant: ["tabular-nums"],
+  },
+  problem: {
+    paddingVertical: 12,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.label,
   },
   pressed: {
     opacity: 0.7,

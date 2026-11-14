@@ -5,13 +5,10 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { RudimentRow, type Rudiment } from "@/components/rudiment-row";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
-import {
-  periodStart,
-  sessionsSince,
-  WEEKLY_SESSION_GOAL,
-} from "@/rudiments/insights";
+import { periodStart, sessionsSince } from "@/rudiments/insights";
 import { findRudiment } from "@/rudiments/library";
 import { usePracticeHistory } from "@/rudiments/practice-session";
+import { useWeeklyGoal } from "@/rudiments/weekly-goal";
 import {
   exerciseMinutes,
   routineLevel,
@@ -39,6 +36,7 @@ export default function PracticeScreen() {
       setNow(new Date());
     }, []),
   );
+  const weeklyGoal = useWeeklyGoal();
   const sessionsThisWeek = sessionsSince(history, periodStart("week", now));
 
   return (
@@ -58,7 +56,7 @@ export default function PracticeScreen() {
           {routineMinutes(todaysRoutine)} min • {rudiments.length} rudiments •
           Lvl {routineLevel(todaysRoutine)}
         </Text>
-        <WeekProgress done={sessionsThisWeek} goal={WEEKLY_SESSION_GOAL} />
+        <WeekProgress done={sessionsThisWeek} goal={weeklyGoal} />
       </View>
 
       <View style={styles.card}>
