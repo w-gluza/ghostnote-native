@@ -1,28 +1,31 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment } from "@/rudiments/library";
 import { useRoundsDone, useRoutineComplete } from "@/rudiments/round-log";
-import { routineMinutes, todaysRoutine } from "@/rudiments/todays-routine";
+import { findRoutine } from "@/rudiments/saved-routines";
+import {
+  routineMinutes,
+  todaysRoutine,
+  type Exercise,
+} from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const routine = todaysRoutine;
-
-type Exercise = (typeof todaysRoutine.exercises)[number];
-
 function SetlistRow({
+  routineId,
   exercise,
   position,
   onPress,
 }: {
+  routineId: string;
   exercise: Exercise;
   position: number;
   onPress: () => void;
 }) {
-  const roundsDone = useRoundsDone(exercise.id);
+  const roundsDone = useRoundsDone(routineId, exercise.id);
   const rudiment = findRudiment(exercise.id);
   if (!rudiment) {
     return null;
@@ -64,14 +67,17 @@ function SetlistRow({
 
 export default function RoutineScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string }>();
+  const routine = findRoutine(params.id) ?? todaysRoutine;
+  const isToday = routine.id === todaysRoutine.id;
   const totalMinutes = routineMinutes(routine);
   const openExercise = (id: string) =>
     router.push({
       pathname: "/rudiment/[id]",
-      params: { id, routine: "today" },
+      params: { id, routine: routine.id },
     });
   const first = routine.exercises[0];
-  const isComplete = useRoutineComplete(routine.exercises);
+  const isComplete = useRoutineComplete(routine);
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.screen}>
@@ -79,7 +85,7 @@ export default function RoutineScreen() {
         options={{
           headerShown: true,
           title: "",
-          headerBackTitle: "Practice",
+          headerBackTitle: isToday ? "Practice" : "Routines",
           headerShadowVisible: false,
           headerTintColor: colors.text.primary,
           headerStyle: { backgroundColor: colors.background },
@@ -123,6 +129,7 @@ export default function RoutineScreen() {
         {routine.exercises.map((exercise, index) => (
           <SetlistRow
             key={exercise.id}
+            routineId={routine.id}
             exercise={exercise}
             position={index + 1}
             onPress={() => openExercise(exercise.id)}
@@ -133,7 +140,12 @@ export default function RoutineScreen() {
       <Pressable
         accessibilityRole="button"
         onPress={() =>
-          isComplete ? router.push("/summary") : first && openExercise(first.id)
+          isComplete
+            ? router.push({
+                pathname: "/summary",
+                params: { routine: routine.id },
+              })
+            : first && openExercise(first.id)
         }
         style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >

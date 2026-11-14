@@ -1,20 +1,27 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment } from "@/rudiments/library";
 import { clearRounds, useRoundsDone } from "@/rudiments/round-log";
-import { routineMinutes, todaysRoutine } from "@/rudiments/todays-routine";
+import { findRoutine } from "@/rudiments/saved-routines";
+import {
+  routineMinutes,
+  todaysRoutine,
+  type Exercise,
+} from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const routine = todaysRoutine;
-
-type Exercise = (typeof todaysRoutine.exercises)[number];
-
-function SummaryRow({ exercise }: { exercise: Exercise }) {
-  const roundsDone = useRoundsDone(exercise.id);
+function SummaryRow({
+  routineId,
+  exercise,
+}: {
+  routineId: string;
+  exercise: Exercise;
+}) {
+  const roundsDone = useRoundsDone(routineId, exercise.id);
   const rudiment = findRudiment(exercise.id);
   if (!rudiment) {
     return null;
@@ -54,13 +61,15 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 export default function SummaryScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ routine?: string }>();
+  const routine = findRoutine(params.routine) ?? todaysRoutine;
   const totalRounds = routine.exercises.reduce(
     (total, exercise) => total + exercise.rounds,
     0,
   );
   const finish = () => {
     router.dismissTo("/");
-    clearRounds();
+    clearRounds(routine);
   };
 
   return (
@@ -95,7 +104,11 @@ export default function SummaryScreen() {
           WHAT YOU PLAYED
         </Text>
         {routine.exercises.map((exercise) => (
-          <SummaryRow key={exercise.id} exercise={exercise} />
+          <SummaryRow
+            key={exercise.id}
+            routineId={routine.id}
+            exercise={exercise}
+          />
         ))}
       </ScrollView>
 

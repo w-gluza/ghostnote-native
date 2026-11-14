@@ -1,4 +1,19 @@
-export const todaysRoutine = {
+export type Exercise = {
+  id: string;
+  minutes: number;
+  rounds: number;
+  bpm: number;
+};
+
+export type Routine = {
+  id: string;
+  name: string;
+  level: number;
+  exercises: Exercise[];
+};
+
+export const todaysRoutine: Routine = {
+  id: "today",
   name: "Today's Routine",
   level: 1,
   exercises: [
@@ -8,7 +23,7 @@ export const todaysRoutine = {
   ],
 };
 
-export function routineMinutes(routine: typeof todaysRoutine) {
+export function routineMinutes(routine: Routine) {
   return routine.exercises.reduce(
     (total, exercise) => total + exercise.minutes,
     0,

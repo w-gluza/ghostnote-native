@@ -16,7 +16,7 @@ import {
   useRoundsDone,
   willCompleteRoutine,
 } from "@/rudiments/round-log";
-import { todaysRoutine } from "@/rudiments/todays-routine";
+import { findRoutine } from "@/rudiments/saved-routines";
 import { useStrokeSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -31,22 +31,21 @@ export default function RudimentScreen() {
   const rudiment = findRudiment(id);
   const router = useRouter();
   const sound = useStrokeSound();
-  const exercise = routine
-    ? todaysRoutine.exercises.find((item) => item.id === id)
-    : undefined;
-  const roundsDone = useRoundsDone(id);
+  const activeRoutine = routine ? findRoutine(routine) : undefined;
+  const exercise = activeRoutine?.exercises.find((item) => item.id === id);
+  const roundsDone = useRoundsDone(activeRoutine?.id ?? "", id);
   const isComplete = exercise ? roundsDone >= exercise.rounds : false;
   const finishRound = () => {
-    if (!exercise) {
+    if (!exercise || !activeRoutine) {
       return;
     }
-    const finishesRoutine = willCompleteRoutine(
-      todaysRoutine.exercises,
-      exercise.id,
-    );
-    logRound(exercise.id, exercise.rounds);
+    const finishesRoutine = willCompleteRoutine(activeRoutine, exercise.id);
+    logRound(activeRoutine.id, exercise.id, exercise.rounds);
     if (finishesRoutine) {
-      router.replace("/summary");
+      router.replace({
+        pathname: "/summary",
+        params: { routine: activeRoutine.id },
+      });
     } else if (roundsDone + 1 >= exercise.rounds) {
       router.back();
     }
@@ -123,7 +122,7 @@ export default function RudimentScreen() {
           <Text style={styles.meta}>This rudiment has no player yet.</Text>
         )}
       </ScrollView>
-      {exercise ? (
+      {exercise && activeRoutine ? (
         <View style={styles.rounds}>
           <WeekProgress
             done={roundsDone}
@@ -136,7 +135,7 @@ export default function RudimentScreen() {
               accessibilityRole="button"
               accessibilityLabel="Undo last round"
               hitSlop={12}
-              onPress={() => undoRound(exercise.id)}
+              onPress={() => undoRound(activeRoutine.id, exercise.id)}
               style={({ pressed }) => [styles.undo, pressed && styles.pressed]}
             >
               <Text style={styles.undoLabel}>Undo</Text>

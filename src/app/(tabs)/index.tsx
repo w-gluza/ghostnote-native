@@ -64,6 +64,7 @@ export default function PracticeScreen() {
       <Pressable
         accessibilityRole="button"
         hitSlop={12}
+        onPress={() => router.push("/routines")}
         style={({ pressed }) => [styles.saved, pressed && styles.pressed]}
       >
         <Text style={styles.savedLabel}>Saved Routines</Text>

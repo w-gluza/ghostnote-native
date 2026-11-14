@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from "react";
 
+import type { Routine } from "./todays-routine";
+
 const roundsDone = new Map<string, number>();
 const listeners = new Set<() => void>();
 
@@ -10,45 +12,56 @@ function subscribe(listener: () => void) {
   };
 }
 
-export function logRound(exerciseId: string, rounds: number) {
-  const done = roundsDone.get(exerciseId) ?? 0;
-  roundsDone.set(exerciseId, Math.min(rounds, done + 1));
+function notify() {
   listeners.forEach((listener) => listener());
 }
 
-export function undoRound(exerciseId: string) {
-  const done = roundsDone.get(exerciseId) ?? 0;
-  roundsDone.set(exerciseId, Math.max(0, done - 1));
-  listeners.forEach((listener) => listener());
+function keyOf(routineId: string, exerciseId: string) {
+  return `${routineId}/${exerciseId}`;
 }
 
-export function useRoundsDone(exerciseId: string) {
-  return useSyncExternalStore(subscribe, () => roundsDone.get(exerciseId) ?? 0);
+function doneIn(routineId: string, exerciseId: string) {
+  return roundsDone.get(keyOf(routineId, exerciseId)) ?? 0;
 }
 
-type RoundTarget = { id: string; rounds: number };
-
-function isComplete(exercises: readonly RoundTarget[]) {
-  return exercises.every(
-    (exercise) => (roundsDone.get(exercise.id) ?? 0) >= exercise.rounds,
-  );
-}
-
-export function willCompleteRoutine(
-  exercises: readonly RoundTarget[],
+export function logRound(
+  routineId: string,
   exerciseId: string,
+  rounds: number,
 ) {
-  return exercises.every((exercise) => {
-    const done = roundsDone.get(exercise.id) ?? 0;
+  const done = doneIn(routineId, exerciseId);
+  roundsDone.set(keyOf(routineId, exerciseId), Math.min(rounds, done + 1));
+  notify();
+}
+
+export function undoRound(routineId: string, exerciseId: string) {
+  const done = doneIn(routineId, exerciseId);
+  roundsDone.set(keyOf(routineId, exerciseId), Math.max(0, done - 1));
+  notify();
+}
+
+export function willCompleteRoutine(routine: Routine, exerciseId: string) {
+  return routine.exercises.every((exercise) => {
+    const done = doneIn(routine.id, exercise.id);
     return (exercise.id === exerciseId ? done + 1 : done) >= exercise.rounds;
   });
 }
 
-export function clearRounds() {
-  roundsDone.clear();
-  listeners.forEach((listener) => listener());
+export function clearRounds(routine: Routine) {
+  routine.exercises.forEach((exercise) => {
+    roundsDone.delete(keyOf(routine.id, exercise.id));
+  });
+  notify();
 }
 
-export function useRoutineComplete(exercises: readonly RoundTarget[]) {
-  return useSyncExternalStore(subscribe, () => isComplete(exercises));
+export function useRoundsDone(routineId: string, exerciseId: string) {
+  return useSyncExternalStore(subscribe, () => doneIn(routineId, exerciseId));
+}
+
+export function useRoutineComplete(routine: Routine) {
+  return useSyncExternalStore(subscribe, () =>
+    routine.exercises.every(
+      (exercise) => doneIn(routine.id, exercise.id) >= exercise.rounds,
+    ),
+  );
 }
