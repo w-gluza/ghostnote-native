@@ -28,6 +28,12 @@ type Unfinished = { rudimentId: string; segments: PracticeSegment[] };
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MINUTE_MS = 60 * 1000;
 
+function endOf(segment: PracticeSegment) {
+  return segment.startedAt
+    ? Date.parse(segment.startedAt) + segment.activeDurationMs
+    : undefined;
+}
+
 export function playedTime(
   sessions: { exercises: CompletedExercise[] }[],
   unfinished: Unfinished[] = [],
@@ -37,7 +43,7 @@ export function playedTime(
       const category = findRudiment(exercise.pattern.rudimentId)?.category;
       return exercise.rounds.flatMap((round) =>
         round.segments.map((segment) => ({
-          at: Date.parse(segment.startedAt ?? round.completedAt),
+          at: endOf(segment) ?? Date.parse(round.completedAt),
           ms: segment.activeDurationMs,
           category,
         })),
@@ -47,7 +53,7 @@ export function playedTime(
   const fromUnfinished = unfinished.flatMap((entry) => {
     const category = findRudiment(entry.rudimentId)?.category;
     return entry.segments.map((segment) => ({
-      at: segment.startedAt ? Date.parse(segment.startedAt) : 0,
+      at: endOf(segment) ?? 0,
       ms: segment.activeDurationMs,
       category,
     }));

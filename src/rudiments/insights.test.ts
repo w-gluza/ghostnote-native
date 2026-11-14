@@ -199,3 +199,25 @@ test("short practice reads as under a minute on each day and in the total", () =
   assert.equal(minutesLabel(days.reduce((total, ms) => total + ms, 0)), "<1");
   assert.equal(minutesLabel(90000), "2");
 });
+
+test("practice that runs past midnight belongs to the day it ended", () => {
+  const monday = new Date(2026, 10, 16, 0, 10);
+  const crossing: PracticeSession = {
+    ...session("crossing", monday.toISOString(), [["single-stroke-roll", 0]]),
+    activeDurationMs: 20 * MIN,
+  };
+  crossing.exercises[0]!.rounds[0]!.segments = [
+    segment(20 * MIN, new Date(2026, 10, 15, 23, 50).toISOString()),
+  ];
+  const played = playedTime([crossing]);
+  assert.deepEqual(weekDayMs(played, monday).map(minutesLabel), [
+    "20",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+  ]);
+  assert.equal(lastPractisedLabel(played, monday), "Today");
+});
