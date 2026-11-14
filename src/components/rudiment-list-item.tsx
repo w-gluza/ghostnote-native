@@ -1,10 +1,18 @@
 import { SymbolView } from "expo-symbols";
 import type { VideoSource } from "expo-video";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 import { RudimentVideo } from "@/components/rudiment-video";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
+
+export type StickingStroke = { hand: string; grace: string[] };
 
 export type RudimentSummary = {
   id?: string;
@@ -12,13 +20,44 @@ export type RudimentSummary = {
   category: string;
   level: number;
   sticking: string;
+  phrases: StickingStroke[][];
   video?: VideoSource;
 };
+
+const CELL_WIDTH = 18;
 
 type RudimentListItemProps = {
   rudiment: RudimentSummary;
   onPress?: () => void;
 };
+
+function Sticking({ phrases }: { phrases: StickingStroke[][] }) {
+  const { fontScale } = useWindowDimensions();
+
+  return (
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={styles.sticking}
+    >
+      {phrases.map((phrase, phraseIndex) => (
+        <View key={phraseIndex} style={styles.phrase}>
+          {phrase.map((stroke, index) => (
+            <View
+              key={index}
+              style={[styles.cell, { minWidth: CELL_WIDTH * fontScale }]}
+            >
+              {stroke.grace.length > 0 ? (
+                <Text style={styles.grace}>{stroke.grace.join("")}</Text>
+              ) : null}
+              <Text style={styles.stroke}>{stroke.hand}</Text>
+            </View>
+          ))}
+        </View>
+      ))}
+    </View>
+  );
+}
 
 export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
   return (
@@ -44,9 +83,7 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
         <Text style={styles.meta}>
           {rudiment.category} · Lvl {rudiment.level}
         </Text>
-        <Text numberOfLines={1} style={styles.sticking}>
-          {rudiment.sticking}
-        </Text>
+        <Sticking phrases={rudiment.phrases} />
       </View>
       <SymbolView
         name="chevron.right"
@@ -83,19 +120,40 @@ const styles = StyleSheet.create({
   },
   name: {
     color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: typography.fontSize.body,
+    lineHeight: 22,
   },
   meta: {
     color: colors.text.secondary,
     fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.label,
+    lineHeight: 20,
   },
   sticking: {
     marginTop: 3,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    columnGap: 10,
+  },
+  phrase: {
+    flexDirection: "row",
+  },
+  cell: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 1,
+  },
+  grace: {
+    color: colors.text.secondary,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.caption,
+    lineHeight: 16,
+  },
+  stroke: {
     color: colors.text.primary,
-    fontFamily: typography.fontFamily.mono,
-    fontSize: typography.fontSize.label,
-    letterSpacing: 1,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.body,
+    lineHeight: 22,
   },
 });

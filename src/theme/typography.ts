@@ -5,7 +5,6 @@ export const typography = {
     body: "Inter-Regular",
     medium: "Inter-Medium",
     semibold: "Inter-SemiBold",
-    mono: "Menlo",
   },
 
   fontSize: {

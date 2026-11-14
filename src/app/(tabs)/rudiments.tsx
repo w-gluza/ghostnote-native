@@ -11,7 +11,12 @@ import {
 } from "@/components/rudiment-list-item";
 import { ScreenHeader } from "@/components/screen-header";
 import { SearchField } from "@/components/search-field";
-import { availableRudiments, stickingOf } from "@/rudiments/library";
+import {
+  availableRudiments,
+  defaultPattern,
+  stickingOf,
+} from "@/rudiments/library";
+import { buildTimeline } from "@/rudiments/timeline";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -19,14 +24,20 @@ const video: Record<string, VideoSource> = {
   "single-paradiddle": require("@/assets/videos/accent_single_paraddilde_85.mp4"),
 };
 
-const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => ({
-  id: rudiment.id,
-  name: rudiment.name,
-  category: rudiment.category,
-  level: rudiment.level,
-  sticking: stickingOf(rudiment),
-  video: video[rudiment.id],
-}));
+const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
+  const timeline = buildTimeline(defaultPattern(rudiment));
+  return {
+    id: rudiment.id,
+    name: rudiment.name,
+    category: rudiment.category,
+    level: rudiment.level,
+    sticking: stickingOf(rudiment),
+    phrases: timeline.phrases.map((phrase) =>
+      phrase.flatMap((index) => timeline.strokes[index] ?? []),
+    ),
+    video: video[rudiment.id],
+  };
+});
 
 const categories = [
   "All",
