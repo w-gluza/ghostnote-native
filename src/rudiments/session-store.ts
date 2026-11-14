@@ -118,14 +118,19 @@ export function createSessionStore(storage: KeyValueStorage) {
 
   const notify = () => listeners.forEach((listener) => listener());
 
-  const saveCurrent = (now: number) =>
-    storage.save(CURRENT_KEY, {
+  let hasUnsavedChanges = false;
+
+  const saveCurrent = (now: number) => {
+    const isSaved = storage.save(CURRENT_KEY, {
       active: Object.values(active),
       unfinished: [...tracked.values()].map(({ tracker, ...entry }) => ({
         ...entry,
         segments: pauseTracking(tracker, now).segments,
       })),
     });
+    hasUnsavedChanges = !isSaved;
+    return isSaved;
+  };
 
   const ensureSession = (routine: Routine, now: number) => {
     const existing = active[routine.id];
@@ -243,7 +248,7 @@ export function createSessionStore(storage: KeyValueStorage) {
       const isPlaying = [...tracked.values()].some(
         (entry) => entry.tracker.open !== undefined,
       );
-      return isPlaying ? saveCurrent(now) : true;
+      return isPlaying || hasUnsavedChanges ? saveCurrent(now) : true;
     },
 
     completeRound(

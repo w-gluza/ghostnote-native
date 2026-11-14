@@ -108,6 +108,27 @@ test("a checkpoint writes nothing while nothing is playing", () => {
   assert.equal(store.checkpoint(9000), true);
 });
 
+test("a failed save is retried at the next checkpoint even while paused", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackRound(routine, first, first.rounds[0]!, playing, 0);
+
+  storage.failing = [CURRENT_KEY];
+  store.completeRound(routine, first, first.rounds[0]!, 60000);
+  assert.equal(store.checkpoint(65000), false);
+
+  storage.failing = [];
+  assert.equal(store.checkpoint(70000), true);
+  const reopened = createSessionStore(storage);
+  assert.equal(
+    reopened.activeSession("r")?.exercises[0]?.rounds[0]?.outcome,
+    "completed",
+  );
+
+  storage.failing = [CURRENT_KEY];
+  assert.equal(store.checkpoint(75000), true);
+});
+
 test("leaving a round and coming back keeps its time", () => {
   const store = createSessionStore(memory());
   store.trackRound(routine, first, first.rounds[0]!, playing, 0);

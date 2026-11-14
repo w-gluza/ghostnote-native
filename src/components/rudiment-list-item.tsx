@@ -137,7 +137,9 @@ const styles = StyleSheet.create({
     columnGap: 10,
   },
   phrase: {
+    maxWidth: "100%",
     flexDirection: "row",
+    flexWrap: "wrap",
   },
   cell: {
     flexDirection: "row",
