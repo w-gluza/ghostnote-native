@@ -3,12 +3,11 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { findRudiment } from "@/rudiments/library";
 import { finishSession, useActiveSession } from "@/rudiments/practice-session";
 import { useRoutine } from "@/rudiments/saved-routines";
 import {
   playedTempoLabel,
-  sessionActiveSeconds,
+  sessionActiveMs,
   sessionRoundCount,
 } from "@/rudiments/session";
 import { todaysRoutine } from "@/rudiments/todays-routine";
@@ -23,10 +22,6 @@ function SummaryRow({
   played: CompletedExercise;
   plannedRounds?: number;
 }) {
-  const rudiment = findRudiment(played.pattern.rudimentId);
-  if (!rudiment) {
-    return null;
-  }
   const tempo = playedTempoLabel(played);
   const detail = tempo ? `${tempo} BPM` : "Not played";
   const rounds = plannedRounds
@@ -36,7 +31,7 @@ function SummaryRow({
   return (
     <View
       accessible
-      accessibilityLabel={`${rudiment.name}, ${rounds}, ${tempo ? `${tempo} beats per minute` : "not played"}`}
+      accessibilityLabel={`${played.rudimentName}, ${rounds}, ${tempo ? `${tempo} beats per minute` : "not played"}`}
       style={styles.row}
     >
       <SymbolView
@@ -46,7 +41,7 @@ function SummaryRow({
         tintColor={colors.accent}
       />
       <View style={styles.rowText}>
-        <Text style={styles.name}>{rudiment.name}</Text>
+        <Text style={styles.name}>{played.rudimentName}</Text>
         <Text style={styles.detail}>{detail}</Text>
       </View>
       <Text style={styles.rounds}>{rounds}</Text>
@@ -69,11 +64,11 @@ export default function SummaryScreen() {
   const routine = useRoutine(params.routine) ?? todaysRoutine;
   const session = useActiveSession(routine.id);
   const played = session?.exercises ?? [];
-  const activeSeconds = sessionActiveSeconds(session);
+  const activeSeconds = sessionActiveMs(session) / 1000;
   const showsSeconds = activeSeconds < 60;
   const finish = () => {
     router.dismissTo("/");
-    finishSession(routine.id);
+    finishSession(routine.id, Date.now());
   };
 
   return (

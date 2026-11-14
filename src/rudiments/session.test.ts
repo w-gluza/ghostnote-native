@@ -2,7 +2,12 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { fraction, ONE } from "./fraction.ts";
-import { finishTracking, idleTracker, trackActivity } from "./round-tracker.ts";
+import {
+  finishTracking,
+  idleTracker,
+  pauseTracking,
+  trackActivity,
+} from "./round-tracker.ts";
 import {
   closeSession,
   isRoutineComplete,
@@ -44,16 +49,18 @@ const routine: Routine = { id: "r", name: "Rolls", exercises: [first, second] };
 const played = (
   sourceRoundId: string,
   bpm: number,
-  secs = 30,
+  ms = 30000,
 ): CompletedRound => ({
   id: `played-${sourceRoundId}`,
   sourceRoundId,
   segments: [
-    { tempo: at(bpm), rhythmicScale: fraction(8), activeDurationSeconds: secs },
+    { tempo: at(bpm), rhythmicScale: fraction(8), activeDurationMs: ms },
   ],
-  activeDurationSeconds: secs,
+  activeDurationMs: ms,
   completedAt: "2026-11-14T10:00:00.000Z",
 });
+
+const NAME = "Double Stroke Roll";
 
 const begin = (): ActiveSession =>
   startSession(routine, "s1", "2026-11-14T09:59:00.000Z");
@@ -69,6 +76,7 @@ test("a rudiment can appear twice in a routine with separate progress", () => {
   const session = recordRound(
     begin(),
     twice.exercises[1]!,
+    NAME,
     played("e3-r1", 90),
   );
   assert.equal(roundsDone(session, twice.exercises[0]!), 0);
@@ -76,8 +84,8 @@ test("a rudiment can appear twice in a routine with separate progress", () => {
 });
 
 test("completed rounds stay tied to their round when the routine is edited", () => {
-  let session = recordRound(begin(), first, played("e1-r1", 60));
-  session = recordRound(session, first, played("e1-r2", 80));
+  let session = recordRound(begin(), first, NAME, played("e1-r1", 60));
+  session = recordRound(session, first, NAME, played("e1-r2", 80));
 
   const withoutFirstRound = { ...first, rounds: first.rounds.slice(1) };
   assert.equal(roundsDone(session, withoutFirstRound), 1);
@@ -95,10 +103,15 @@ test("the routine is complete only when every round of every exercise is done", 
   let session = begin();
   assert.equal(isRoutineComplete(undefined, routine), false);
   for (const round of first.rounds) {
-    session = recordRound(session, first, played(round.id, round.tempo.bpm));
+    session = recordRound(
+      session,
+      first,
+      NAME,
+      played(round.id, round.tempo.bpm),
+    );
   }
   assert.equal(isRoutineComplete(session, routine), false);
-  session = recordRound(session, second, played("e2-r1", 70));
+  session = recordRound(session, second, NAME, played("e2-r1", 70));
   assert.equal(isRoutineComplete(session, routine), true);
   assert.equal(
     isRoutineComplete(begin(), { ...routine, exercises: [] }),
@@ -107,8 +120,8 @@ test("the routine is complete only when every round of every exercise is done", 
 });
 
 test("undo removes only the last round of that exercise", () => {
-  let session = recordRound(begin(), first, played("e1-r1", 60));
-  session = recordRound(session, second, played("e2-r1", 70));
+  let session = recordRound(begin(), first, NAME, played("e1-r1", 60));
+  session = recordRound(session, second, NAME, played("e2-r1", 70));
   session = removeLastRound(session, "e2");
   assert.equal(roundsDone(session, first), 1);
   assert.equal(roundsDone(session, second), 0);
@@ -116,11 +129,12 @@ test("undo removes only the last round of that exercise", () => {
 });
 
 test("a closed session records what was played, not what was planned", () => {
-  let session = recordRound(begin(), first, played("e1-r1", 65, 42.5));
-  session = recordRound(session, first, played("e1-r2", 90, 10));
+  let session = recordRound(begin(), first, NAME, played("e1-r1", 65, 42500));
+  session = recordRound(session, first, NAME, played("e1-r2", 90, 10000));
   const closed = closeSession(session, "2026-11-14T10:05:00.000Z");
-  assert.equal(closed.activeDurationSeconds, 52.5);
+  assert.equal(closed.activeDurationMs, 52500);
   assert.equal(closed.routineName, "Rolls");
+  assert.equal(closed.exercises[0]?.rudimentName, NAME);
   assert.deepEqual(closed.exercises[0]?.pattern, pattern);
   assert.equal(playedTempoLabel(closed.exercises[0]!), "65-90");
   assert.equal(
@@ -142,10 +156,8 @@ test("only time spent playing counts, and pauses are left out", () => {
   tracker = trackActivity(tracker, { isPlaying: false, ...setting }, 11000);
   tracker = trackActivity(tracker, { isPlaying: true, ...setting }, 60000);
   const result = finishTracking(tracker, 65000);
-  assert.equal(result.activeDurationSeconds, 15);
-  assert.deepEqual(result.segments, [
-    { ...setting, activeDurationSeconds: 15 },
-  ]);
+  assert.equal(result.activeDurationMs, 15000);
+  assert.deepEqual(result.segments, [{ ...setting, activeDurationMs: 15000 }]);
 });
 
 test("a tempo or rhythmic scale change during a round starts a new segment", () => {
@@ -170,20 +182,46 @@ test("a tempo or rhythmic scale change during a round starts a new segment", () 
     result.segments.map((segment) => [
       segment.tempo.bpm,
       segment.rhythmicScale.numerator,
-      segment.activeDurationSeconds,
+      segment.activeDurationMs,
     ]),
     [
-      [80, 4, 20],
-      [100, 4, 10],
-      [100, 2, 6],
+      [80, 4, 20000],
+      [100, 4, 10000],
+      [100, 2, 6000],
     ],
   );
-  assert.equal(result.activeDurationSeconds, 36);
+  assert.equal(result.activeDurationMs, 36000);
 });
 
 test("a round finished without playing records no time", () => {
   assert.deepEqual(finishTracking(idleTracker, 5000), {
     segments: [],
-    activeDurationSeconds: 0,
+    activeDurationMs: 0,
   });
+});
+
+test("leaving a round keeps its time and resuming adds to it", () => {
+  const setting = { tempo: at(80), rhythmicScale: fraction(4) };
+  let tracker = trackActivity(idleTracker, { isPlaying: true, ...setting }, 0);
+  tracker = pauseTracking(tracker, 60000);
+  assert.equal(tracker.open, undefined);
+  tracker = trackActivity(tracker, { isPlaying: true, ...setting }, 300000);
+  assert.equal(finishTracking(tracker, 305000).activeDurationMs, 65000);
+});
+
+test("segment durations always add up to the round total", () => {
+  let tracker = idleTracker;
+  [80, 90, 100].forEach((bpm, index) => {
+    tracker = trackActivity(
+      tracker,
+      { isPlaying: true, tempo: at(bpm), rhythmicScale: ONE },
+      index * 60,
+    );
+  });
+  const result = finishTracking(tracker, 180);
+  assert.deepEqual(
+    result.segments.map((segment) => segment.activeDurationMs),
+    [60, 60, 60],
+  );
+  assert.equal(result.activeDurationMs, 180);
 });

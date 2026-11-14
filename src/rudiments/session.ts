@@ -25,6 +25,7 @@ export function startSession(
 export function recordRound(
   session: ActiveSession,
   exercise: RoutineExercise,
+  rudimentName: string,
   round: CompletedRound,
 ): ActiveSession {
   const exists = session.exercises.some(
@@ -40,6 +41,7 @@ export function recordRound(
         ...session.exercises,
         {
           sourceExerciseId: exercise.id,
+          rudimentName,
           pattern: exercise.pattern,
           rounds: [round],
         },
@@ -101,17 +103,16 @@ export function isRoutineComplete(
   );
 }
 
-export function sessionActiveSeconds(session: ActiveSession | undefined) {
-  const total = (session?.exercises ?? []).reduce(
+export function sessionActiveMs(session: ActiveSession | undefined) {
+  return (session?.exercises ?? []).reduce(
     (sum, exercise) =>
       sum +
       exercise.rounds.reduce(
-        (roundSum, round) => roundSum + round.activeDurationSeconds,
+        (roundSum, round) => roundSum + round.activeDurationMs,
         0,
       ),
     0,
   );
-  return Math.round(total * 10) / 10;
 }
 
 export function sessionRoundCount(session: ActiveSession | undefined) {
@@ -128,7 +129,7 @@ export function closeSession(
   return {
     ...session,
     completedAt,
-    activeDurationSeconds: sessionActiveSeconds(session),
+    activeDurationMs: sessionActiveMs(session),
   };
 }
 

@@ -1,25 +1,18 @@
 import { equals } from "./fraction.ts";
 import type { Fraction, PracticeSegment, Tempo } from "./types";
 
-export type Activity = {
-  isPlaying: boolean;
-  tempo: Tempo;
-  rhythmicScale: Fraction;
-};
+type Setting = { tempo: Tempo; rhythmicScale: Fraction };
 
-type TimedSegment = { tempo: Tempo; rhythmicScale: Fraction; ms: number };
+export type Activity = Setting & { isPlaying: boolean };
 
 export type RoundTracker = {
-  segments: TimedSegment[];
-  open?: { tempo: Tempo; rhythmicScale: Fraction; since: number };
+  segments: PracticeSegment[];
+  open?: Setting & { since: number };
 };
 
 export const idleTracker: RoundTracker = { segments: [] };
 
-function sameSetting(
-  a: { tempo: Tempo; rhythmicScale: Fraction },
-  b: { tempo: Tempo; rhythmicScale: Fraction },
-) {
+function sameSetting(a: Setting, b: Setting) {
   return (
     a.tempo.bpm === b.tempo.bpm &&
     equals(a.tempo.pulseQuarterUnits, b.tempo.pulseQuarterUnits) &&
@@ -27,24 +20,30 @@ function sameSetting(
   );
 }
 
-function close(tracker: RoundTracker, now: number): TimedSegment[] {
+function closed(tracker: RoundTracker, now: number): PracticeSegment[] {
   if (!tracker.open) {
     return tracker.segments;
   }
-  const ms = Math.max(0, now - tracker.open.since);
-  if (ms === 0) {
+  const activeDurationMs = Math.max(0, Math.round(now - tracker.open.since));
+  if (activeDurationMs === 0) {
     return tracker.segments;
   }
   const last = tracker.segments[tracker.segments.length - 1];
   if (last && sameSetting(last, tracker.open)) {
-    return [...tracker.segments.slice(0, -1), { ...last, ms: last.ms + ms }];
+    return [
+      ...tracker.segments.slice(0, -1),
+      {
+        ...last,
+        activeDurationMs: last.activeDurationMs + activeDurationMs,
+      },
+    ];
   }
   return [
     ...tracker.segments,
     {
       tempo: tracker.open.tempo,
       rhythmicScale: tracker.open.rhythmicScale,
-      ms,
+      activeDurationMs,
     },
   ];
 }
@@ -61,7 +60,7 @@ export function trackActivity(
   ) {
     return tracker;
   }
-  const segments = close(tracker, now);
+  const segments = closed(tracker, now);
   return activity.isPlaying
     ? {
         segments,
@@ -74,23 +73,17 @@ export function trackActivity(
     : { segments };
 }
 
-function seconds(ms: number) {
-  return Math.round(ms / 100) / 10;
+export function pauseTracking(tracker: RoundTracker, now: number) {
+  return tracker.open ? { segments: closed(tracker, now) } : tracker;
 }
 
 export function finishTracking(tracker: RoundTracker, now: number) {
-  const timed = close(tracker, now);
-  const segments: PracticeSegment[] = timed
-    .map((segment) => ({
-      tempo: segment.tempo,
-      rhythmicScale: segment.rhythmicScale,
-      activeDurationSeconds: seconds(segment.ms),
-    }))
-    .filter((segment) => segment.activeDurationSeconds > 0);
+  const segments = closed(tracker, now);
   return {
     segments,
-    activeDurationSeconds: seconds(
-      timed.reduce((total, segment) => total + segment.ms, 0),
+    activeDurationMs: segments.reduce(
+      (total, segment) => total + segment.activeDurationMs,
+      0,
     ),
   };
 }

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,14 +19,11 @@ import {
 import {
   activeSession,
   completeRound,
+  pauseRound,
+  trackRound,
   undoRound,
   useActiveSession,
 } from "@/rudiments/practice-session";
-import {
-  finishTracking,
-  idleTracker,
-  trackActivity,
-} from "@/rudiments/round-tracker";
 import { isRoutineComplete, nextRound, roundsDone } from "@/rudiments/session";
 import { useRoutine } from "@/rudiments/saved-routines";
 import { buildTimeline, evenStep, scaleToStep } from "@/rudiments/timeline";
@@ -74,28 +71,45 @@ export default function RudimentScreen() {
     round?.tempo ??
     exercise?.rounds[roundGoal - 1]?.tempo ??
     quarterTempo(rudiment ? defaultBpm(rudiment) : 80);
-  const tracker = useRef(idleTracker);
   const activity = useRef({ isPlaying: false, tempo: initialTempo });
   const track = (isPlaying: boolean, tempo: Tempo, scale: Fraction) => {
     activity.current = { isPlaying, tempo };
-    tracker.current = trackActivity(
-      tracker.current,
-      { isPlaying, tempo, rhythmicScale: scale },
-      Date.now(),
-    );
+    if (activeRoutine && exercise && round) {
+      trackRound(
+        activeRoutine,
+        exercise,
+        round,
+        { isPlaying, tempo, rhythmicScale: scale },
+        Date.now(),
+      );
+    }
   };
   const changeScale = (scale: Fraction) => {
     setRhythmicScale(scale);
     track(activity.current.isPlaying, activity.current.tempo, scale);
   };
+  const trackedRoutineId = activeRoutine?.id;
+  const trackedExerciseId = exercise?.id;
+  const trackedRoundId = round?.id;
+  useEffect(() => {
+    if (!trackedRoutineId || !trackedExerciseId || !trackedRoundId) {
+      return;
+    }
+    return () => {
+      pauseRound(
+        trackedRoutineId,
+        trackedExerciseId,
+        trackedRoundId,
+        Date.now(),
+      );
+    };
+  }, [trackedRoutineId, trackedExerciseId, trackedRoundId]);
   const finishRound = () => {
     if (!exercise || !activeRoutine || !round) {
       return;
     }
-    const played = finishTracking(tracker.current, Date.now());
-    tracker.current = idleTracker;
     activity.current = { ...activity.current, isPlaying: false };
-    completeRound(activeRoutine, exercise, round, played);
+    completeRound(activeRoutine, exercise, round, Date.now());
     const isLastOfExercise = done + 1 >= roundGoal;
     if (isRoutineComplete(activeSession(activeRoutine.id), activeRoutine)) {
       router.replace({
@@ -110,8 +124,6 @@ export default function RudimentScreen() {
     if (!exercise || !activeRoutine) {
       return;
     }
-    tracker.current = idleTracker;
-    activity.current = { ...activity.current, isPlaying: false };
     undoRound(activeRoutine.id, exercise.id);
   };
   const [viewportHeight, setViewportHeight] = useState(0);

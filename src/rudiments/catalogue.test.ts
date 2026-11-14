@@ -174,7 +174,7 @@ test("notation refuses a stroke with no length", () => {
 
 test("validation rejects unknown hands, stroke kinds and group kinds", () => {
   const stored = (change: object) =>
-    validatePattern({ ...valid, ...change } as RudimentPattern).length;
+    validatePattern({ ...valid, ...change }).length;
   assert.ok(
     stored({
       strokes: [{ id: "a", kind: "onset", hand: "X", at: fraction(0) }],
@@ -192,6 +192,26 @@ test("validation rejects unknown hands, stroke kinds and group kinds", () => {
   );
   assert.ok(stored({ strokes: "R L" }));
   assert.ok(stored({ strokes: [{ id: "a", kind: "onset", hand: "R" }] }));
+});
+
+test("validation reports malformed stored data instead of throwing", () => {
+  const { cycleDuration: _cycle, ...withoutCycle } = valid;
+  for (const stored of [
+    null,
+    "pattern",
+    [],
+    withoutCycle,
+    { ...valid, strokes: [null] },
+    { ...valid, strokes: [{ id: "a", kind: "onset", hand: "R", at: "0" }] },
+    { ...valid, groups: [null] },
+    { ...valid, groups: [{ id: "g", kind: "phrase", strokeIds: "a" }] },
+  ]) {
+    assert.ok(validatePattern(stored).length > 0);
+  }
+  assert.ok(validateRudiment(null).length > 0);
+  assert.ok(validateRudiment({ id: "x", name: "X", patterns: [null] }).length);
+  assert.ok(validateTempo(null).length > 0);
+  assert.ok(validateTempo({ bpm: "80", pulseQuarterUnits: null }).length);
 });
 
 test("a rudiment names its default pattern instead of relying on order", () => {

@@ -87,19 +87,20 @@ export type Routine = {
 export type PracticeSegment = {
   tempo: Tempo;
   rhythmicScale: Fraction;
-  activeDurationSeconds: number;
+  activeDurationMs: number;
 };
 
 export type CompletedRound = {
   id: string;
   sourceRoundId?: string;
   segments: PracticeSegment[];
-  activeDurationSeconds: number;
+  activeDurationMs: number;
   completedAt: string;
 };
 
 export type CompletedExercise = {
   sourceExerciseId?: string;
+  rudimentName: string;
   pattern: PatternReference;
   rounds: CompletedRound[];
 };
@@ -110,11 +111,11 @@ export type PracticeSession = {
   routineName?: string;
   startedAt: string;
   completedAt: string;
-  activeDurationSeconds: number;
+  activeDurationMs: number;
   exercises: CompletedExercise[];
 };
 
 export type ActiveSession = Omit<
   PracticeSession,
-  "completedAt" | "activeDurationSeconds"
+  "completedAt" | "activeDurationMs"
 >;
