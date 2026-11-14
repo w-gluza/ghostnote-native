@@ -1,4 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  type GestureResponderEvent,
+} from "react-native";
 
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -15,18 +20,40 @@ const tickAngles = Array.from(
 
 type TempoDialProps = {
   bpm: number;
-  position: number;
+  min: number;
+  max: number;
   size: number;
+  onChange: (bpm: number) => void;
 };
 
-export function TempoDial({ bpm, position, size }: TempoDialProps) {
+export function TempoDial({ bpm, min, max, size, onChange }: TempoDialProps) {
+  const position = (bpm - min) / (max - min);
   const markerAngle = ARC_START + position * (ARC_END - ARC_START);
+
+  const turnTo = (event: GestureResponderEvent) => {
+    const { locationX, locationY } = event.nativeEvent;
+    const degrees =
+      (Math.atan2(locationX - size / 2, size / 2 - locationY) * 180) / Math.PI;
+    const angle = Math.min(ARC_END, Math.max(ARC_START, degrees));
+    const turned = (angle - ARC_START) / (ARC_END - ARC_START);
+    onChange(Math.round(min + turned * (max - min)));
+  };
 
   return (
     <View
       accessible
+      accessibilityRole="adjustable"
       accessibilityLabel="Tempo"
       accessibilityValue={{ text: `${bpm} beats per minute` }}
+      accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
+      onAccessibilityAction={(event) =>
+        onChange(bpm + (event.nativeEvent.actionName === "increment" ? 1 : -1))
+      }
+      onStartShouldSetResponder={() => true}
+      onMoveShouldSetResponder={() => true}
+      onResponderTerminationRequest={() => false}
+      onResponderGrant={turnTo}
+      onResponderMove={turnTo}
       style={{ width: size, height: size }}
     >
       {tickAngles.map((angle, index) => (

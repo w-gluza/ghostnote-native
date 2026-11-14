@@ -12,7 +12,9 @@ import {
   leadMs,
   msPerQuarterUnit,
   nextIndexOfHand,
+  onsetAt,
   quarterTempo,
+  retimed,
   scheduleStrokes,
 } from "./timing.ts";
 
@@ -125,4 +127,18 @@ test("an even pattern can be stretched to quarter-note strokes", () => {
     [0, 1, 2, 3],
     [4, 5, 6, 7],
   ]);
+});
+
+test("a tempo change keeps strokes already scheduled and retimes the rest", () => {
+  const start = { time: 1000, beat: 0, unitMs: 1000 };
+  assert.equal(onsetAt(start, paradiddle, 2), 1500);
+
+  const faster = retimed(start, paradiddle, 2, 500);
+  assert.equal(onsetAt(faster, paradiddle, 2), 1500);
+  assert.equal(onsetAt(faster, paradiddle, 3), 1625);
+  assert.equal(onsetAt(faster, paradiddle, 10), 2500);
+
+  const slower = retimed(faster, paradiddle, 3, 2000);
+  assert.equal(onsetAt(slower, paradiddle, 3), 1625);
+  assert.equal(onsetAt(slower, paradiddle, 4), 2125);
 });

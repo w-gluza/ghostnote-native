@@ -1,5 +1,8 @@
+import { useIsFocused } from "expo-router";
 import { SymbolView } from "expo-symbols";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  AppState,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -9,22 +12,49 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BeatPattern, type BeatKind } from "@/components/beat-pattern";
+import { BeatPattern } from "@/components/beat-pattern";
+import { OptionMenu } from "@/components/option-menu";
 import { PlayButton } from "@/components/play-button";
 import { ScreenHeader } from "@/components/screen-header";
 import { TempoDial } from "@/components/tempo-dial";
+import {
+  buildClicks,
+  clampBpm,
+  defaultSettings,
+  isMetronomeSettings,
+  MAX_BPM,
+  meterLabel,
+  METERS,
+  MIN_BPM,
+  subdivisionName,
+  subdivisionsFor,
+  tempoOf,
+  withMeter,
+  withNextBeatKind,
+  type MetronomeSettings,
+} from "@/metronome/metronome";
+import { load, save } from "@/rudiments/storage";
+import { useRudimentPlayback } from "@/rudiments/use-rudiment-playback";
+import { useClickSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
+const SETTINGS_KEY = "metronome";
 const SCREEN_PADDING = 24;
 const STEP_BUTTON_SIZE = 36;
 const DIAL_GAP = 4;
 const MAX_DIAL_SIZE = 300;
+const REPEAT_MS = 80;
 
-const tempo = { bpm: 120, position: 0.7 };
-const timeSignature = { beats: 4, noteValue: 4 };
-const subdivision = "Eighth notes";
-const beatPattern: BeatKind[] = ["accent", "normal", "normal", "skipped"];
+const meterOptions = METERS.map((meter) => ({
+  key: meterLabel(meter),
+  label: meterLabel(meter),
+}));
+
+function storedSettings(): MetronomeSettings {
+  const stored = load(SETTINGS_KEY);
+  return isMetronomeSettings(stored) ? stored : defaultSettings;
+}
 
 export default function MetronomeScreen() {
   const { width } = useWindowDimensions();
@@ -32,6 +62,76 @@ export default function MetronomeScreen() {
     width - 2 * (SCREEN_PADDING + STEP_BUTTON_SIZE + DIAL_GAP),
     MAX_DIAL_SIZE,
   );
+  const [settings, setSettings] = useState(storedSettings);
+  const sound = useClickSound();
+  const loop = useMemo(() => buildClicks(settings), [settings]);
+
+  const change = (next: (current: MetronomeSettings) => MetronomeSettings) => {
+    setSettings((current) => {
+      const changed = next(current);
+      save(SETTINGS_KEY, changed);
+      return changed;
+    });
+  };
+  const changeBpm = (bpm: number) =>
+    change((current) => ({ ...current, bpm: clampBpm(bpm) }));
+  const stepBpm = (step: number) =>
+    change((current) => ({ ...current, bpm: clampBpm(current.bpm + step) }));
+
+  const repeat = useRef<ReturnType<typeof setInterval>>(undefined);
+  const startRepeat = (step: number) => {
+    clearInterval(repeat.current);
+    repeat.current = setInterval(() => stepBpm(step), REPEAT_MS);
+  };
+  const stopRepeat = () => clearInterval(repeat.current);
+  useEffect(() => () => clearInterval(repeat.current), []);
+
+  const playback = useRudimentPlayback({
+    timeline: loop,
+    tempo: tempoOf(settings),
+    clock: sound?.now,
+    restartOnPlay: true,
+    onSchedule: (index, timeMs) => {
+      const click = loop.strokes[index];
+      if (!click || click.kind === "silent") {
+        return;
+      }
+      sound?.play(
+        click.kind === "accent" ? "accent" : "tap",
+        click.kind === "soft" ? "soft" : "full",
+        timeMs,
+      );
+    },
+    onCancel: sound?.cancel,
+  });
+
+  const isFocused = useIsFocused();
+  const pause = useRef(() => {});
+  useEffect(() => {
+    pause.current = playback.pause;
+  });
+  useEffect(() => {
+    if (!isFocused) {
+      pause.current();
+    }
+  }, [isFocused]);
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state !== "active") {
+        pause.current();
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
+  const activeClick =
+    playback.isPlaying && playback.activeIndex !== null
+      ? loop.strokes[playback.activeIndex]
+      : undefined;
+  const subdivisionOptions = subdivisionsFor(settings.meter).map((option) => ({
+    key: option.clicks,
+    label: option.name,
+  }));
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -43,55 +143,43 @@ export default function MetronomeScreen() {
         <ScreenHeader />
 
         <View style={styles.rhythm}>
-          <View style={styles.rhythmControls}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Time signature, ${timeSignature.beats} ${timeSignature.noteValue}`}
-              style={({ pressed }) => [
-                styles.target,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.signatureLabel}>
-                {timeSignature.beats}/{timeSignature.noteValue}
-              </Text>
-            </Pressable>
-            <View style={styles.rhythmSeparator} />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Subdivision, ${subdivision}`}
-              style={({ pressed }) => [
-                styles.target,
-                styles.subdivision,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.subdivisionIcon}>♫</Text>
-              <Text style={styles.subdivisionLabel}>{subdivision}</Text>
-              <SymbolView
-                name="chevron.down"
-                size={13}
-                weight="medium"
-                tintColor={colors.text.secondary}
-              />
-            </Pressable>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Rhythm settings"
-            style={({ pressed }) => [
-              styles.target,
-              styles.settings,
-              pressed && styles.pressed,
-            ]}
+          <OptionMenu
+            name="Time signature"
+            options={meterOptions}
+            selected={meterLabel(settings.meter)}
+            onChange={(label) => {
+              const meter = METERS.find(
+                (option) => meterLabel(option) === label,
+              );
+              if (meter) {
+                change((current) => withMeter(current, meter));
+              }
+            }}
           >
+            <Text style={styles.signatureLabel}>
+              {meterLabel(settings.meter)}
+            </Text>
+          </OptionMenu>
+          <View style={styles.rhythmSeparator} />
+          <OptionMenu
+            name="Subdivision"
+            options={subdivisionOptions}
+            selected={settings.subdivision}
+            onChange={(subdivision) =>
+              change((current) => ({ ...current, subdivision }))
+            }
+          >
+            <Text style={styles.subdivisionIcon}>♫</Text>
+            <Text numberOfLines={1} style={styles.subdivisionLabel}>
+              {subdivisionName(settings)}
+            </Text>
             <SymbolView
-              name="slider.vertical.3"
-              size={22}
-              weight="light"
+              name="chevron.down"
+              size={13}
+              weight="medium"
               tintColor={colors.text.secondary}
             />
-          </Pressable>
+          </OptionMenu>
         </View>
 
         <View style={styles.stage}>
@@ -99,7 +187,11 @@ export default function MetronomeScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Decrease tempo"
+              disabled={settings.bpm <= MIN_BPM}
               hitSlop={8}
+              onPress={() => stepBpm(-1)}
+              onLongPress={() => startRepeat(-1)}
+              onPressOut={stopRepeat}
               style={({ pressed }) => [
                 styles.step,
                 styles.stepStart,
@@ -113,11 +205,21 @@ export default function MetronomeScreen() {
                 tintColor={colors.text.primary}
               />
             </Pressable>
-            <TempoDial {...tempo} size={dialSize} />
+            <TempoDial
+              bpm={settings.bpm}
+              min={MIN_BPM}
+              max={MAX_BPM}
+              size={dialSize}
+              onChange={changeBpm}
+            />
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Increase tempo"
+              disabled={settings.bpm >= MAX_BPM}
               hitSlop={8}
+              onPress={() => stepBpm(1)}
+              onLongPress={() => startRepeat(1)}
+              onPressOut={stopRepeat}
               style={({ pressed }) => [
                 styles.step,
                 styles.stepEnd,
@@ -132,11 +234,20 @@ export default function MetronomeScreen() {
               />
             </Pressable>
           </View>
-          <BeatPattern beats={beatPattern} playingBeat={2} />
+          <BeatPattern
+            beats={settings.beats}
+            playingBeat={activeClick ? activeClick.beatIndex + 1 : 0}
+            onPressBeat={(index) =>
+              change((current) => withNextBeatKind(current, index))
+            }
+          />
         </View>
 
         <View style={styles.transport}>
-          <PlayButton isPlaying />
+          <PlayButton
+            isPlaying={playback.isPlaying}
+            onPress={playback.toggle}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -153,14 +264,6 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingHorizontal: SCREEN_PADDING,
   },
-  target: {
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  settings: {
-    minWidth: 44,
-    alignItems: "flex-end",
-  },
   pressed: {
     opacity: 0.7,
   },
@@ -171,7 +274,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     gap: 12,
     backgroundColor: colors.surface,
   },
@@ -179,22 +281,10 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontSize: typography.fontSize.title,
   },
-  rhythmControls: {
-    flexShrink: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
   rhythmSeparator: {
     width: StyleSheet.hairlineWidth,
     height: 22,
     backgroundColor: colors.disabled,
-  },
-  subdivision: {
-    flexShrink: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
   },
   subdivisionLabel: {
     flexShrink: 1,

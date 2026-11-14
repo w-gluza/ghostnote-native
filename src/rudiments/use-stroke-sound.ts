@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AudioContext,
   AudioManager,
@@ -7,19 +7,31 @@ import {
 
 import type { TimelineStroke } from "./timeline";
 
+const tapSource = require("@/assets/sounds/click.wav");
+const accentSource = require("@/assets/sounds/click-accent.wav");
+
+const SOFT_GAIN = 0.4;
+
+type Pending = { source: AudioBufferSourceNode; timeMs: number };
+
+export type ClickSound = {
+  now: () => number;
+  play: (
+    sample: "tap" | "accent",
+    level: "full" | "soft",
+    timeMs: number,
+  ) => void;
+  cancel: () => void;
+};
+
 export type StrokeSound = {
   now: () => number;
   schedule: (stroke: TimelineStroke, timeMs: number) => void;
   cancel: () => void;
 };
 
-const tapSource = require("@/assets/sounds/click.wav");
-const accentSource = require("@/assets/sounds/click-accent.wav");
-
-type Pending = { source: AudioBufferSourceNode; timeMs: number };
-
-export function useStrokeSound() {
-  const [sound, setSound] = useState<StrokeSound>();
+export function useClickSound() {
+  const [sound, setSound] = useState<ClickSound>();
 
   useEffect(() => {
     let isActive = true;
@@ -29,6 +41,9 @@ export function useStrokeSound() {
       ios: { category: "playback", options: ["mixWithOthers"] },
     });
     const context = new AudioContext();
+    const soft = context.createGain();
+    soft.gain.value = SOFT_GAIN;
+    soft.connect(context.destination);
     const now = () => context.currentTime * 1000;
 
     Promise.all([
@@ -42,10 +57,10 @@ export function useStrokeSound() {
         }
         setSound({
           now,
-          schedule: (stroke, timeMs) => {
+          play: (sample, level, timeMs) => {
             const source = context.createBufferSource();
-            source.buffer = stroke.accent ? accent : tap;
-            source.connect(context.destination);
+            source.buffer = sample === "accent" ? accent : tap;
+            source.connect(level === "soft" ? soft : context.destination);
             source.start(Math.max(timeMs, now()) / 1000);
             pending = pending.filter((item) => item.timeMs > now());
             pending.push({ source, timeMs });
@@ -68,4 +83,21 @@ export function useStrokeSound() {
   }, []);
 
   return sound;
+}
+
+export function useStrokeSound() {
+  const click = useClickSound();
+
+  return useMemo<StrokeSound | undefined>(
+    () =>
+      click
+        ? {
+            now: click.now,
+            schedule: (stroke, timeMs) =>
+              click.play(stroke.accent ? "accent" : "tap", "full", timeMs),
+            cancel: click.cancel,
+          }
+        : undefined,
+    [click],
+  );
 }

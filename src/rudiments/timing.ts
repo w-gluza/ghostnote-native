@@ -27,17 +27,41 @@ export function msPerQuarterUnit(tempo: Tempo) {
   return 60000 / (tempo.bpm * toNumber(tempo.pulseQuarterUnits));
 }
 
-export function beatOfOrdinal(timeline: Timeline, ordinal: number) {
+export type Loop = { cycleBeats: number; strokes: { beat: number }[] };
+
+export function beatOfOrdinal(timeline: Loop, ordinal: number) {
   const count = timeline.strokes.length;
   const cycle = Math.floor(ordinal / count);
   const index = ordinal - cycle * count;
   return cycle * timeline.cycleBeats + (timeline.strokes[index]?.beat ?? 0);
 }
 
-export function gapBeforeOrdinal(timeline: Timeline, ordinal: number) {
+export function gapBeforeOrdinal(timeline: Loop, ordinal: number) {
   return (
     beatOfOrdinal(timeline, ordinal) - beatOfOrdinal(timeline, ordinal - 1)
   );
+}
+
+export type Anchor = { time: number; beat: number; unitMs: number };
+
+export function onsetAt(anchor: Anchor, timeline: Loop, ordinal: number) {
+  return (
+    anchor.time +
+    (beatOfOrdinal(timeline, ordinal) - anchor.beat) * anchor.unitMs
+  );
+}
+
+export function retimed(
+  anchor: Anchor,
+  timeline: Loop,
+  lastOrdinal: number,
+  unitMs: number,
+): Anchor {
+  return {
+    time: onsetAt(anchor, timeline, lastOrdinal),
+    beat: beatOfOrdinal(timeline, lastOrdinal),
+    unitMs,
+  };
 }
 
 export function leadMs(gapMs: number) {

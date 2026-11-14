@@ -1,27 +1,31 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import type { BeatKind } from "@/metronome/metronome";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
-
-export type BeatKind = "accent" | "normal" | "skipped";
 
 type BeatPatternProps = {
   beats: BeatKind[];
   playingBeat: number;
+  onPressBeat: (index: number) => void;
 };
 
-export function BeatPattern({ beats, playingBeat }: BeatPatternProps) {
-  const summary = beats
-    .map((kind, index) => {
-      const beat = index + 1;
-      return `beat ${beat} ${kind}${beat === playingBeat ? ", playing" : ""}`;
-    })
-    .join("; ");
-
+export function BeatPattern({
+  beats,
+  playingBeat,
+  onPressBeat,
+}: BeatPatternProps) {
   return (
-    <View accessible accessibilityLabel={summary} style={styles.row}>
+    <View style={styles.row}>
       {beats.map((kind, index) => (
-        <View key={index} style={styles.beat}>
+        <Pressable
+          key={index}
+          accessibilityRole="button"
+          accessibilityLabel={`Beat ${index + 1}, ${kind}`}
+          accessibilityHint="Changes between normal, accent and skipped"
+          onPress={() => onPressBeat(index)}
+          style={({ pressed }) => [styles.beat, pressed && styles.pressed]}
+        >
           <Text style={styles.accentMark}>{kind === "accent" ? ">" : " "}</Text>
           <View
             style={[
@@ -36,7 +40,7 @@ export function BeatPattern({ beats, playingBeat }: BeatPatternProps) {
               index + 1 === playingBeat && styles.playheadActive,
             ]}
           />
-        </View>
+        </Pressable>
       ))}
     </View>
   );
@@ -45,12 +49,18 @@ export function BeatPattern({ beats, playingBeat }: BeatPatternProps) {
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "center",
     gap: 8,
   },
   beat: {
     width: 40,
+    minHeight: 44,
+    justifyContent: "center",
     gap: 4,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   accentMark: {
     textAlign: "center",
