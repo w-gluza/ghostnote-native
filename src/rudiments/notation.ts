@@ -35,6 +35,9 @@ export function parsePattern(source: PatternSource): RudimentPattern {
         throw new Error(`Unreadable stroke "${token}" in ${source.id}`);
       }
       const [, opens, mark, bounce, grace, hand, units, parts, closes] = match;
+      if (Number(units ?? 1) === 0 || Number(parts ?? 1) === 0) {
+        throw new Error(`Stroke "${token}" has no length in ${source.id}`);
+      }
       onsetCount += 1;
       const id = `s${onsetCount}`;
 

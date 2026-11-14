@@ -4,34 +4,39 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment } from "@/rudiments/library";
-import { clearRounds, useRoundsDone } from "@/rudiments/round-log";
+import { finishSession, useActiveSession } from "@/rudiments/practice-session";
 import { useRoutine } from "@/rudiments/saved-routines";
 import {
-  routineMinutes,
-  tempoLabel,
-  todaysRoutine,
-  type Exercise,
-} from "@/rudiments/todays-routine";
+  playedTempoLabel,
+  sessionActiveSeconds,
+  sessionRoundCount,
+} from "@/rudiments/session";
+import { todaysRoutine } from "@/rudiments/todays-routine";
+import type { CompletedExercise } from "@/rudiments/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 function SummaryRow({
-  routineId,
-  exercise,
+  played,
+  plannedRounds,
 }: {
-  routineId: string;
-  exercise: Exercise;
+  played: CompletedExercise;
+  plannedRounds?: number;
 }) {
-  const roundsDone = useRoundsDone(routineId, exercise.id);
-  const rudiment = findRudiment(exercise.id);
+  const rudiment = findRudiment(played.pattern.rudimentId);
   if (!rudiment) {
     return null;
   }
+  const tempo = playedTempoLabel(played);
+  const detail = tempo ? `${tempo} BPM` : "Not played";
+  const rounds = plannedRounds
+    ? `${played.rounds.length}/${plannedRounds} rounds`
+    : `${played.rounds.length} rounds`;
 
   return (
     <View
       accessible
-      accessibilityLabel={`${rudiment.name}, ${roundsDone} of ${exercise.rounds.length} rounds at ${tempoLabel(exercise)} beats per minute`}
+      accessibilityLabel={`${rudiment.name}, ${rounds}, ${tempo ? `${tempo} beats per minute` : "not played"}`}
       style={styles.row}
     >
       <SymbolView
@@ -42,11 +47,9 @@ function SummaryRow({
       />
       <View style={styles.rowText}>
         <Text style={styles.name}>{rudiment.name}</Text>
-        <Text style={styles.detail}>{tempoLabel(exercise)} BPM</Text>
+        <Text style={styles.detail}>{detail}</Text>
       </View>
-      <Text style={styles.rounds}>
-        {roundsDone}/{exercise.rounds.length} rounds
-      </Text>
+      <Text style={styles.rounds}>{rounds}</Text>
     </View>
   );
 }
@@ -64,13 +67,13 @@ export default function SummaryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ routine?: string }>();
   const routine = useRoutine(params.routine) ?? todaysRoutine;
-  const totalRounds = routine.exercises.reduce(
-    (total, exercise) => total + exercise.rounds.length,
-    0,
-  );
+  const session = useActiveSession(routine.id);
+  const played = session?.exercises ?? [];
+  const activeSeconds = sessionActiveSeconds(session);
+  const showsSeconds = activeSeconds < 60;
   const finish = () => {
     router.dismissTo("/");
-    clearRounds(routine);
+    finishSession(routine.id);
   };
 
   return (
@@ -91,24 +94,33 @@ export default function SummaryScreen() {
             tintColor={colors.accent}
           />
         </View>
-        <Text style={styles.subtitle}>{routine.name}</Text>
+        <Text style={styles.subtitle}>
+          {session?.routineName ?? routine.name}
+        </Text>
 
         <View style={styles.stats}>
-          <Stat value={`${routineMinutes(routine)}`} label="minutes" />
+          <Stat
+            value={`${Math.round(showsSeconds ? activeSeconds : activeSeconds / 60)}`}
+            label={showsSeconds ? "seconds played" : "minutes played"}
+          />
           <View style={styles.statRule} />
-          <Stat value={`${routine.exercises.length}`} label="exercises" />
+          <Stat value={`${played.length}`} label="exercises" />
           <View style={styles.statRule} />
-          <Stat value={`${totalRounds}`} label="rounds" />
+          <Stat value={`${sessionRoundCount(session)}`} label="rounds" />
         </View>
 
         <Text accessibilityRole="header" style={styles.sectionTitle}>
           WHAT YOU PLAYED
         </Text>
-        {routine.exercises.map((exercise) => (
+        {played.map((exercise, index) => (
           <SummaryRow
-            key={exercise.id}
-            routineId={routine.id}
-            exercise={exercise}
+            key={exercise.sourceExerciseId ?? index}
+            played={exercise}
+            plannedRounds={
+              routine.exercises.find(
+                (planned) => planned.id === exercise.sourceExerciseId,
+              )?.rounds.length
+            }
           />
         ))}
       </ScrollView>

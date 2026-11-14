@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,16 +9,29 @@ import { STAGE_HEIGHT } from "@/components/pad-animation";
 import { RudimentPlayer } from "@/components/rudiment-player";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
-import { fraction } from "@/rudiments/fraction";
-import { defaultBpm, findRudiment, standardPattern } from "@/rudiments/library";
+import { fraction, multiply, ONE } from "@/rudiments/fraction";
 import {
-  logRound,
+  defaultBpm,
+  defaultPattern,
+  findRudiment,
+  resolvePattern,
+} from "@/rudiments/library";
+import {
+  activeSession,
+  completeRound,
   undoRound,
-  useRoundsDone,
-  willCompleteRoutine,
-} from "@/rudiments/round-log";
+  useActiveSession,
+} from "@/rudiments/practice-session";
+import {
+  finishTracking,
+  idleTracker,
+  trackActivity,
+} from "@/rudiments/round-tracker";
+import { isRoutineComplete, nextRound, roundsDone } from "@/rudiments/session";
 import { useRoutine } from "@/rudiments/saved-routines";
 import { buildTimeline, evenStep, scaleToStep } from "@/rudiments/timeline";
+import { quarterTempo } from "@/rudiments/timing";
+import type { Fraction, Tempo } from "@/rudiments/types";
 import { useStrokeSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -26,34 +39,80 @@ import { typography } from "@/theme/typography";
 const MIN_PAD_SCALE = 0.6;
 
 export default function RudimentScreen() {
-  const { id, routine } = useLocalSearchParams<{
+  const {
+    id,
+    routine,
+    exercise: exerciseId,
+  } = useLocalSearchParams<{
     id: string;
     routine?: string;
+    exercise?: string;
   }>();
   const rudiment = findRudiment(id);
   const router = useRouter();
   const sound = useStrokeSound();
   const openedRoutine = useRoutine(routine);
   const activeRoutine = routine ? openedRoutine : undefined;
-  const exercise = activeRoutine?.exercises.find((item) => item.id === id);
-  const roundsDone = useRoundsDone(activeRoutine?.id ?? "", id);
+  const exercise = activeRoutine?.exercises.find(
+    (item) => item.id === exerciseId,
+  );
+  const session = useActiveSession(activeRoutine?.id ?? "");
   const roundGoal = exercise?.rounds.length ?? 0;
-  const isComplete = exercise ? roundsDone >= roundGoal : false;
-  const round = exercise?.rounds[Math.min(roundsDone, roundGoal - 1)];
+  const done = exercise ? roundsDone(session, exercise) : 0;
+  const round = exercise ? nextRound(session, exercise) : undefined;
+  const isComplete = exercise ? round === undefined : false;
+  const pattern = exercise
+    ? resolvePattern(exercise.pattern)
+    : rudiment
+      ? defaultPattern(rudiment)
+      : undefined;
+  const [rhythmicScale, setRhythmicScale] = useState(
+    () =>
+      exercise?.rhythmicScale ?? (pattern ? scaleToStep(pattern, ONE) : ONE),
+  );
+  const initialTempo =
+    round?.tempo ??
+    exercise?.rounds[roundGoal - 1]?.tempo ??
+    quarterTempo(rudiment ? defaultBpm(rudiment) : 80);
+  const tracker = useRef(idleTracker);
+  const activity = useRef({ isPlaying: false, tempo: initialTempo });
+  const track = (isPlaying: boolean, tempo: Tempo, scale: Fraction) => {
+    activity.current = { isPlaying, tempo };
+    tracker.current = trackActivity(
+      tracker.current,
+      { isPlaying, tempo, rhythmicScale: scale },
+      Date.now(),
+    );
+  };
+  const changeScale = (scale: Fraction) => {
+    setRhythmicScale(scale);
+    track(activity.current.isPlaying, activity.current.tempo, scale);
+  };
   const finishRound = () => {
-    if (!exercise || !activeRoutine) {
+    if (!exercise || !activeRoutine || !round) {
       return;
     }
-    const finishesRoutine = willCompleteRoutine(activeRoutine, exercise.id);
-    logRound(activeRoutine.id, exercise.id, roundGoal);
-    if (finishesRoutine) {
+    const played = finishTracking(tracker.current, Date.now());
+    tracker.current = idleTracker;
+    activity.current = { ...activity.current, isPlaying: false };
+    completeRound(activeRoutine, exercise, round, played);
+    const isLastOfExercise = done + 1 >= roundGoal;
+    if (isRoutineComplete(activeSession(activeRoutine.id), activeRoutine)) {
       router.replace({
         pathname: "/summary",
         params: { routine: activeRoutine.id },
       });
-    } else if (roundsDone + 1 >= roundGoal) {
+    } else if (isLastOfExercise) {
       router.back();
     }
+  };
+  const undo = () => {
+    if (!exercise || !activeRoutine) {
+      return;
+    }
+    tracker.current = idleTracker;
+    activity.current = { ...activity.current, isPlaying: false };
+    undoRound(activeRoutine.id, exercise.id);
   };
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
@@ -69,12 +128,11 @@ export default function RudimentScreen() {
       setPadScale(fitted);
     }
   };
-  const [subdivision, setSubdivision] = useState(1);
-  const pattern = rudiment ? standardPattern(rudiment) : undefined;
-  const hasEvenStrokes = pattern ? evenStep(pattern) !== undefined : false;
-  const timeline = pattern
-    ? buildTimeline(pattern, scaleToStep(pattern, fraction(1, subdivision)))
-    : undefined;
+  const step = pattern ? evenStep(pattern) : undefined;
+  const strokeStep = step ? multiply(step, rhythmicScale) : undefined;
+  const subdivision =
+    strokeStep && strokeStep.numerator === 1 ? strokeStep.denominator : 0;
+  const timeline = pattern ? buildTimeline(pattern, rhythmicScale) : undefined;
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.screen}>
@@ -109,17 +167,22 @@ export default function RudimentScreen() {
               <Text numberOfLines={1} style={styles.detail}>
                 {rudiment.category} · Lvl {rudiment.level}
               </Text>
-              {hasEvenStrokes ? (
+              {pattern && step ? (
                 <NoteValuePicker
                   subdivision={subdivision}
-                  onChange={setSubdivision}
+                  onChange={(value) =>
+                    changeScale(scaleToStep(pattern, fraction(1, value)))
+                  }
                 />
               ) : null}
             </View>
             <RudimentPlayer
-              key={`${rudiment.id}-${round?.bpm ?? ""}`}
+              key={`${rudiment.id}-${round?.id ?? ""}`}
               timeline={timeline}
-              initialBpm={round?.bpm ?? defaultBpm(rudiment)}
+              initialTempo={initialTempo}
+              onActivity={(isPlaying, tempo) =>
+                track(isPlaying, tempo, rhythmicScale)
+              }
               sound={sound}
               padScale={padScale}
             />
@@ -131,17 +194,17 @@ export default function RudimentScreen() {
       {exercise && activeRoutine ? (
         <View style={styles.rounds}>
           <WeekProgress
-            done={roundsDone}
+            done={done}
             goal={roundGoal}
             unit="rounds"
-            description={`${roundsDone} of ${roundGoal} rounds done`}
+            description={`${done} of ${roundGoal} rounds done`}
           />
-          {roundsDone > 0 ? (
+          {done > 0 ? (
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Undo last round"
               hitSlop={12}
-              onPress={() => undoRound(activeRoutine.id, exercise.id)}
+              onPress={undo}
               style={({ pressed }) => [styles.undo, pressed && styles.pressed]}
             >
               <Text style={styles.undoLabel}>Undo</Text>

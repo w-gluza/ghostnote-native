@@ -1,4 +1,4 @@
-import { toNumber } from "./fraction.ts";
+import { ONE, toNumber } from "./fraction.ts";
 import type { Timeline } from "./timeline";
 import type { Hand, Tempo } from "./types";
 
@@ -19,8 +19,8 @@ export function clampBpm(bpm: number) {
   return Math.min(MAX_BPM, Math.max(MIN_BPM, Math.round(bpm)));
 }
 
-export function msPerBeat(bpm: number) {
-  return 60000 / bpm;
+export function quarterTempo(bpm: number): Tempo {
+  return { bpm, pulseQuarterUnits: ONE };
 }
 
 export function msPerQuarterUnit(tempo: Tempo) {
@@ -70,10 +70,10 @@ export function beatsUntilSameHand(timeline: Timeline, index: number) {
 
 export function scheduleStrokes(
   timeline: Timeline,
-  bpm: number,
+  tempo: Tempo,
   count: number,
 ): ScheduledStroke[] {
-  const beat = msPerBeat(bpm);
+  const beat = msPerQuarterUnit(tempo);
   return Array.from({ length: count }, (_, ordinal) => {
     const index = ordinal % timeline.strokes.length;
     const stroke = timeline.strokes[index];

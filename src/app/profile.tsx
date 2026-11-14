@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { StatRow } from "@/components/stat-row";
-import { todaysRoutine } from "@/rudiments/todays-routine";
+import { routineLevel, todaysRoutine } from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -37,7 +37,7 @@ export default function ProfileScreen() {
         <StatRow
           symbol="chart.bar"
           label="Level"
-          value={`Lvl ${todaysRoutine.level}`}
+          value={`Lvl ${routineLevel(todaysRoutine)}`}
         />
         <StatRow symbol="calendar" label="Weekly goal" value="3 sessions" />
         <StatRow symbol="clock" label="Session length" value="20 min" isLast />

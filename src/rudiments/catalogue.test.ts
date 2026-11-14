@@ -7,7 +7,7 @@ import {
   findRudiment,
   resolvePattern,
   rudimentLibrary,
-  standardPattern,
+  defaultPattern,
   stickingOf,
 } from "./library.ts";
 import { parsePattern } from "./notation.ts";
@@ -19,7 +19,7 @@ import {
   validateTempo,
 } from "./validate.ts";
 
-const patternOf = (id: string) => standardPattern(findRudiment(id)!);
+const patternOf = (id: string) => defaultPattern(findRudiment(id)!);
 
 const valid: RudimentPattern = {
   id: "standard",
@@ -61,7 +61,7 @@ test("every rudiment in the library passes validation", () => {
 
 test("every rudiment loops over a whole number of quarter notes", () => {
   for (const rudiment of rudimentLibrary) {
-    const cycle = standardPattern(rudiment).cycleDuration;
+    const cycle = defaultPattern(rudiment).cycleDuration;
     assert.equal(cycle.denominator, 1, rudiment.name);
   }
 });
@@ -161,6 +161,52 @@ test("notation reads ghost notes and fractional lengths", () => {
   );
 });
 
+test("notation refuses a stroke with no length", () => {
+  const source = {
+    id: "standard",
+    label: "Standard",
+    version: 1,
+    subdivision: 1,
+  };
+  assert.throws(() => parsePattern({ ...source, sticking: "R:0 L" }));
+  assert.throws(() => parsePattern({ ...source, sticking: "R:1/0 L" }));
+});
+
+test("validation rejects unknown hands, stroke kinds and group kinds", () => {
+  const stored = (change: object) =>
+    validatePattern({ ...valid, ...change } as RudimentPattern).length;
+  assert.ok(
+    stored({
+      strokes: [{ id: "a", kind: "onset", hand: "X", at: fraction(0) }],
+      groups: [],
+    }),
+  );
+  assert.ok(
+    stored({
+      strokes: [{ id: "a", kind: "tap", hand: "R", at: fraction(0) }],
+      groups: [],
+    }),
+  );
+  assert.ok(
+    stored({ groups: [{ id: "g", kind: "unknown", strokeIds: ["a"] }] }),
+  );
+  assert.ok(stored({ strokes: "R L" }));
+  assert.ok(stored({ strokes: [{ id: "a", kind: "onset", hand: "R" }] }));
+});
+
+test("a rudiment names its default pattern instead of relying on order", () => {
+  const rudiment = findRudiment("single-paradiddle")!;
+  const older = { ...defaultPattern(rudiment), version: 0, label: "Draft" };
+  const reordered = { ...rudiment, patterns: [older, ...rudiment.patterns] };
+  assert.equal(defaultPattern(reordered).version, 1);
+  assert.ok(
+    validateRudiment({
+      ...rudiment,
+      defaultPattern: { patternId: "standard", patternVersion: 9 },
+    }).length,
+  );
+});
+
 test("simultaneous strokes keep their source order", () => {
   const timeline = buildTimeline({
     ...valid,
@@ -219,7 +265,7 @@ test("tempo validation rejects impossible tempos", () => {
 test("rudiments shown in the app have even strokes and no grace or bounce", () => {
   assert.equal(availableRudiments.length, 7);
   for (const rudiment of availableRudiments) {
-    const pattern = standardPattern(rudiment);
+    const pattern = defaultPattern(rudiment);
     assert.notEqual(evenStep(pattern), undefined, rudiment.name);
     for (const stroke of buildTimeline(pattern).strokes) {
       assert.deepEqual(stroke.grace, [], rudiment.name);

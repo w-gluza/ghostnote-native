@@ -4,40 +4,41 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment, stickingOf } from "@/rudiments/library";
-import { useRoundsDone, useRoutineComplete } from "@/rudiments/round-log";
+import { useActiveSession } from "@/rudiments/practice-session";
 import { useRoutine } from "@/rudiments/saved-routines";
+import { isRoutineComplete, roundsDone } from "@/rudiments/session";
 import {
   exerciseMinutes,
+  routineLevel,
   routineMinutes,
   todaysRoutine,
-  type Exercise,
 } from "@/rudiments/todays-routine";
+import type { RoutineExercise } from "@/rudiments/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 function SetlistRow({
-  routineId,
+  done,
   exercise,
   position,
   onPress,
 }: {
-  routineId: string;
-  exercise: Exercise;
+  done: number;
+  exercise: RoutineExercise;
   position: number;
   onPress: () => void;
 }) {
-  const roundsDone = useRoundsDone(routineId, exercise.id);
-  const rudiment = findRudiment(exercise.id);
+  const rudiment = findRudiment(exercise.pattern.rudimentId);
   if (!rudiment) {
     return null;
   }
-  const isComplete = roundsDone >= exercise.rounds.length;
+  const isComplete = done >= exercise.rounds.length;
   const sticking = stickingOf(rudiment);
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${rudiment.name}, ${exerciseMinutes(exercise)} minutes, ${roundsDone} of ${exercise.rounds.length} rounds done, sticking ${sticking}`}
+      accessibilityLabel={`${rudiment.name}, ${exerciseMinutes(exercise)} minutes, ${done} of ${exercise.rounds.length} rounds done, sticking ${sticking}`}
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
@@ -50,8 +51,8 @@ function SetlistRow({
       </View>
       <View style={styles.rowStatus}>
         <Text style={styles.minutes}>{exerciseMinutes(exercise)} min</Text>
-        <Text style={[styles.minutes, roundsDone > 0 && styles.roundsStarted]}>
-          {roundsDone}/{exercise.rounds.length} rounds
+        <Text style={[styles.minutes, done > 0 && styles.roundsStarted]}>
+          {done}/{exercise.rounds.length} rounds
         </Text>
       </View>
       <SymbolView
@@ -70,13 +71,18 @@ export default function RoutineScreen() {
   const routine = useRoutine(params.id) ?? todaysRoutine;
   const isToday = routine.id === todaysRoutine.id;
   const totalMinutes = routineMinutes(routine);
-  const openExercise = (id: string) =>
+  const openExercise = (exercise: RoutineExercise) =>
     router.push({
       pathname: "/rudiment/[id]",
-      params: { id, routine: routine.id },
+      params: {
+        id: exercise.pattern.rudimentId,
+        routine: routine.id,
+        exercise: exercise.id,
+      },
     });
   const first = routine.exercises[0];
-  const isComplete = useRoutineComplete(routine);
+  const session = useActiveSession(routine.id);
+  const isComplete = isRoutineComplete(session, routine);
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.screen}>
@@ -121,7 +127,7 @@ export default function RoutineScreen() {
           />
           <Text style={styles.summaryText}>
             {totalMinutes} min · {routine.exercises.length} rudiments · Lvl{" "}
-            {routine.level}
+            {routineLevel(routine)}
           </Text>
         </View>
 
@@ -137,10 +143,10 @@ export default function RoutineScreen() {
         {routine.exercises.map((exercise, index) => (
           <SetlistRow
             key={exercise.id}
-            routineId={routine.id}
+            done={roundsDone(session, exercise)}
             exercise={exercise}
             position={index + 1}
-            onPress={() => openExercise(exercise.id)}
+            onPress={() => openExercise(exercise)}
           />
         ))}
       </ScrollView>
@@ -153,7 +159,7 @@ export default function RoutineScreen() {
                 pathname: "/summary",
                 params: { routine: routine.id },
               })
-            : first && openExercise(first.id)
+            : first && openExercise(first)
         }
         style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >

@@ -1,34 +1,32 @@
 import { useSyncExternalStore } from "react";
 
-import { evenRounds, todaysRoutine, type Routine } from "./todays-routine";
+import { presetExercise, todaysRoutine } from "./todays-routine";
+import type { Routine } from "./types";
 
 let savedRoutines: Routine[] = [
   {
     id: "quick-warm-up",
     name: "Quick Warm-up",
-    level: 1,
     exercises: [
-      { id: "single-stroke-roll", rounds: evenRounds(2, 70, 3) },
-      { id: "double-stroke-roll", rounds: evenRounds(2, 60, 3) },
+      presetExercise("quick-warm-up-e1", "single-stroke-roll", 2, 70, 3),
+      presetExercise("quick-warm-up-e2", "double-stroke-roll", 2, 60, 3),
     ],
   },
   {
     id: "paradiddle-focus",
     name: "Paradiddle Focus",
-    level: 1,
     exercises: [
-      { id: "single-stroke-roll", rounds: evenRounds(2, 80, 4) },
-      { id: "single-paradiddle", rounds: evenRounds(4, 70, 10) },
+      presetExercise("paradiddle-focus-e1", "single-stroke-roll", 2, 80, 4),
+      presetExercise("paradiddle-focus-e2", "single-paradiddle", 4, 70, 10),
     ],
   },
   {
     id: "roll-builder",
     name: "Roll Builder",
-    level: 2,
     exercises: [
-      { id: "single-stroke-roll", rounds: evenRounds(4, 100, 8) },
-      { id: "double-stroke-roll", rounds: evenRounds(4, 90, 8) },
-      { id: "single-paradiddle", rounds: evenRounds(2, 80, 4) },
+      presetExercise("roll-builder-e1", "single-stroke-roll", 4, 100, 8),
+      presetExercise("roll-builder-e2", "double-stroke-roll", 4, 90, 8),
+      presetExercise("roll-builder-e3", "single-paradiddle", 2, 80, 4),
     ],
   },
 ];

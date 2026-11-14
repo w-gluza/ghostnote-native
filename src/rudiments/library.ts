@@ -19,6 +19,7 @@ type RudimentEntry = {
 };
 
 const FALLBACK_BPM = 80;
+const STANDARD = { patternId: "standard", patternVersion: 1 };
 
 const playableIds = new Set([
   "single-stroke-roll",
@@ -444,11 +445,12 @@ export const rudimentLibrary: Rudiment[] = entries.map((entry) => ({
   category: entry.category,
   level: entry.level,
   defaultTempo: { bpm: entry.bpm, pulseQuarterUnits: ONE },
+  defaultPattern: STANDARD,
   patterns: [
     parsePattern({
-      id: "standard",
+      id: STANDARD.patternId,
       label: "Standard",
-      version: 1,
+      version: STANDARD.patternVersion,
       subdivision: entry.subdivision,
       sticking: entry.sticking,
     }),
@@ -463,14 +465,6 @@ export function findRudiment(id: string) {
   return rudimentLibrary.find((rudiment) => rudiment.id === id);
 }
 
-export function standardPattern(rudiment: Rudiment): RudimentPattern {
-  const pattern = rudiment.patterns[0];
-  if (!pattern) {
-    throw new Error(`${rudiment.id} has no pattern`);
-  }
-  return pattern;
-}
-
 export function resolvePattern(reference: PatternReference) {
   return findRudiment(reference.rudimentId)?.patterns.find(
     (pattern) =>
@@ -479,12 +473,29 @@ export function resolvePattern(reference: PatternReference) {
   );
 }
 
+export function defaultPatternReference(rudiment: Rudiment): PatternReference {
+  return { rudimentId: rudiment.id, ...rudiment.defaultPattern };
+}
+
+export function defaultPattern(rudiment: Rudiment): RudimentPattern {
+  const reference = defaultPatternReference(rudiment);
+  const pattern = rudiment.patterns.find(
+    (candidate) =>
+      candidate.id === reference.patternId &&
+      candidate.version === reference.patternVersion,
+  );
+  if (!pattern) {
+    throw new Error(`${rudiment.id} has no default pattern`);
+  }
+  return pattern;
+}
+
 export function defaultBpm(rudiment: Rudiment) {
   return rudiment.defaultTempo?.bpm ?? FALLBACK_BPM;
 }
 
 export function stickingOf(rudiment: Rudiment) {
-  const pattern = standardPattern(rudiment);
+  const pattern = defaultPattern(rudiment);
   return pattern.strokes
     .filter((stroke) => stroke.kind === "onset")
     .map((onset) => {

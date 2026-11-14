@@ -2,6 +2,9 @@ import { compare, isReduced, ZERO } from "./fraction.ts";
 import type { Fraction, Rudiment, RudimentPattern, Tempo } from "./types";
 
 const DYNAMICS = ["normal", "ghost", "accent"];
+const HANDS = ["R", "L"];
+const STROKE_KINDS = ["onset", "grace"];
+const GROUP_KINDS = ["phrase", "diddle"];
 
 function isPositive(value: Fraction) {
   return isReduced(value) && compare(value, ZERO) > 0;
@@ -29,9 +32,27 @@ export function validatePattern(pattern: RudimentPattern): string[] {
     say("cycle must be a positive, reduced fraction");
   }
 
+  if (!Array.isArray(pattern.strokes)) {
+    say("strokes must be a list");
+    return problems;
+  }
+  if (pattern.groups !== undefined && !Array.isArray(pattern.groups)) {
+    say("groups must be a list");
+    return problems;
+  }
+
   const ids = new Set<string>();
   const onsetIds = new Set<string>();
   for (const stroke of pattern.strokes) {
+    if (typeof stroke.id !== "string" || stroke.id.length === 0) {
+      say("every stroke needs an id");
+    }
+    if (!HANDS.includes(stroke.hand)) {
+      say(`${stroke.id} has an unknown hand`);
+    }
+    if (!STROKE_KINDS.includes(stroke.kind)) {
+      say(`${stroke.id} has an unknown kind`);
+    }
     if (ids.has(stroke.id)) {
       say(`stroke id ${stroke.id} is used twice`);
     }
@@ -47,7 +68,7 @@ export function validatePattern(pattern: RudimentPattern): string[] {
   const graceOrders = new Map<string, Set<number>>();
   for (const stroke of pattern.strokes) {
     if (stroke.kind === "onset") {
-      if (!isReduced(stroke.at)) {
+      if (!stroke.at || !isReduced(stroke.at)) {
         say(`${stroke.id} position is not a reduced fraction`);
       } else if (
         compare(stroke.at, ZERO) < 0 ||
@@ -67,6 +88,9 @@ export function validatePattern(pattern: RudimentPattern): string[] {
       ) {
         say(`${stroke.id} has an unknown technique`);
       }
+      continue;
+    }
+    if (stroke.kind !== "grace") {
       continue;
     }
 
@@ -90,8 +114,15 @@ export function validatePattern(pattern: RudimentPattern): string[] {
       say(`group id ${group.id} is used twice`);
     }
     groupIds.add(group.id);
-    if (group.strokeIds.length === 0) {
+    if (typeof group.id !== "string" || group.id.length === 0) {
+      say("every group needs an id");
+    }
+    if (!GROUP_KINDS.includes(group.kind)) {
+      say(`group ${group.id} has an unknown kind`);
+    }
+    if (!Array.isArray(group.strokeIds) || group.strokeIds.length === 0) {
       say(`group ${group.id} is empty`);
+      continue;
     }
     for (const strokeId of group.strokeIds) {
       if (!ids.has(strokeId)) {
@@ -118,6 +149,14 @@ export function validateRudiment(rudiment: Rudiment): string[] {
     problems.push(
       ...validatePattern(pattern).map((problem) => `${rudiment.id}/${problem}`),
     );
+  }
+  const hasDefault = rudiment.patterns.some(
+    (pattern) =>
+      pattern.id === rudiment.defaultPattern?.patternId &&
+      pattern.version === rudiment.defaultPattern?.patternVersion,
+  );
+  if (!hasDefault) {
+    problems.push(`${rudiment.id}: default pattern is not one of its patterns`);
   }
   if (rudiment.defaultTempo) {
     problems.push(

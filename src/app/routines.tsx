@@ -3,7 +3,8 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { useSavedRoutines } from "@/rudiments/saved-routines";
-import { routineMinutes, type Routine } from "@/rudiments/todays-routine";
+import { routineLevel, routineMinutes } from "@/rudiments/todays-routine";
+import type { Routine } from "@/rudiments/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -23,7 +24,7 @@ function RoutineRow({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${routine.name}, ${minutes} minutes, ${routine.exercises.length} rudiments, level ${routine.level}`}
+      accessibilityLabel={`${routine.name}, ${minutes} minutes, ${routine.exercises.length} rudiments, level ${routineLevel(routine)}`}
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
@@ -36,7 +37,7 @@ function RoutineRow({
         <Text style={styles.name}>{routine.name}</Text>
         <Text style={styles.meta}>
           {minutes} min · {routine.exercises.length} rudiments · Lvl{" "}
-          {routine.level}
+          {routineLevel(routine)}
         </Text>
       </View>
       <SymbolView

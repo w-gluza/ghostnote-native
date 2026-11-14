@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 
-import { beatOfOrdinal, gapBeforeOrdinal, leadMs, msPerBeat } from "./timing";
+import {
+  beatOfOrdinal,
+  gapBeforeOrdinal,
+  leadMs,
+  msPerQuarterUnit,
+} from "./timing";
+import type { Tempo } from "./types";
 import type { Timeline } from "./timeline";
 
 type PlaybackOptions = {
   timeline: Timeline;
-  bpm: number;
+  tempo: Tempo;
   clock?: () => number;
   onSchedule?: (index: number, timeMs: number) => void;
   onCancel?: () => void;
@@ -21,7 +27,7 @@ const systemClock = () => performance.now();
 
 export function useRudimentPlayback({
   timeline,
-  bpm,
+  tempo,
   clock = systemClock,
   onSchedule,
   onCancel,
@@ -31,6 +37,7 @@ export function useRudimentPlayback({
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const nextOrdinal = useRef(0);
+  const beat = msPerQuarterUnit(tempo);
   const handlers = useRef({ onSchedule, onCancel, onApproach, onStroke });
 
   useEffect(() => {
@@ -42,7 +49,6 @@ export function useRudimentPlayback({
       return;
     }
 
-    const beat = msPerBeat(bpm);
     const anchorTime = clock() + START_DELAY_MS;
     const anchorBeat = beatOfOrdinal(timeline, nextOrdinal.current);
     const timers = new Set<ReturnType<typeof setTimeout>>();
@@ -95,7 +101,7 @@ export function useRudimentPlayback({
       timers.forEach(clearTimeout);
       handlers.current.onCancel?.();
     };
-  }, [isPlaying, bpm, timeline, clock]);
+  }, [isPlaying, beat, timeline, clock]);
 
   return {
     isPlaying,

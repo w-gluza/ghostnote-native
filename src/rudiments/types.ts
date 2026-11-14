@@ -55,6 +55,7 @@ export type Rudiment = {
   category: RudimentCategory;
   level: number;
   defaultTempo?: Tempo;
+  defaultPattern: { patternId: string; patternVersion: number };
   patterns: RudimentPattern[];
 };
 
@@ -63,3 +64,57 @@ export type PatternReference = {
   patternId: string;
   patternVersion: number;
 };
+
+export type RoutineRound = {
+  id: string;
+  tempo: Tempo;
+  durationSeconds: number;
+};
+
+export type RoutineExercise = {
+  id: string;
+  pattern: PatternReference;
+  rhythmicScale: Fraction;
+  rounds: RoutineRound[];
+};
+
+export type Routine = {
+  id: string;
+  name: string;
+  exercises: RoutineExercise[];
+};
+
+export type PracticeSegment = {
+  tempo: Tempo;
+  rhythmicScale: Fraction;
+  activeDurationSeconds: number;
+};
+
+export type CompletedRound = {
+  id: string;
+  sourceRoundId?: string;
+  segments: PracticeSegment[];
+  activeDurationSeconds: number;
+  completedAt: string;
+};
+
+export type CompletedExercise = {
+  sourceExerciseId?: string;
+  pattern: PatternReference;
+  rounds: CompletedRound[];
+};
+
+export type PracticeSession = {
+  id: string;
+  routineId?: string;
+  routineName?: string;
+  startedAt: string;
+  completedAt: string;
+  activeDurationSeconds: number;
+  exercises: CompletedExercise[];
+};
+
+export type ActiveSession = Omit<
+  PracticeSession,
+  "completedAt" | "activeDurationSeconds"
+>;

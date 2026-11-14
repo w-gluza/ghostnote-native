@@ -10,27 +10,36 @@ import {
   View,
 } from "react-native";
 
+import { NoteValuePicker } from "@/components/note-value-picker";
+import { fraction, multiply } from "@/rudiments/fraction";
 import {
   availableRudiments,
   defaultBpm,
   findRudiment,
+  resolvePattern,
 } from "@/rudiments/library";
 import { findRoutine, saveRoutine } from "@/rudiments/saved-routines";
+import { evenStep, scaleToStep } from "@/rudiments/timeline";
 import { clampBpm } from "@/rudiments/timing";
 import {
   exerciseMinutes,
+  NEW_ROUND_SECONDS,
+  newExercise,
+  newRound,
   routineMinutes,
   todaysRoutine,
-  type Exercise,
-  type Round,
 } from "@/rudiments/todays-routine";
+import type {
+  RoutineExercise,
+  RoutineRound,
+  Rudiment,
+} from "@/rudiments/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 const MAX_ROUNDS = 10;
 const MIN_ROUND_SECONDS = 10;
 const MAX_ROUND_SECONDS = 30 * 60;
-const NEW_ROUND_SECONDS = 120;
 
 function formatDuration(seconds: number) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
@@ -99,37 +108,36 @@ function ExerciseEditor({
   onRemove,
   onClose,
 }: {
-  exercise: Exercise;
-  onChange: (rounds: Round[]) => void;
+  exercise: RoutineExercise;
+  onChange: (change: Partial<RoutineExercise>) => void;
   onRemove: () => void;
   onClose: () => void;
 }) {
-  const rudiment = findRudiment(exercise.id);
-  const [roundKeys, setRoundKeys] = useState(() =>
-    exercise.rounds.map((_, index) => index),
-  );
+  const rudiment = findRudiment(exercise.pattern.rudimentId);
+  const pattern = resolvePattern(exercise.pattern);
+  const step = pattern ? evenStep(pattern) : undefined;
+  const strokeStep = step ? multiply(step, exercise.rhythmicScale) : undefined;
   const minutes = exerciseMinutes(exercise);
-  const changeRound = (index: number, change: Partial<Round>) =>
-    onChange(
-      exercise.rounds.map((round, position) =>
-        position === index ? { ...round, ...change } : round,
+  const changeRound = (id: string, change: Partial<RoutineRound>) =>
+    onChange({
+      rounds: exercise.rounds.map((round) =>
+        round.id === id ? { ...round, ...change } : round,
       ),
-    );
+    });
   const addRound = () => {
     const last = exercise.rounds[exercise.rounds.length - 1];
-    onChange([
-      ...exercise.rounds,
-      {
-        bpm: last?.bpm ?? (rudiment ? defaultBpm(rudiment) : 80),
-        seconds: last?.seconds ?? NEW_ROUND_SECONDS,
-      },
-    ]);
-    setRoundKeys((keys) => [...keys, Math.max(-1, ...keys) + 1]);
+    onChange({
+      rounds: [
+        ...exercise.rounds,
+        newRound(
+          last?.tempo.bpm ?? (rudiment ? defaultBpm(rudiment) : 80),
+          last?.durationSeconds ?? NEW_ROUND_SECONDS,
+        ),
+      ],
+    });
   };
-  const removeRound = (index: number) => {
-    onChange(exercise.rounds.filter((_, position) => position !== index));
-    setRoundKeys((keys) => keys.filter((_, position) => position !== index));
-  };
+  const removeRound = (id: string) =>
+    onChange({ rounds: exercise.rounds.filter((round) => round.id !== id) });
 
   return (
     <View style={styles.screen}>
@@ -167,9 +175,23 @@ function ExerciseEditor({
         <Text accessibilityRole="header" style={styles.title}>
           {rudiment?.name}
         </Text>
-        <Text style={styles.subtitle}>
-          {rudiment?.category} · Lvl {rudiment?.level}
-        </Text>
+        <View style={styles.subtitleRow}>
+          <Text style={styles.subtitle}>
+            {rudiment?.category} · Lvl {rudiment?.level}
+          </Text>
+          {pattern && strokeStep ? (
+            <NoteValuePicker
+              subdivision={
+                strokeStep.numerator === 1 ? strokeStep.denominator : 0
+              }
+              onChange={(value) =>
+                onChange({
+                  rhythmicScale: scaleToStep(pattern, fraction(1, value)),
+                })
+              }
+            />
+          ) : null}
+        </View>
 
         <View style={styles.sectionHeader}>
           <Text accessibilityRole="header" style={styles.sectionTitle}>
@@ -188,7 +210,7 @@ function ExerciseEditor({
         </View>
 
         {exercise.rounds.map((round, index) => (
-          <View key={roundKeys[index] ?? index} style={styles.roundRow}>
+          <View key={round.id} style={styles.roundRow}>
             <View style={styles.roundColumn}>
               <View style={styles.roundBadge}>
                 <Text style={styles.roundNumber}>{index + 1}</Text>
@@ -197,21 +219,25 @@ function ExerciseEditor({
             <View style={styles.fieldColumn}>
               <RoundField
                 label={`Round ${index + 1} tempo in beats per minute`}
-                value={round.bpm}
+                value={round.tempo.bpm}
                 format={String}
                 parse={parseTempo}
                 keyboardType="number-pad"
-                onChange={(bpm) => changeRound(index, { bpm })}
+                onChange={(bpm) =>
+                  changeRound(round.id, { tempo: { ...round.tempo, bpm } })
+                }
               />
             </View>
             <View style={styles.fieldColumn}>
               <RoundField
                 label={`Round ${index + 1} duration, minutes and seconds`}
-                value={round.seconds}
+                value={round.durationSeconds}
                 format={formatDuration}
                 parse={parseDuration}
                 keyboardType="numbers-and-punctuation"
-                onChange={(seconds) => changeRound(index, { seconds })}
+                onChange={(durationSeconds) =>
+                  changeRound(round.id, { durationSeconds })
+                }
               />
             </View>
             {exercise.rounds.length > 1 ? (
@@ -219,7 +245,7 @@ function ExerciseEditor({
                 accessibilityRole="button"
                 accessibilityLabel={`Remove round ${index + 1}`}
                 hitSlop={8}
-                onPress={() => removeRound(index)}
+                onPress={() => removeRound(round.id)}
                 style={({ pressed }) => [
                   styles.removeColumn,
                   pressed && styles.pressed,
@@ -277,38 +303,23 @@ export default function RoutineEditorScreen() {
   const source = id ? findRoutine(id) : undefined;
   const isCopy = source?.id === todaysRoutine.id;
   const [name, setName] = useState(source?.name ?? "");
-  const [exercises, setExercises] = useState<Exercise[]>(
+  const [exercises, setExercises] = useState<RoutineExercise[]>(
     source?.exercises ?? [],
   );
   const [openId, setOpenId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
-  const available = availableRudiments.filter(
-    (rudiment) => !exercises.some((exercise) => exercise.id === rudiment.id),
-  );
   const canSave = name.trim().length > 0 && exercises.length > 0;
   const open = exercises.find((exercise) => exercise.id === openId);
 
-  const add = (rudimentId: string, bpm: number) => {
-    setExercises((current) => [
-      ...current,
-      {
-        id: rudimentId,
-        rounds: Array.from({ length: 3 }, () => ({
-          bpm,
-          seconds: NEW_ROUND_SECONDS,
-        })),
-      },
-    ]);
+  const add = (rudiment: Rudiment) => {
+    setExercises((current) => [...current, newExercise(rudiment)]);
     setIsAdding(false);
   };
   const save = () => {
     saveRoutine({
       id: source && !isCopy ? source.id : `routine-${Date.now()}`,
       name: name.trim(),
-      level: Math.max(
-        ...exercises.map((exercise) => findRudiment(exercise.id)?.level ?? 1),
-      ),
       exercises,
     });
     router.back();
@@ -319,10 +330,10 @@ export default function RoutineEditorScreen() {
       <ExerciseEditor
         key={open.id}
         exercise={open}
-        onChange={(rounds) =>
+        onChange={(change) =>
           setExercises((current) =>
             current.map((exercise) =>
-              exercise.id === open.id ? { ...exercise, rounds } : exercise,
+              exercise.id === open.id ? { ...exercise, ...change } : exercise,
             ),
           )
         }
@@ -394,7 +405,7 @@ export default function RoutineEditorScreen() {
         </View>
 
         {exercises.map((exercise, index) => {
-          const rudiment = findRudiment(exercise.id);
+          const rudiment = findRudiment(exercise.pattern.rudimentId);
           if (!rudiment) {
             return null;
           }
@@ -427,7 +438,7 @@ export default function RoutineEditorScreen() {
           );
         })}
 
-        {available.length > 0 ? (
+        {availableRudiments.length > 0 ? (
           <Pressable
             accessibilityRole="button"
             accessibilityState={{ expanded: isAdding }}
@@ -446,12 +457,12 @@ export default function RoutineEditorScreen() {
         ) : null}
 
         {isAdding
-          ? available.map((rudiment) => (
+          ? availableRudiments.map((rudiment) => (
               <Pressable
                 key={rudiment.id}
                 accessibilityRole="button"
                 accessibilityLabel={`Add ${rudiment.name}`}
-                onPress={() => add(rudiment.id, defaultBpm(rudiment))}
+                onPress={() => add(rudiment)}
                 style={({ pressed }) => [
                   styles.choice,
                   pressed && styles.pressed,
@@ -513,8 +524,14 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     paddingTop: 6,
   },
-  subtitle: {
+  subtitleRow: {
     marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  subtitle: {
     color: colors.text.secondary,
     fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.label,

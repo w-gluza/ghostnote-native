@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { fraction, ONE } from "./fraction.ts";
-import { findRudiment, standardPattern } from "./library.ts";
+import { findRudiment, defaultPattern } from "./library.ts";
 import { buildTimeline, scaleToStep, type Timeline } from "./timeline.ts";
 import {
   beatOfOrdinal,
@@ -10,13 +10,13 @@ import {
   clampBpm,
   gapBeforeOrdinal,
   leadMs,
-  msPerBeat,
   msPerQuarterUnit,
   nextIndexOfHand,
+  quarterTempo,
   scheduleStrokes,
 } from "./timing.ts";
 
-const paradiddlePattern = standardPattern(findRudiment("single-paradiddle")!);
+const paradiddlePattern = defaultPattern(findRudiment("single-paradiddle")!);
 const paradiddle = buildTimeline(paradiddlePattern);
 
 const tap = { accent: false, ghost: false, bounce: false, grace: [] };
@@ -32,26 +32,28 @@ const swung: Timeline = {
 };
 
 test("single paradiddle sticking is R L R R L R L L", () => {
-  const hands = scheduleStrokes(paradiddle, 60, 8).map((stroke) => stroke.hand);
+  const hands = scheduleStrokes(paradiddle, quarterTempo(60), 8).map(
+    (stroke) => stroke.hand,
+  );
   assert.equal(hands.join(" "), "R L R R L R L L");
 });
 
 test("single paradiddle accents the first stroke of each group", () => {
-  const accents = scheduleStrokes(paradiddle, 60, 8)
+  const accents = scheduleStrokes(paradiddle, quarterTempo(60), 8)
     .filter((stroke) => stroke.accent)
     .map((stroke) => stroke.index);
   assert.deepEqual(accents, [0, 4]);
 });
 
 test("sixteenth notes are evenly spaced at the given tempo", () => {
-  const times = scheduleStrokes(paradiddle, 60, 5).map(
+  const times = scheduleStrokes(paradiddle, quarterTempo(60), 5).map(
     (stroke) => stroke.timeMs,
   );
   assert.deepEqual(times, [0, 250, 500, 750, 1000]);
 });
 
 test("the pattern loops without a gap or overlap", () => {
-  const strokes = scheduleStrokes(paradiddle, 120, 17);
+  const strokes = scheduleStrokes(paradiddle, quarterTempo(120), 17);
   assert.equal(strokes[8]?.index, 0);
   assert.equal(strokes[8]?.timeMs, 1000);
   assert.equal(strokes[16]?.timeMs, 2000);
@@ -62,8 +64,8 @@ test("the pattern loops without a gap or overlap", () => {
 });
 
 test("halving the tempo doubles every stroke time", () => {
-  const full = scheduleStrokes(paradiddle, 100, 8);
-  const half = scheduleStrokes(paradiddle, 50, 8);
+  const full = scheduleStrokes(paradiddle, quarterTempo(100), 8);
+  const half = scheduleStrokes(paradiddle, quarterTempo(50), 8);
   full.forEach((stroke, i) => {
     assert.equal(half[i]?.timeMs, stroke.timeMs * 2);
   });
@@ -88,7 +90,7 @@ test("lead time never exceeds the gap and is capped", () => {
 });
 
 test("tempo helpers", () => {
-  assert.equal(msPerBeat(120), 500);
+  assert.equal(msPerQuarterUnit(quarterTempo(120)), 500);
   assert.equal(clampBpm(10), 40);
   assert.equal(clampBpm(500), 200);
   assert.equal(clampBpm(84.6), 85);
@@ -114,7 +116,9 @@ test("an even pattern can be stretched to quarter-note strokes", () => {
     paradiddlePattern,
     scaleToStep(paradiddlePattern, ONE),
   );
-  const times = scheduleStrokes(quarters, 60, 3).map((stroke) => stroke.timeMs);
+  const times = scheduleStrokes(quarters, quarterTempo(60), 3).map(
+    (stroke) => stroke.timeMs,
+  );
   assert.deepEqual(times, [0, 1000, 2000]);
   assert.equal(quarters.cycleBeats, 8);
   assert.deepEqual(quarters.phrases, [

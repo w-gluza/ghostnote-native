@@ -7,6 +7,7 @@ import { WeekProgress } from "@/components/week-progress";
 import { findRudiment } from "@/rudiments/library";
 import {
   exerciseMinutes,
+  routineLevel,
   routineMinutes,
   todaysRoutine,
 } from "@/rudiments/todays-routine";
@@ -15,10 +16,10 @@ import { typography } from "@/theme/typography";
 
 const video = require("@/assets/videos/accent_single_paraddilde_85.mp4");
 const rudiments: Rudiment[] = todaysRoutine.exercises.map((exercise) => ({
-  name: findRudiment(exercise.id)?.name ?? "",
+  name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
   minutes: exerciseMinutes(exercise),
   rounds: exercise.rounds.length,
-  bpm: exercise.rounds[0]?.bpm ?? 0,
+  bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
   video,
 }));
 
@@ -40,7 +41,7 @@ export default function PracticeScreen() {
       <View style={styles.summary}>
         <Text style={styles.summaryText}>
           {routineMinutes(todaysRoutine)} min • {rudiments.length} rudiments •
-          Lvl {todaysRoutine.level}
+          Lvl {routineLevel(todaysRoutine)}
         </Text>
         <WeekProgress done={2} goal={3} />
       </View>

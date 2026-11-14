@@ -24,10 +24,11 @@ import {
   clampBpm,
   MAX_BPM,
   MIN_BPM,
-  msPerBeat,
+  msPerQuarterUnit,
   nextIndexOfHand,
 } from "@/rudiments/timing";
 import type { Timeline } from "@/rudiments/timeline";
+import type { Tempo } from "@/rudiments/types";
 import { useRudimentPlayback } from "@/rudiments/use-rudiment-playback";
 import type { StrokeSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
@@ -35,7 +36,8 @@ import { typography } from "@/theme/typography";
 
 type RudimentPlayerProps = {
   timeline: Timeline;
-  initialBpm: number;
+  initialTempo: Tempo;
+  onActivity?: (isPlaying: boolean, tempo: Tempo) => void;
   sound?: StrokeSound;
   padScale?: number;
 };
@@ -48,13 +50,18 @@ const RIPPLE_MS = 280;
 
 export function RudimentPlayer({
   timeline,
-  initialBpm,
+  initialTempo,
+  onActivity,
   sound,
   padScale = 1,
 }: RudimentPlayerProps) {
   const { height } = useWindowDimensions();
   const isCompact = height < COMPACT_HEIGHT;
-  const [bpm, setBpm] = useState(clampBpm(initialBpm));
+  const [bpm, setBpm] = useState(clampBpm(initialTempo.bpm));
+  const tempo: Tempo = {
+    bpm,
+    pulseQuarterUnits: initialTempo.pulseQuarterUnits,
+  };
 
   const left: StickMotion = {
     lift: useAnimatedValue(TAP_LIFT),
@@ -69,7 +76,7 @@ export function RudimentPlayer({
 
   const playback = useRudimentPlayback({
     timeline,
-    bpm: bpm,
+    tempo,
     clock: sound?.now,
     onSchedule: (index, timeMs) => {
       const stroke = timeline.strokes[index];
@@ -94,7 +101,7 @@ export function RudimentPlayer({
       const motion = motionOf(index);
       const nextOfHand = timeline.strokes[nextIndexOfHand(timeline, index)];
       const sameHandGapMs =
-        beatsUntilSameHand(timeline, index) * msPerBeat(bpm);
+        beatsUntilSameHand(timeline, index) * msPerQuarterUnit(tempo);
 
       motion.ripple.setValue(0);
       Animated.parallel([
@@ -113,6 +120,16 @@ export function RudimentPlayer({
       ]).start();
     },
   });
+
+  const changeBpm = (value: number) => {
+    const next = clampBpm(value);
+    setBpm(next);
+    onActivity?.(playback.isPlaying, { ...tempo, bpm: next });
+  };
+  const togglePlayback = () => {
+    onActivity?.(!playback.isPlaying, tempo);
+    playback.toggle();
+  };
 
   const activeStroke =
     playback.activeIndex === null
@@ -140,7 +157,7 @@ export function RudimentPlayer({
           accessibilityRole="button"
           accessibilityLabel="Decrease tempo"
           disabled={bpm <= MIN_BPM}
-          onPress={() => setBpm((value) => clampBpm(value - BPM_STEP))}
+          onPress={() => changeBpm(bpm - BPM_STEP)}
           style={({ pressed }) => [styles.step, pressed && styles.pressed]}
         >
           <SymbolView
@@ -162,7 +179,7 @@ export function RudimentPlayer({
           accessibilityRole="button"
           accessibilityLabel="Increase tempo"
           disabled={bpm >= MAX_BPM}
-          onPress={() => setBpm((value) => clampBpm(value + BPM_STEP))}
+          onPress={() => changeBpm(bpm + BPM_STEP)}
           style={({ pressed }) => [styles.step, pressed && styles.pressed]}
         >
           <SymbolView
@@ -174,7 +191,7 @@ export function RudimentPlayer({
         </Pressable>
       </View>
 
-      <PlayButton isPlaying={playback.isPlaying} onPress={playback.toggle} />
+      <PlayButton isPlaying={playback.isPlaying} onPress={togglePlayback} />
     </View>
   );
 }
