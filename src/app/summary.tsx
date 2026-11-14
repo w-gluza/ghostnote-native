@@ -1,5 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -68,9 +69,13 @@ export default function SummaryScreen() {
   const played = session?.exercises ?? [];
   const activeSeconds = sessionActiveMs(session) / 1000;
   const showsSeconds = activeSeconds < 60;
+  const [saveFailed, setSaveFailed] = useState(false);
   const finish = () => {
+    if (!finishSession(routine.id, Date.now())) {
+      setSaveFailed(true);
+      return;
+    }
     router.dismissTo("/");
-    finishSession(routine.id, Date.now());
   };
 
   return (
@@ -122,6 +127,12 @@ export default function SummaryScreen() {
         ))}
       </ScrollView>
 
+      {saveFailed ? (
+        <Text accessibilityRole="alert" style={styles.saveFailed}>
+          This session could not be saved. Your practice is still here - try
+          again.
+        </Text>
+      ) : null}
       <Pressable
         accessibilityRole="button"
         onPress={finish}
@@ -229,6 +240,14 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.label,
     fontVariant: ["tabular-nums"],
+  },
+  saveFailed: {
+    marginHorizontal: 24,
+    marginBottom: 12,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.label,
+    textAlign: "center",
   },
   finish: {
     marginHorizontal: 24,

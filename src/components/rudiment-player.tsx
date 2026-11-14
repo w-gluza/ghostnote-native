@@ -1,7 +1,8 @@
 import { SymbolView } from "expo-symbols";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  AppState,
   Easing,
   Pressable,
   StyleSheet,
@@ -139,6 +140,25 @@ export function RudimentPlayer({
     }
     playback.toggle();
   };
+
+  const leaveForeground = useRef(() => {});
+  useEffect(() => {
+    leaveForeground.current = () => {
+      if (playback.isPlaying) {
+        isHeard.current = false;
+        onActivity?.(false, tempo);
+        playback.pause();
+      }
+    };
+  });
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state !== "active") {
+        leaveForeground.current();
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   const activeStroke =
     playback.activeIndex === null

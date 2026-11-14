@@ -316,13 +316,18 @@ export default function RoutineEditorScreen() {
     setExercises((current) => [...current, newExercise(rudiment)]);
     setIsAdding(false);
   };
+  const [saveFailed, setSaveFailed] = useState(false);
   const save = () => {
-    saveRoutine({
+    const isSaved = saveRoutine({
       id: source && !isCopy ? source.id : `routine-${Date.now()}`,
       name: name.trim(),
       exercises,
     });
-    router.back();
+    if (isSaved) {
+      router.back();
+    } else {
+      setSaveFailed(true);
+    }
   };
 
   if (open) {
@@ -381,6 +386,12 @@ export default function RoutineEditorScreen() {
         <Text accessibilityRole="header" style={styles.title}>
           {source ? "Edit Routine" : "New Routine"}
         </Text>
+        {saveFailed ? (
+          <Text accessibilityRole="alert" style={styles.saveFailed}>
+            This routine could not be saved. Your changes are still here - try
+            again.
+          </Text>
+        ) : null}
 
         <TextInput
           accessibilityLabel="Routine name"
@@ -516,6 +527,12 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 24,
     paddingBottom: 40,
+  },
+  saveFailed: {
+    marginTop: 12,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.label,
   },
   title: {
     color: colors.text.primary,

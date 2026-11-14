@@ -13,5 +13,8 @@ export function load(key: string): unknown {
 export function save(key: string, data: unknown) {
   try {
     Storage.setItemSync(key, encode(data));
-  } catch {}
+    return true;
+  } catch {
+    return false;
+  }
 }

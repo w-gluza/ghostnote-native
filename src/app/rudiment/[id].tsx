@@ -124,7 +124,7 @@ export default function RudimentScreen() {
     if (!exercise || !activeRoutine) {
       return;
     }
-    undoRound(activeRoutine.id, exercise.id);
+    undoRound(activeRoutine.id, exercise.id, Date.now());
   };
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);

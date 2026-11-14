@@ -49,11 +49,15 @@ function subscribe(listener: () => void) {
 
 export function saveRoutine(routine: Routine) {
   const exists = savedRoutines.some((saved) => saved.id === routine.id);
-  savedRoutines = exists
+  const next = exists
     ? savedRoutines.map((saved) => (saved.id === routine.id ? routine : saved))
     : [...savedRoutines, routine];
-  save(ROUTINES_KEY, savedRoutines);
+  if (!save(ROUTINES_KEY, next)) {
+    return false;
+  }
+  savedRoutines = next;
   listeners.forEach((listener) => listener());
+  return true;
 }
 
 export function useSavedRoutines() {
