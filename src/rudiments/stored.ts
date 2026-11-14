@@ -100,6 +100,7 @@ export function isRoutine(value: unknown): value is Routine {
 export function isSegment(value: unknown): value is PracticeSegment {
   return (
     isFields(value) &&
+    (value.startedAt === undefined || isTimestamp(value.startedAt)) &&
     validateTempo(value.tempo).length === 0 &&
     isPositive(value.rhythmicScale) &&
     isDuration(value.activeDurationMs)

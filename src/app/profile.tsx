@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { StatRow } from "@/components/stat-row";
+import { WEEKLY_SESSION_GOAL } from "@/rudiments/insights";
 import { routineLevel, todaysRoutine } from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -39,7 +40,11 @@ export default function ProfileScreen() {
           label="Level"
           value={`Lvl ${routineLevel(todaysRoutine)}`}
         />
-        <StatRow symbol="calendar" label="Weekly goal" value="3 sessions" />
+        <StatRow
+          symbol="calendar"
+          label="Weekly goal"
+          value={`${WEEKLY_SESSION_GOAL} sessions`}
+        />
         <StatRow symbol="clock" label="Session length" value="20 min" isLast />
       </View>
 

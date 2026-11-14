@@ -1,6 +1,15 @@
 import { SymbolView } from "expo-symbols";
 import { useRef, useState, type ComponentRef, type ReactNode } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
 
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -15,10 +24,12 @@ type OptionMenuProps<Key extends string | number> = {
   options: MenuOption<Key>[];
   selected: Key;
   onChange: (key: Key) => void;
+  align?: "start" | "end";
+  style?: StyleProp<ViewStyle>;
   children: ReactNode;
 };
 
-type Anchor = { top: number; left: number };
+type Anchor = { top: number; left?: number; right?: number };
 
 const MENU_GAP = 8;
 
@@ -27,15 +38,23 @@ export function OptionMenu<Key extends string | number>({
   options,
   selected,
   onChange,
+  align = "start",
+  style,
   children,
 }: OptionMenuProps<Key>) {
+  const { width: windowWidth } = useWindowDimensions();
   const trigger = useRef<ComponentRef<typeof View>>(null);
   const [anchor, setAnchor] = useState<Anchor | null>(null);
   const current = options.find((option) => option.key === selected);
 
   const open = () => {
-    trigger.current?.measureInWindow((x, y, _width, height) => {
-      setAnchor({ top: y + height + MENU_GAP, left: x });
+    trigger.current?.measureInWindow((x, y, width, height) => {
+      const top = y + height + MENU_GAP;
+      setAnchor(
+        align === "end"
+          ? { top, right: windowWidth - (x + width) }
+          : { top, left: x },
+      );
     });
   };
   const close = () => setAnchor(null);
@@ -48,7 +67,11 @@ export function OptionMenu<Key extends string | number>({
         accessibilityLabel={`${name}, ${current?.label ?? "not set"}`}
         accessibilityState={{ expanded: anchor !== null }}
         onPress={open}
-        style={({ pressed }) => [styles.trigger, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.trigger,
+          style,
+          pressed && styles.pressed,
+        ]}
       >
         {children}
       </Pressable>
@@ -65,10 +88,7 @@ export function OptionMenu<Key extends string | number>({
           style={StyleSheet.absoluteFill}
         />
         {anchor ? (
-          <View
-            accessibilityRole="menu"
-            style={[styles.menu, { top: anchor.top, left: anchor.left }]}
-          >
+          <View accessibilityRole="menu" style={[styles.menu, anchor]}>
             {options.map((option, index) => {
               const isSelected = option.key === selected;
               return (

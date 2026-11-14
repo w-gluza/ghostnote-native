@@ -85,6 +85,7 @@ export type Routine = {
 };
 
 export type PracticeSegment = {
+  startedAt?: string;
   tempo: Tempo;
   rhythmicScale: Fraction;
   activeDurationMs: number;

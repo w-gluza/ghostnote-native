@@ -1,10 +1,17 @@
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { RudimentRow, type Rudiment } from "@/components/rudiment-row";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
+import {
+  periodStart,
+  sessionsSince,
+  WEEKLY_SESSION_GOAL,
+} from "@/rudiments/insights";
 import { findRudiment } from "@/rudiments/library";
+import { usePracticeHistory } from "@/rudiments/practice-session";
 import {
   exerciseMinutes,
   routineLevel,
@@ -25,6 +32,14 @@ const rudiments: Rudiment[] = todaysRoutine.exercises.map((exercise) => ({
 
 export default function PracticeScreen() {
   const router = useRouter();
+  const history = usePracticeHistory();
+  const [now, setNow] = useState(() => new Date());
+  useFocusEffect(
+    useCallback(() => {
+      setNow(new Date());
+    }, []),
+  );
+  const sessionsThisWeek = sessionsSince(history, periodStart("week", now));
 
   return (
     <ScrollView
@@ -43,7 +58,7 @@ export default function PracticeScreen() {
           {routineMinutes(todaysRoutine)} min • {rudiments.length} rudiments •
           Lvl {routineLevel(todaysRoutine)}
         </Text>
-        <WeekProgress done={2} goal={3} />
+        <WeekProgress done={sessionsThisWeek} goal={WEEKLY_SESSION_GOAL} />
       </View>
 
       <View style={styles.card}>

@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
+import { minutesLabel } from "@/rudiments/insights";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-export type DayPractice = { day: string; label: string; minutes: number };
+export type DayPractice = { day: string; label: string; ms: number };
 
 type WeekChartProps = {
   days: DayPractice[];
@@ -11,12 +12,19 @@ type WeekChartProps = {
 };
 
 const BAR_AREA_HEIGHT = 120;
+const SHORTEST_BAR = 4;
+
+function spoken(ms: number) {
+  const label = minutesLabel(ms);
+  if (label === "<1") {
+    return "less than a minute";
+  }
+  return label === "1" ? "1 minute" : `${label} minutes`;
+}
 
 export function WeekChart({ days, todayIndex }: WeekChartProps) {
-  const longest = Math.max(...days.map((day) => day.minutes), 1);
-  const summary = days
-    .map((day) => `${day.day} ${day.minutes} minutes`)
-    .join(", ");
+  const longest = Math.max(...days.map((day) => day.ms), 1);
+  const summary = days.map((day) => `${day.day} ${spoken(day.ms)}`).join(", ");
 
   return (
     <View accessible accessibilityLabel={summary} style={styles.chart}>
@@ -24,15 +32,20 @@ export function WeekChart({ days, todayIndex }: WeekChartProps) {
         const isToday = index === todayIndex;
         return (
           <View key={day.day} style={styles.column}>
-            {day.minutes > 0 ? (
+            {day.ms > 0 ? (
               <>
                 <Text style={[styles.value, isToday && styles.today]}>
-                  {day.minutes}
+                  {minutesLabel(day.ms)}
                 </Text>
                 <View
                   style={[
                     styles.bar,
-                    { height: (day.minutes / longest) * BAR_AREA_HEIGHT },
+                    {
+                      height: Math.max(
+                        SHORTEST_BAR,
+                        (day.ms / longest) * BAR_AREA_HEIGHT,
+                      ),
+                    },
                     isToday && styles.barToday,
                   ]}
                 />

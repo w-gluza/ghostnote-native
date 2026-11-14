@@ -25,6 +25,14 @@ export function useActiveSession(routineId: string) {
   );
 }
 
+export function useActiveSessions() {
+  return useSyncExternalStore(store.subscribe, store.activeSessions);
+}
+
+export function useUnfinishedPractice() {
+  return useSyncExternalStore(store.subscribe, store.unfinished);
+}
+
 export function usePracticeHistory() {
   return useSyncExternalStore(store.subscribe, store.history);
 }

@@ -163,3 +163,53 @@ test("practice on an exercise later removed is kept as partial when the routine 
   assert.equal(store.finishSession("r", 110000), true);
   assert.equal(store.history()[0]?.activeDurationMs, 45000);
 });
+
+test("paused practice in an unfinished round is exposed until the round is completed", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackRound(routine, first, first.rounds[0]!, playing, 1000);
+  store.trackRound(routine, first, first.rounds[0]!, paused, 31000);
+
+  const expected = [
+    {
+      rudimentId: "single-paradiddle",
+      segments: [
+        {
+          startedAt: new Date(1000).toISOString(),
+          tempo,
+          rhythmicScale: fraction(4),
+          activeDurationMs: 30000,
+        },
+      ],
+    },
+  ];
+  assert.deepEqual(store.unfinished(), expected);
+  assert.deepEqual(createSessionStore(storage).unfinished(), expected);
+
+  store.completeRound(routine, first, first.rounds[0]!, 40000);
+  assert.deepEqual(store.unfinished(), []);
+  assert.equal(
+    store.activeSession("r")?.exercises[0]?.rounds[0]?.activeDurationMs,
+    30000,
+  );
+});
+
+test("each stretch of playing keeps the time it started", () => {
+  const store = createSessionStore(memory());
+  store.trackRound(routine, first, first.rounds[0]!, playing, 1000);
+  store.trackRound(routine, first, first.rounds[0]!, paused, 11000);
+  store.trackRound(routine, first, first.rounds[0]!, playing, 90000000);
+  store.completeRound(routine, first, first.rounds[0]!, 90005000);
+  assert.deepEqual(
+    store
+      .activeSession("r")
+      ?.exercises[0]?.rounds[0]?.segments.map((segment) => [
+        segment.startedAt,
+        segment.activeDurationMs,
+      ]),
+    [
+      [new Date(1000).toISOString(), 10000],
+      [new Date(90000000).toISOString(), 5000],
+    ],
+  );
+});

@@ -28,19 +28,10 @@ function closed(tracker: RoundTracker, now: number): PracticeSegment[] {
   if (activeDurationMs === 0) {
     return tracker.segments;
   }
-  const last = tracker.segments[tracker.segments.length - 1];
-  if (last && sameSetting(last, tracker.open)) {
-    return [
-      ...tracker.segments.slice(0, -1),
-      {
-        ...last,
-        activeDurationMs: last.activeDurationMs + activeDurationMs,
-      },
-    ];
-  }
   return [
     ...tracker.segments,
     {
+      startedAt: new Date(tracker.open.since).toISOString(),
       tempo: tracker.open.tempo,
       rhythmicScale: tracker.open.rhythmicScale,
       activeDurationMs,

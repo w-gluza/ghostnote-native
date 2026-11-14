@@ -1,7 +1,10 @@
+import { useFocusEffect } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { AchievementRow, type Achievement } from "@/components/achievement-row";
+import { OptionMenu } from "@/components/option-menu";
 import { ScreenHeader } from "@/components/screen-header";
 import { StatRow } from "@/components/stat-row";
 import {
@@ -9,45 +12,96 @@ import {
   type TechniqueShare,
 } from "@/components/technique-balance";
 import { WeekChart, type DayPractice } from "@/components/week-chart";
+import {
+  durationLabel,
+  lastPractisedLabel,
+  periodStart,
+  minutesLabel,
+  playedTime,
+  practiceSessions,
+  techniqueShares,
+  todayIndex,
+  totalMs,
+  weekDayMs,
+  type Period,
+} from "@/rudiments/insights";
+import {
+  useActiveSessions,
+  usePracticeHistory,
+  useUnfinishedPractice,
+} from "@/rudiments/practice-session";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const week: DayPractice[] = [
-  { day: "Monday", label: "M", minutes: 20 },
-  { day: "Tuesday", label: "T", minutes: 0 },
-  { day: "Wednesday", label: "W", minutes: 30 },
-  { day: "Thursday", label: "T", minutes: 15 },
-  { day: "Friday", label: "F", minutes: 25 },
-  { day: "Saturday", label: "S", minutes: 0 },
-  { day: "Sunday", label: "S", minutes: 35 },
+const DAYS = [
+  { day: "Monday", label: "M" },
+  { day: "Tuesday", label: "T" },
+  { day: "Wednesday", label: "W" },
+  { day: "Thursday", label: "T" },
+  { day: "Friday", label: "F" },
+  { day: "Saturday", label: "S" },
+  { day: "Sunday", label: "S" },
 ];
 
-const techniques: TechniqueShare[] = [
-  { name: "Rolls", percent: 52, color: colors.accent },
-  { name: "Diddles", percent: 28, color: colors.violet },
-  { name: "Flams", percent: 20, color: colors.slate },
-  { name: "Drags", percent: 0, color: colors.disabled },
+const TECHNIQUE_COLORS = [
+  colors.accent,
+  colors.violet,
+  colors.slate,
+  colors.disabled,
 ];
 
-const achievements: Achievement[] = [
-  {
-    symbol: "waveform",
-    title: "Getting into rhythm",
-    description: "Complete 50 practice sessions",
-    progress: 42,
-    goal: 50,
-  },
-  {
-    symbol: "hourglass",
-    title: "Dedicated drummer",
-    description: "Complete 30 hours of practice",
-    progress: 24,
-    goal: 30,
-  },
+const PERIODS: { key: Period; label: string }[] = [
+  { key: "week", label: "This week" },
+  { key: "month", label: "This month" },
+  { key: "all", label: "All time" },
 ];
+
+const SESSIONS_GOAL = 50;
+const HOURS_GOAL = 30;
+const HOUR_MS = 60 * 60 * 1000;
 
 export default function InsightsScreen() {
-  const weekMinutes = week.reduce((total, day) => total + day.minutes, 0);
+  const history = usePracticeHistory();
+  const active = useActiveSessions();
+  const unfinished = useUnfinishedPractice();
+  const [period, setPeriod] = useState<Period>("month");
+  const [now, setNow] = useState(() => new Date());
+  useFocusEffect(
+    useCallback(() => {
+      setNow(new Date());
+    }, []),
+  );
+
+  const rounds = playedTime([...history, ...Object.values(active)], unfinished);
+  const dayMs = weekDayMs(rounds, now);
+  const week: DayPractice[] = DAYS.map((day, index) => ({
+    ...day,
+    ms: dayMs[index] ?? 0,
+  }));
+  const weekMinutes = minutesLabel(dayMs.reduce((total, ms) => total + ms, 0));
+  const shares = techniqueShares(rounds, periodStart(period, now));
+  const techniques: TechniqueShare[] = shares.map((share, index) => ({
+    ...share,
+    color: TECHNIQUE_COLORS[index] ?? colors.disabled,
+  }));
+  const hasBalance = shares.some((share) => share.percent > 0);
+  const practised = totalMs(rounds);
+  const achievements: Achievement[] = [
+    {
+      symbol: "waveform",
+      title: "Getting into rhythm",
+      description: `Complete ${SESSIONS_GOAL} practice sessions`,
+      progress: Math.min(practiceSessions(history).length, SESSIONS_GOAL),
+      goal: SESSIONS_GOAL,
+    },
+    {
+      symbol: "hourglass",
+      title: "Dedicated drummer",
+      description: `Complete ${HOURS_GOAL} hours of practice`,
+      progress: Math.min(Math.floor(practised / HOUR_MS), HOURS_GOAL),
+      goal: HOURS_GOAL,
+    },
+  ];
 
   return (
     <ScrollView
@@ -68,7 +122,7 @@ export default function InsightsScreen() {
           </Text>
           <Text style={styles.sectionAside}>{weekMinutes} min</Text>
         </View>
-        <WeekChart days={week} todayIndex={6} />
+        <WeekChart days={week} todayIndex={todayIndex(now)} />
       </View>
 
       <View style={[styles.section, styles.divided]}>
@@ -76,22 +130,32 @@ export default function InsightsScreen() {
           <Text accessibilityRole="header" style={styles.sectionTitle}>
             Technique balance
           </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Period: This month"
-            hitSlop={12}
-            style={({ pressed }) => [styles.period, pressed && styles.pressed]}
+          <OptionMenu
+            name="Period"
+            options={PERIODS}
+            selected={period}
+            onChange={setPeriod}
+            align="end"
+            style={styles.period}
           >
-            <Text style={styles.sectionAside}>This month</Text>
+            <Text style={styles.sectionAside}>
+              {PERIODS.find((option) => option.key === period)?.label}
+            </Text>
             <SymbolView
               name="chevron.down"
               size={12}
               weight="medium"
               tintColor={colors.text.secondary}
             />
-          </Pressable>
+          </OptionMenu>
         </View>
-        <TechniqueBalance techniques={techniques} />
+        {hasBalance ? (
+          <TechniqueBalance techniques={techniques} />
+        ) : (
+          <Text style={styles.empty}>
+            Play a round in a routine to see how your practice is split.
+          </Text>
+        )}
       </View>
 
       <View style={[styles.section, styles.divided]}>
@@ -99,12 +163,20 @@ export default function InsightsScreen() {
           Your activity
         </Text>
         <View style={styles.stats}>
-          <StatRow symbol="clock" label="Total practice time" value="24h 35m" />
-          <StatRow symbol="calendar" label="Total sessions" value="42" />
+          <StatRow
+            symbol="clock"
+            label="Total practice time"
+            value={durationLabel(practised)}
+          />
+          <StatRow
+            symbol="calendar"
+            label="Total sessions"
+            value={`${practiceSessions(history).length}`}
+          />
           <StatRow
             symbol="clock.arrow.circlepath"
             label="Last practised"
-            value="Today"
+            value={lastPractisedLabel(rounds, now)}
             isLast
           />
         </View>
@@ -172,11 +244,15 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.body,
   },
+  empty: {
+    color: colors.text.secondary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.label,
+    lineHeight: 20,
+  },
   period: {
-    minHeight: 44,
     marginVertical: -10,
-    flexDirection: "row",
-    alignItems: "center",
+    flexShrink: 0,
     gap: 6,
   },
   stats: {

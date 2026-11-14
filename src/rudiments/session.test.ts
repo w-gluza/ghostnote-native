@@ -172,7 +172,18 @@ test("only time spent playing counts, and pauses are left out", () => {
   tracker = trackActivity(tracker, { isPlaying: true, ...setting }, 60000);
   const result = finishTracking(tracker, 65000);
   assert.equal(result.activeDurationMs, 15000);
-  assert.deepEqual(result.segments, [{ ...setting, activeDurationMs: 15000 }]);
+  assert.deepEqual(result.segments, [
+    {
+      ...setting,
+      startedAt: new Date(1000).toISOString(),
+      activeDurationMs: 10000,
+    },
+    {
+      ...setting,
+      startedAt: new Date(60000).toISOString(),
+      activeDurationMs: 5000,
+    },
+  ]);
 });
 
 test("a tempo or rhythmic scale change during a round starts a new segment", () => {

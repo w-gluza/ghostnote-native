@@ -51,6 +51,11 @@ type StoredTrackedRound = Omit<TrackedRound, "tracker"> & {
   segments: PracticeSegment[];
 };
 
+export type UnfinishedPractice = {
+  rudimentId: string;
+  segments: PracticeSegment[];
+};
+
 export const CURRENT_KEY = "sessions.current";
 export const HISTORY_KEY = "sessions.history";
 
@@ -119,6 +124,15 @@ export function createSessionStore(storage: KeyValueStorage) {
   const notify = () => listeners.forEach((listener) => listener());
 
   let hasUnsavedChanges = false;
+  let unfinished: UnfinishedPractice[] = [];
+
+  const refreshUnfinished = () => {
+    unfinished = [...tracked.values()].map((entry) => ({
+      rudimentId: entry.exercise.pattern.rudimentId,
+      segments: entry.tracker.segments,
+    }));
+  };
+  refreshUnfinished();
 
   const saveCurrent = (now: number) => {
     const isSaved = storage.save(CURRENT_KEY, {
@@ -175,6 +189,8 @@ export function createSessionStore(storage: KeyValueStorage) {
     if (entry) {
       tracked.set(key, { ...entry, tracker: change(entry.tracker) });
       saveCurrent(now);
+      refreshUnfinished();
+      notify();
     }
   };
 
@@ -190,8 +206,16 @@ export function createSessionStore(storage: KeyValueStorage) {
       return active[routineId];
     },
 
+    activeSessions() {
+      return active;
+    },
+
     history() {
       return history;
+    },
+
+    unfinished() {
+      return unfinished;
     },
 
     trackRound(
@@ -206,7 +230,6 @@ export function createSessionStore(storage: KeyValueStorage) {
       if (!activity.isPlaying && !entry) {
         return;
       }
-      const isNewSession = active[routine.id] === undefined;
       ensureSession(routine, now);
       tracked.set(key, {
         routineId: routine.id,
@@ -216,9 +239,8 @@ export function createSessionStore(storage: KeyValueStorage) {
         tracker: trackActivity(entry?.tracker ?? idleTracker, activity, now),
       });
       saveCurrent(now);
-      if (isNewSession) {
-        notify();
-      }
+      refreshUnfinished();
+      notify();
     },
 
     rescaleRound(
@@ -285,6 +307,7 @@ export function createSessionStore(storage: KeyValueStorage) {
         }
       }
       saveCurrent(now);
+      refreshUnfinished();
       notify();
     },
 
@@ -318,6 +341,7 @@ export function createSessionStore(storage: KeyValueStorage) {
       const { [routineId]: _finished, ...rest } = active;
       active = rest;
       saveCurrent(now);
+      refreshUnfinished();
       notify();
       return true;
     },
