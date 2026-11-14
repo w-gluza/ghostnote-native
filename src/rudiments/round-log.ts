@@ -25,3 +25,30 @@ export function undoRound(exerciseId: string) {
 export function useRoundsDone(exerciseId: string) {
   return useSyncExternalStore(subscribe, () => roundsDone.get(exerciseId) ?? 0);
 }
+
+type RoundTarget = { id: string; rounds: number };
+
+function isComplete(exercises: readonly RoundTarget[]) {
+  return exercises.every(
+    (exercise) => (roundsDone.get(exercise.id) ?? 0) >= exercise.rounds,
+  );
+}
+
+export function willCompleteRoutine(
+  exercises: readonly RoundTarget[],
+  exerciseId: string,
+) {
+  return exercises.every((exercise) => {
+    const done = roundsDone.get(exercise.id) ?? 0;
+    return (exercise.id === exerciseId ? done + 1 : done) >= exercise.rounds;
+  });
+}
+
+export function clearRounds() {
+  roundsDone.clear();
+  listeners.forEach((listener) => listener());
+}
+
+export function useRoutineComplete(exercises: readonly RoundTarget[]) {
+  return useSyncExternalStore(subscribe, () => isComplete(exercises));
+}

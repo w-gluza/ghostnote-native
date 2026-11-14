@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment } from "@/rudiments/library";
-import { useRoundsDone } from "@/rudiments/round-log";
+import { useRoundsDone, useRoutineComplete } from "@/rudiments/round-log";
 import { routineMinutes, todaysRoutine } from "@/rudiments/todays-routine";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -71,6 +71,7 @@ export default function RoutineScreen() {
       params: { id, routine: "today" },
     });
   const first = routine.exercises[0];
+  const isComplete = useRoutineComplete(routine.exercises);
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.screen}>
@@ -131,16 +132,20 @@ export default function RoutineScreen() {
 
       <Pressable
         accessibilityRole="button"
-        onPress={() => first && openExercise(first.id)}
+        onPress={() =>
+          isComplete ? router.push("/summary") : first && openExercise(first.id)
+        }
         style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >
         <SymbolView
-          name="play.circle"
+          name={isComplete ? "checkmark.circle" : "play.circle"}
           size={20}
           weight="medium"
           tintColor={colors.text.onAccent}
         />
-        <Text style={styles.startLabel}>Start Practice</Text>
+        <Text style={styles.startLabel}>
+          {isComplete ? "View Summary" : "Start Practice"}
+        </Text>
       </Pressable>
     </SafeAreaView>
   );

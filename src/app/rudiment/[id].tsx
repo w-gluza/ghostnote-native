@@ -10,7 +10,12 @@ import { RudimentPlayer } from "@/components/rudiment-player";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
 import { findRudiment } from "@/rudiments/library";
-import { logRound, undoRound, useRoundsDone } from "@/rudiments/round-log";
+import {
+  logRound,
+  undoRound,
+  useRoundsDone,
+  willCompleteRoutine,
+} from "@/rudiments/round-log";
 import { todaysRoutine } from "@/rudiments/todays-routine";
 import { useStrokeSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
@@ -35,8 +40,14 @@ export default function RudimentScreen() {
     if (!exercise) {
       return;
     }
+    const finishesRoutine = willCompleteRoutine(
+      todaysRoutine.exercises,
+      exercise.id,
+    );
     logRound(exercise.id, exercise.rounds);
-    if (roundsDone + 1 >= exercise.rounds) {
+    if (finishesRoutine) {
+      router.replace("/summary");
+    } else if (roundsDone + 1 >= exercise.rounds) {
       router.back();
     }
   };
