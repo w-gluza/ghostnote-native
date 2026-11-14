@@ -12,6 +12,11 @@ import {
 import { ScreenHeader } from "@/components/screen-header";
 import { SearchField } from "@/components/search-field";
 import {
+  ALL_CATEGORIES,
+  categoryOptions,
+  filterRudiments,
+} from "@/rudiments/filter";
+import {
   availableRudiments,
   defaultPattern,
   stickingOf,
@@ -39,10 +44,7 @@ const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
   };
 });
 
-const categories = [
-  "All",
-  ...new Set(rudiments.map((rudiment) => rudiment.category)),
-];
+const categories = categoryOptions(rudiments);
 
 function Separator() {
   return <View style={styles.separator} />;
@@ -53,10 +55,8 @@ export default function RudimentsScreen() {
   const [query, setQuery] = useState("");
 
   const router = useRouter();
-  const term = query.trim().toLowerCase();
-  const results = term
-    ? rudiments.filter((rudiment) => rudiment.name.toLowerCase().includes(term))
-    : rudiments;
+  const [category, setCategory] = useState(ALL_CATEGORIES);
+  const results = filterRudiments(rudiments, category, query);
 
   function closeSearch() {
     setIsSearching(false);
@@ -84,7 +84,9 @@ export default function RudimentsScreen() {
       ItemSeparatorComponent={Separator}
       ListEmptyComponent={
         <Text style={styles.empty}>
-          No rudiments match &quot;{query.trim()}&quot;.
+          {category === ALL_CATEGORIES
+            ? `No rudiments match "${query.trim()}".`
+            : `No ${category.toLowerCase()} match "${query.trim()}".`}
         </Text>
       }
       style={styles.screen}
@@ -129,7 +131,11 @@ export default function RudimentsScreen() {
               </Pressable>
             </View>
           )}
-          <FilterChips options={categories} selected="All" />
+          <FilterChips
+            options={categories}
+            selected={category}
+            onSelect={setCategory}
+          />
         </View>
       }
     />

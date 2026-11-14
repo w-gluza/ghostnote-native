@@ -6,9 +6,10 @@ import { typography } from "@/theme/typography";
 type FilterChipsProps = {
   options: string[];
   selected: string;
+  onSelect: (option: string) => void;
 };
 
-export function FilterChips({ options, selected }: FilterChipsProps) {
+export function FilterChips({ options, selected, onSelect }: FilterChipsProps) {
   return (
     <ScrollView
       horizontal
@@ -24,6 +25,7 @@ export function FilterChips({ options, selected }: FilterChipsProps) {
             key={option}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
+            onPress={() => onSelect(option)}
             style={({ pressed }) => [styles.target, pressed && styles.pressed]}
           >
             <View style={[styles.chip, isSelected && styles.chipSelected]}>
