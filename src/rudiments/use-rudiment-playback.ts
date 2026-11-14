@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import { useEffect, useId, useRef, useState } from "react";
 
 import {
   beatOfOrdinal,
@@ -127,6 +128,17 @@ export function useRudimentPlayback({
       handlers.current.onCancel?.();
     };
   }, [isPlaying, timeline, clock, restartOnPlay]);
+
+  const keepAwakeTag = useId();
+  useEffect(() => {
+    if (!isPlaying) {
+      return;
+    }
+    activateKeepAwakeAsync(keepAwakeTag).catch(() => undefined);
+    return () => {
+      deactivateKeepAwake(keepAwakeTag).catch(() => undefined);
+    };
+  }, [isPlaying, keepAwakeTag]);
 
   return {
     isPlaying,
