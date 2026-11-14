@@ -147,6 +147,24 @@ export function closeSession(
   };
 }
 
+export function clockLabel(ms: number) {
+  const seconds = Math.max(0, Math.floor(ms / 1000));
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+export function spokenClock(ms: number) {
+  const seconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  const parts = [
+    minutes > 0 ? `${minutes} ${minutes === 1 ? "minute" : "minutes"}` : "",
+    rest > 0 || minutes === 0
+      ? `${rest} ${rest === 1 ? "second" : "seconds"}`
+      : "",
+  ];
+  return parts.filter(Boolean).join(" ");
+}
+
 export function playedTempoLabel(exercise: CompletedExercise) {
   const tempos = exercise.rounds.flatMap((round) =>
     round.segments.map((segment) => segment.tempo.bpm),

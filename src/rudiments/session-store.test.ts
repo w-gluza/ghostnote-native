@@ -213,3 +213,17 @@ test("each stretch of playing keeps the time it started", () => {
     ],
   );
 });
+
+test("the round clock counts playing time only and carries on after a pause", () => {
+  const store = createSessionStore(memory());
+  const round = first.rounds[0]!;
+  assert.equal(store.roundPlayedMs("r", "e1", round.id, 500), 0);
+  store.trackRound(routine, first, round, playing, 1000);
+  assert.equal(store.roundPlayedMs("r", "e1", round.id, 21000), 20000);
+  store.trackRound(routine, first, round, paused, 31000);
+  assert.equal(store.roundPlayedMs("r", "e1", round.id, 90000), 30000);
+  store.trackRound(routine, first, round, playing, 100000);
+  assert.equal(store.roundPlayedMs("r", "e1", round.id, 105000), 35000);
+  store.completeRound(routine, first, round, 105000);
+  assert.equal(store.roundPlayedMs("r", "e1", round.id, 110000), 0);
+});

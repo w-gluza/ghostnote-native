@@ -21,6 +21,8 @@ import {
   removeLastRound,
   roundsDone,
   startSession,
+  clockLabel,
+  spokenClock,
 } from "./session.ts";
 import type {
   ActiveSession,
@@ -293,4 +295,15 @@ test("unfinished practice counts as time played but not as a round done", () => 
   assert.equal(closed.exercises[1]?.rudimentName, "Flam Tap");
   assert.equal(completedRoundCount(closed.exercises[1]!), 0);
   assert.equal(closed.activeDurationMs, 75000);
+});
+
+test("the round clock reads as minutes and seconds", () => {
+  assert.equal(clockLabel(0), "0:00");
+  assert.equal(clockLabel(42999), "0:42");
+  assert.equal(clockLabel(120000), "2:00");
+  assert.equal(clockLabel(605000), "10:05");
+  assert.equal(spokenClock(0), "0 seconds");
+  assert.equal(spokenClock(42000), "42 seconds");
+  assert.equal(spokenClock(120000), "2 minutes");
+  assert.equal(spokenClock(61000), "1 minute 1 second");
 });

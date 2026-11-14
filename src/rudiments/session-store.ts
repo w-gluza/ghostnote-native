@@ -218,6 +218,16 @@ export function createSessionStore(storage: KeyValueStorage) {
       return unfinished;
     },
 
+    roundPlayedMs(
+      routineId: string,
+      exerciseId: string,
+      roundId: string,
+      now: number,
+    ) {
+      const entry = tracked.get(trackerKey(routineId, exerciseId, roundId));
+      return entry ? finishTracking(entry.tracker, now).activeDurationMs : 0;
+    },
+
     trackRound(
       routine: Routine,
       exercise: RoutineExercise,

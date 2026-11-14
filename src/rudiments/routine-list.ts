@@ -9,18 +9,3 @@ export function withRoutine(routines: Routine[], routine: Routine) {
 export function withoutRoutine(routines: Routine[], id: string) {
   return routines.filter((saved) => saved.id !== id);
 }
-
-export function removeWithSession(steps: {
-  remove: () => boolean;
-  finishSession: () => boolean;
-  restore: () => boolean;
-}) {
-  if (!steps.remove()) {
-    return false;
-  }
-  if (steps.finishSession()) {
-    return true;
-  }
-  steps.restore();
-  return false;
-}

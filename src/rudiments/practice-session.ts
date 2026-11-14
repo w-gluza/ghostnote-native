@@ -1,12 +1,17 @@
 import { useSyncExternalStore } from "react";
 
-import { deleteRoutine } from "./saved-routines";
+import { deleteRoutine, resumeRoutineDeletion } from "./saved-routines";
 import { createSessionStore } from "./session-store";
 import { load, save } from "./storage";
 
 const CHECKPOINT_MS = 5000;
 
 const store = createSessionStore({ load, save });
+
+const finishNow = (routineId: string) =>
+  store.finishSession(routineId, Date.now());
+
+resumeRoutineDeletion(finishNow);
 
 setInterval(() => store.checkpoint(Date.now()), CHECKPOINT_MS);
 
@@ -18,6 +23,7 @@ export const {
   completeRound,
   undoRound,
   finishSession,
+  roundPlayedMs,
 } = store;
 
 export function useActiveSession(routineId: string) {
@@ -31,9 +37,7 @@ export function useActiveSessions() {
 }
 
 export function removeRoutine(routineId: string) {
-  return deleteRoutine(routineId, () =>
-    store.finishSession(routineId, Date.now()),
-  );
+  return deleteRoutine(routineId, finishNow);
 }
 
 export function useUnfinishedPractice() {

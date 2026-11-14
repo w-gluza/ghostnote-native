@@ -1,5 +1,5 @@
 import { SymbolView } from "expo-symbols";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Animated,
   AppState,
@@ -41,6 +41,7 @@ type RudimentPlayerProps = {
   onActivity?: (isPlaying: boolean, tempo: Tempo) => void;
   sound?: StrokeSound;
   padScale?: number;
+  children?: ReactNode;
 };
 
 const BPM_STEP = 5;
@@ -55,6 +56,7 @@ export function RudimentPlayer({
   onActivity,
   sound,
   padScale = 1,
+  children,
 }: RudimentPlayerProps) {
   const { height } = useWindowDimensions();
   const isCompact = height < COMPACT_HEIGHT;
@@ -221,6 +223,7 @@ export function RudimentPlayer({
       </View>
 
       <PlayButton isPlaying={playback.isPlaying} onPress={togglePlayback} />
+      {children}
     </View>
   );
 }

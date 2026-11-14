@@ -1,12 +1,9 @@
 import { useSyncExternalStore } from "react";
 
-import { removeWithSession, withoutRoutine, withRoutine } from "./routine-list";
+import { createRoutineStore } from "./routine-store";
 import { load, save } from "./storage";
-import { isRoutine, validItems } from "./stored";
 import { presetExercise, todaysRoutine } from "./todays-routine";
 import type { Routine } from "./types";
-
-const ROUTINES_KEY = "routines";
 
 const starterRoutines: Routine[] = [
   {
@@ -36,51 +33,23 @@ const starterRoutines: Routine[] = [
   },
 ];
 
-let savedRoutines: Routine[] =
-  validItems(load(ROUTINES_KEY), isRoutine) ?? starterRoutines;
+const store = createRoutineStore({ load, save }, starterRoutines);
 
-const listeners = new Set<() => void>();
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
-}
-
-function replaceRoutines(next: Routine[]) {
-  if (!save(ROUTINES_KEY, next)) {
-    return false;
-  }
-  savedRoutines = next;
-  listeners.forEach((listener) => listener());
-  return true;
-}
-
-export function saveRoutine(routine: Routine) {
-  return replaceRoutines(withRoutine(savedRoutines, routine));
-}
-
-export function deleteRoutine(id: string, finishSession: () => boolean) {
-  const previous = savedRoutines;
-  return removeWithSession({
-    remove: () => replaceRoutines(withoutRoutine(previous, id)),
-    finishSession,
-    restore: () => replaceRoutines(previous),
-  });
-}
+export const saveRoutine = store.save;
+export const deleteRoutine = store.remove;
+export const resumeRoutineDeletion = store.resumeDeletion;
 
 export function useSavedRoutines() {
-  return useSyncExternalStore(subscribe, () => savedRoutines);
+  return useSyncExternalStore(store.subscribe, store.routines);
 }
 
 export function useRoutine(id: string | undefined) {
-  return useSyncExternalStore(subscribe, () => findRoutine(id));
+  return useSyncExternalStore(store.subscribe, () => findRoutine(id));
 }
 
 export function findRoutine(id: string | undefined) {
   if (!id || id === todaysRoutine.id) {
     return todaysRoutine;
   }
-  return savedRoutines.find((routine) => routine.id === id);
+  return store.routines().find((routine) => routine.id === id);
 }

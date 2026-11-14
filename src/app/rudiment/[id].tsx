@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { NoteValuePicker } from "@/components/note-value-picker";
 import { STAGE_HEIGHT } from "@/components/pad-animation";
+import { RoundClock } from "@/components/round-clock";
 import { RudimentPlayer } from "@/components/rudiment-player";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
@@ -195,7 +196,18 @@ export default function RudimentScreen() {
               onActivity={track}
               sound={sound}
               padScale={padScale}
-            />
+            >
+              {exercise && activeRoutine && round ? (
+                <RoundClock
+                  key={round.id}
+                  routineId={activeRoutine.id}
+                  exerciseId={exercise.id}
+                  roundId={round.id}
+                  position={done + 1}
+                  targetSeconds={round.durationSeconds}
+                />
+              ) : null}
+            </RudimentPlayer>
           </>
         ) : (
           <Text style={styles.meta}>This rudiment has no player yet.</Text>
@@ -278,7 +290,11 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.title,
   },
   rounds: {
-    paddingVertical: 8,
+    marginTop: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
