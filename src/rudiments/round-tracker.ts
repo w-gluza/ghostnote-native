@@ -73,6 +73,20 @@ export function trackActivity(
     : { segments };
 }
 
+export function rescaleTracking(
+  tracker: RoundTracker,
+  rhythmicScale: Fraction,
+  now: number,
+) {
+  return tracker.open
+    ? trackActivity(
+        tracker,
+        { isPlaying: true, tempo: tracker.open.tempo, rhythmicScale },
+        now,
+      )
+    : tracker;
+}
+
 export function pauseTracking(tracker: RoundTracker, now: number) {
   return tracker.open ? { segments: closed(tracker, now) } : tracker;
 }

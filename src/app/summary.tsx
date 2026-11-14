@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { finishSession, useActiveSession } from "@/rudiments/practice-session";
 import { useRoutine } from "@/rudiments/saved-routines";
 import {
+  completedRoundCount,
   playedTempoLabel,
   sessionActiveMs,
   sessionRoundCount,
@@ -24,9 +25,10 @@ function SummaryRow({
 }) {
   const tempo = playedTempoLabel(played);
   const detail = tempo ? `${tempo} BPM` : "Not played";
+  const completed = completedRoundCount(played);
   const rounds = plannedRounds
-    ? `${played.rounds.length}/${plannedRounds} rounds`
-    : `${played.rounds.length} rounds`;
+    ? `${completed}/${plannedRounds} rounds`
+    : `${completed} rounds`;
 
   return (
     <View

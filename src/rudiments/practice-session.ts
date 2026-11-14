@@ -6,18 +6,21 @@ import {
   finishTracking,
   idleTracker,
   pauseTracking,
+  rescaleTracking,
   trackActivity,
   type Activity,
   type RoundTracker,
 } from "./round-tracker";
 import {
   closeSession,
+  isRoutineComplete,
   recordRound,
   removeLastRound,
   startSession,
 } from "./session";
 import type {
   ActiveSession,
+  Fraction,
   PracticeSession,
   Routine,
   RoutineExercise,
@@ -26,7 +29,15 @@ import type {
 
 let active: Record<string, ActiveSession> = {};
 let history: PracticeSession[] = [];
-const trackers = new Map<string, RoundTracker>();
+type TrackedRound = {
+  routineId: string;
+  exercise: Pick<RoutineExercise, "id" | "pattern">;
+  rudimentName: string;
+  roundId: string;
+  tracker: RoundTracker;
+};
+
+const tracked = new Map<string, TrackedRound>();
 const listeners = new Set<() => void>();
 
 function subscribe(listener: () => void) {
@@ -62,6 +73,38 @@ export function activeSession(routineId: string): ActiveSession | undefined {
   return active[routineId];
 }
 
+function nameOf(exercise: Pick<RoutineExercise, "pattern">) {
+  return (
+    findRudiment(exercise.pattern.rudimentId)?.name ??
+    exercise.pattern.rudimentId
+  );
+}
+
+function settleUnfinished(routineId: string, now: number) {
+  let session = active[routineId];
+  for (const [key, entry] of [...tracked]) {
+    if (entry.routineId !== routineId) {
+      continue;
+    }
+    tracked.delete(key);
+    const played = finishTracking(entry.tracker, now);
+    if (!session || played.activeDurationMs === 0) {
+      continue;
+    }
+    session = recordRound(session, entry.exercise, entry.rudimentName, {
+      id: newId("played"),
+      sourceRoundId: entry.roundId,
+      outcome: "partial",
+      segments: played.segments,
+      activeDurationMs: played.activeDurationMs,
+      completedAt: timestamp(now),
+    });
+  }
+  if (session) {
+    active = { ...active, [routineId]: session };
+  }
+}
+
 export function trackRound(
   routine: Routine,
   exercise: RoutineExercise,
@@ -70,16 +113,41 @@ export function trackRound(
   now: number,
 ) {
   const key = trackerKey(routine.id, exercise.id, round.id);
-  const tracker = trackers.get(key) ?? idleTracker;
-  if (!activity.isPlaying && tracker === idleTracker) {
+  const entry = tracked.get(key);
+  if (!activity.isPlaying && !entry) {
     return;
   }
   const isNewSession = active[routine.id] === undefined;
   ensureSession(routine, now);
-  trackers.set(key, trackActivity(tracker, activity, now));
+  tracked.set(key, {
+    routineId: routine.id,
+    exercise: { id: exercise.id, pattern: exercise.pattern },
+    rudimentName: nameOf(exercise),
+    roundId: round.id,
+    tracker: trackActivity(entry?.tracker ?? idleTracker, activity, now),
+  });
   if (isNewSession) {
     notify();
   }
+}
+
+function retrack(key: string, change: (tracker: RoundTracker) => RoundTracker) {
+  const entry = tracked.get(key);
+  if (entry) {
+    tracked.set(key, { ...entry, tracker: change(entry.tracker) });
+  }
+}
+
+export function rescaleRound(
+  routineId: string,
+  exerciseId: string,
+  roundId: string,
+  rhythmicScale: Fraction,
+  now: number,
+) {
+  retrack(trackerKey(routineId, exerciseId, roundId), (tracker) =>
+    rescaleTracking(tracker, rhythmicScale, now),
+  );
 }
 
 export function pauseRound(
@@ -88,11 +156,9 @@ export function pauseRound(
   roundId: string,
   now: number,
 ) {
-  const key = trackerKey(routineId, exerciseId, roundId);
-  const tracker = trackers.get(key);
-  if (tracker) {
-    trackers.set(key, pauseTracking(tracker, now));
-  }
+  retrack(trackerKey(routineId, exerciseId, roundId), (tracker) =>
+    pauseTracking(tracker, now),
+  );
 }
 
 export function completeRound(
@@ -102,22 +168,25 @@ export function completeRound(
   now: number,
 ) {
   const key = trackerKey(routine.id, exercise.id, round.id);
-  const played = finishTracking(trackers.get(key) ?? idleTracker, now);
-  trackers.delete(key);
-  const session = ensureSession(routine, now);
-  const rudimentName =
-    findRudiment(exercise.pattern.rudimentId)?.name ??
-    exercise.pattern.rudimentId;
-  active = {
-    ...active,
-    [routine.id]: recordRound(session, exercise, rudimentName, {
+  const played = finishTracking(tracked.get(key)?.tracker ?? idleTracker, now);
+  tracked.delete(key);
+  const session = recordRound(
+    ensureSession(routine, now),
+    exercise,
+    nameOf(exercise),
+    {
       id: newId("played"),
       sourceRoundId: round.id,
+      outcome: "completed",
       segments: played.segments,
       activeDurationMs: played.activeDurationMs,
       completedAt: timestamp(now),
-    }),
-  };
+    },
+  );
+  active = { ...active, [routine.id]: session };
+  if (isRoutineComplete(session, routine)) {
+    settleUnfinished(routine.id, now);
+  }
   notify();
 }
 
@@ -131,18 +200,14 @@ export function undoRound(routineId: string, exerciseId: string) {
 }
 
 export function finishSession(routineId: string, now: number) {
-  const session = active[routineId];
-  if (!session) {
+  if (!active[routineId]) {
     return;
   }
-  const { [routineId]: _finished, ...rest } = active;
+  const session = active[routineId];
+  settleUnfinished(routineId, now);
+  const { [routineId]: settled = session, ...rest } = active;
   active = rest;
-  for (const key of [...trackers.keys()]) {
-    if (key.startsWith(`${routineId}/`)) {
-      trackers.delete(key);
-    }
-  }
-  history = [...history, closeSession(session, timestamp(now))];
+  history = [...history, closeSession(settled, timestamp(now))];
   notify();
 }
 

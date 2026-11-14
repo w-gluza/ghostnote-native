@@ -24,7 +24,7 @@ export function startSession(
 
 export function recordRound(
   session: ActiveSession,
-  exercise: RoutineExercise,
+  exercise: Pick<RoutineExercise, "id" | "pattern">,
   rudimentName: string,
   round: CompletedRound,
 ): ActiveSession {
@@ -49,6 +49,11 @@ export function recordRound(
   return { ...session, exercises };
 }
 
+function withoutLastCompleted(rounds: CompletedRound[]) {
+  const last = rounds.findLastIndex((round) => round.outcome === "completed");
+  return last < 0 ? rounds : rounds.filter((_, index) => index !== last);
+}
+
 export function removeLastRound(
   session: ActiveSession,
   exerciseId: string,
@@ -58,7 +63,7 @@ export function removeLastRound(
     exercises: session.exercises
       .map((completed) =>
         completed.sourceExerciseId === exerciseId
-          ? { ...completed, rounds: completed.rounds.slice(0, -1) }
+          ? { ...completed, rounds: withoutLastCompleted(completed.rounds) }
           : completed,
       )
       .filter((completed) => completed.rounds.length > 0),
@@ -72,7 +77,11 @@ function completedRoundIds(
   const completed = session?.exercises.find(
     (exercise) => exercise.sourceExerciseId === exerciseId,
   );
-  return new Set(completed?.rounds.map((round) => round.sourceRoundId));
+  return new Set(
+    completed?.rounds
+      .filter((round) => round.outcome === "completed")
+      .map((round) => round.sourceRoundId),
+  );
 }
 
 export function roundsDone(
@@ -117,9 +126,14 @@ export function sessionActiveMs(session: ActiveSession | undefined) {
 
 export function sessionRoundCount(session: ActiveSession | undefined) {
   return (session?.exercises ?? []).reduce(
-    (sum, exercise) => sum + exercise.rounds.length,
+    (sum, exercise) => sum + completedRoundCount(exercise),
     0,
   );
+}
+
+export function completedRoundCount(exercise: CompletedExercise) {
+  return exercise.rounds.filter((round) => round.outcome === "completed")
+    .length;
 }
 
 export function closeSession(

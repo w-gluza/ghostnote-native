@@ -93,6 +93,7 @@ export type PracticeSegment = {
 export type CompletedRound = {
   id: string;
   sourceRoundId?: string;
+  outcome: "completed" | "partial";
   segments: PracticeSegment[];
   activeDurationMs: number;
   completedAt: string;

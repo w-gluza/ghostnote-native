@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,6 +20,7 @@ import {
   activeSession,
   completeRound,
   pauseRound,
+  rescaleRound,
   trackRound,
   undoRound,
   useActiveSession,
@@ -71,22 +72,22 @@ export default function RudimentScreen() {
     round?.tempo ??
     exercise?.rounds[roundGoal - 1]?.tempo ??
     quarterTempo(rudiment ? defaultBpm(rudiment) : 80);
-  const activity = useRef({ isPlaying: false, tempo: initialTempo });
-  const track = (isPlaying: boolean, tempo: Tempo, scale: Fraction) => {
-    activity.current = { isPlaying, tempo };
+  const track = (isPlaying: boolean, tempo: Tempo) => {
     if (activeRoutine && exercise && round) {
       trackRound(
         activeRoutine,
         exercise,
         round,
-        { isPlaying, tempo, rhythmicScale: scale },
+        { isPlaying, tempo, rhythmicScale },
         Date.now(),
       );
     }
   };
   const changeScale = (scale: Fraction) => {
     setRhythmicScale(scale);
-    track(activity.current.isPlaying, activity.current.tempo, scale);
+    if (activeRoutine && exercise && round) {
+      rescaleRound(activeRoutine.id, exercise.id, round.id, scale, Date.now());
+    }
   };
   const trackedRoutineId = activeRoutine?.id;
   const trackedExerciseId = exercise?.id;
@@ -108,7 +109,6 @@ export default function RudimentScreen() {
     if (!exercise || !activeRoutine || !round) {
       return;
     }
-    activity.current = { ...activity.current, isPlaying: false };
     completeRound(activeRoutine, exercise, round, Date.now());
     const isLastOfExercise = done + 1 >= roundGoal;
     if (isRoutineComplete(activeSession(activeRoutine.id), activeRoutine)) {
@@ -192,9 +192,7 @@ export default function RudimentScreen() {
               key={`${rudiment.id}-${round?.id ?? ""}`}
               timeline={timeline}
               initialTempo={initialTempo}
-              onActivity={(isPlaying, tempo) =>
-                track(isPlaying, tempo, rhythmicScale)
-              }
+              onActivity={track}
               sound={sound}
               padScale={padScale}
             />

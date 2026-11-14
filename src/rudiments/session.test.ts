@@ -6,10 +6,14 @@ import {
   finishTracking,
   idleTracker,
   pauseTracking,
+  rescaleTracking,
   trackActivity,
 } from "./round-tracker.ts";
 import {
   closeSession,
+  completedRoundCount,
+  sessionActiveMs,
+  sessionRoundCount,
   isRoutineComplete,
   nextRound,
   playedTempoLabel,
@@ -53,6 +57,7 @@ const played = (
 ): CompletedRound => ({
   id: `played-${sourceRoundId}`,
   sourceRoundId,
+  outcome: "completed",
   segments: [
     { tempo: at(bpm), rhythmicScale: fraction(8), activeDurationMs: ms },
   ],
@@ -126,6 +131,16 @@ test("undo removes only the last round of that exercise", () => {
   assert.equal(roundsDone(session, first), 1);
   assert.equal(roundsDone(session, second), 0);
   assert.equal(session.exercises.length, 1);
+
+  const partial = { ...played("e1-r2", 80), outcome: "partial" as const };
+  const kept = removeLastRound(
+    recordRound(session, first, NAME, partial),
+    "e1",
+  );
+  assert.deepEqual(
+    kept.exercises[0]?.rounds.map((round) => round.outcome),
+    ["partial"],
+  );
 });
 
 test("a closed session records what was played, not what was planned", () => {
@@ -224,4 +239,47 @@ test("segment durations always add up to the round total", () => {
     [60, 60, 60],
   );
   assert.equal(result.activeDurationMs, 180);
+});
+
+test("changing the note value while paused records nothing", () => {
+  const setting = { tempo: at(80), rhythmicScale: fraction(4) };
+  let tracker = trackActivity(idleTracker, { isPlaying: true, ...setting }, 0);
+  tracker = pauseTracking(tracker, 10000);
+  tracker = rescaleTracking(tracker, fraction(2), 20000);
+  assert.equal(tracker.open, undefined);
+  assert.equal(finishTracking(tracker, 90000).activeDurationMs, 10000);
+  assert.equal(rescaleTracking(idleTracker, fraction(2), 0), idleTracker);
+});
+
+test("changing the note value while playing starts a new segment", () => {
+  const setting = { tempo: at(80), rhythmicScale: fraction(4) };
+  let tracker = trackActivity(idleTracker, { isPlaying: true, ...setting }, 0);
+  tracker = rescaleTracking(tracker, fraction(2), 5000);
+  assert.deepEqual(
+    finishTracking(tracker, 8000).segments.map((segment) => [
+      segment.rhythmicScale.numerator,
+      segment.activeDurationMs,
+    ]),
+    [
+      [4, 5000],
+      [2, 3000],
+    ],
+  );
+});
+
+test("unfinished practice counts as time played but not as a round done", () => {
+  const removed = exercise("gone", [100]);
+  let session = recordRound(begin(), first, NAME, played("e1-r1", 60));
+  session = recordRound(session, removed, "Flam Tap", {
+    ...played("gone-r1", 100, 45000),
+    outcome: "partial",
+  });
+  assert.equal(roundsDone(session, removed), 0);
+  assert.equal(nextRound(session, removed)?.id, "gone-r1");
+  assert.equal(sessionRoundCount(session), 1);
+  assert.equal(sessionActiveMs(session), 75000);
+  const closed = closeSession(session, "2026-11-14T10:05:00.000Z");
+  assert.equal(closed.exercises[1]?.rudimentName, "Flam Tap");
+  assert.equal(completedRoundCount(closed.exercises[1]!), 0);
+  assert.equal(closed.activeDurationMs, 75000);
 });

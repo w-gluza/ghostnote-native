@@ -1,5 +1,5 @@
 import { SymbolView } from "expo-symbols";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -74,6 +74,8 @@ export function RudimentPlayer({
   const motionOf = (index: number) =>
     timeline.strokes[index]?.hand === "L" ? left : right;
 
+  const isHeard = useRef(false);
+
   const playback = useRudimentPlayback({
     timeline,
     tempo,
@@ -97,6 +99,10 @@ export function RudimentPlayer({
       const stroke = timeline.strokes[index];
       if (!stroke) {
         return;
+      }
+      if (!isHeard.current) {
+        isHeard.current = true;
+        onActivity?.(true, tempo);
       }
       const motion = motionOf(index);
       const nextOfHand = timeline.strokes[nextIndexOfHand(timeline, index)];
@@ -124,10 +130,13 @@ export function RudimentPlayer({
   const changeBpm = (value: number) => {
     const next = clampBpm(value);
     setBpm(next);
-    onActivity?.(playback.isPlaying, { ...tempo, bpm: next });
+    onActivity?.(isHeard.current, { ...tempo, bpm: next });
   };
   const togglePlayback = () => {
-    onActivity?.(!playback.isPlaying, tempo);
+    if (playback.isPlaying) {
+      isHeard.current = false;
+      onActivity?.(false, tempo);
+    }
     playback.toggle();
   };
 
