@@ -27,13 +27,14 @@ import {
   msPerBeat,
   nextIndexOfHand,
 } from "@/rudiments/timing";
-import type { RudimentPattern, StrokeSound } from "@/rudiments/types";
+import type { Timeline } from "@/rudiments/timeline";
 import { useRudimentPlayback } from "@/rudiments/use-rudiment-playback";
+import type { StrokeSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 type RudimentPlayerProps = {
-  pattern: RudimentPattern;
+  timeline: Timeline;
   initialBpm: number;
   sound?: StrokeSound;
   padScale?: number;
@@ -46,7 +47,7 @@ const RETURN_SHARE = 0.55;
 const RIPPLE_MS = 280;
 
 export function RudimentPlayer({
-  pattern,
+  timeline,
   initialBpm,
   sound,
   padScale = 1,
@@ -64,14 +65,14 @@ export function RudimentPlayer({
     ripple: useAnimatedValue(1),
   };
   const motionOf = (index: number) =>
-    pattern.strokes[index]?.hand === "L" ? left : right;
+    timeline.strokes[index]?.hand === "L" ? left : right;
 
   const playback = useRudimentPlayback({
-    pattern,
+    timeline,
     bpm: bpm,
     clock: sound?.now,
     onSchedule: (index, timeMs) => {
-      const stroke = pattern.strokes[index];
+      const stroke = timeline.strokes[index];
       if (stroke) {
         sound?.schedule(stroke, timeMs);
       }
@@ -86,13 +87,14 @@ export function RudimentPlayer({
       }).start();
     },
     onStroke: (index) => {
-      const stroke = pattern.strokes[index];
+      const stroke = timeline.strokes[index];
       if (!stroke) {
         return;
       }
       const motion = motionOf(index);
-      const nextOfHand = pattern.strokes[nextIndexOfHand(pattern, index)];
-      const sameHandGapMs = beatsUntilSameHand(pattern, index) * msPerBeat(bpm);
+      const nextOfHand = timeline.strokes[nextIndexOfHand(timeline, index)];
+      const sameHandGapMs =
+        beatsUntilSameHand(timeline, index) * msPerBeat(bpm);
 
       motion.ripple.setValue(0);
       Animated.parallel([
@@ -115,8 +117,8 @@ export function RudimentPlayer({
   const activeStroke =
     playback.activeIndex === null
       ? null
-      : pattern.strokes[playback.activeIndex];
-  const sticking = pattern.strokes.map((stroke) => stroke.hand).join(" ");
+      : timeline.strokes[playback.activeIndex];
+  const sticking = timeline.strokes.map((stroke) => stroke.hand).join(" ");
 
   return (
     <View style={[styles.player, isCompact && styles.playerCompact]}>
@@ -129,7 +131,7 @@ export function RudimentPlayer({
       />
 
       <StickingPattern
-        pattern={pattern}
+        timeline={timeline}
         activeIndex={playback.isPlaying ? playback.activeIndex : null}
       />
 

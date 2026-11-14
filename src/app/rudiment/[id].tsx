@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,7 +9,8 @@ import { STAGE_HEIGHT } from "@/components/pad-animation";
 import { RudimentPlayer } from "@/components/rudiment-player";
 import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
-import { findRudiment } from "@/rudiments/library";
+import { fraction } from "@/rudiments/fraction";
+import { defaultBpm, findRudiment, standardPattern } from "@/rudiments/library";
 import {
   logRound,
   undoRound,
@@ -17,6 +18,7 @@ import {
   willCompleteRoutine,
 } from "@/rudiments/round-log";
 import { useRoutine } from "@/rudiments/saved-routines";
+import { buildTimeline, evenStep, scaleToStep } from "@/rudiments/timeline";
 import { useStrokeSound } from "@/rudiments/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -67,13 +69,12 @@ export default function RudimentScreen() {
       setPadScale(fitted);
     }
   };
-  const [subdivision, setSubdivision] = useState(
-    rudiment?.pattern.subdivision ?? 1,
-  );
-  const pattern = useMemo(
-    () => (rudiment ? { ...rudiment.pattern, subdivision } : undefined),
-    [rudiment, subdivision],
-  );
+  const [subdivision, setSubdivision] = useState(1);
+  const pattern = rudiment ? standardPattern(rudiment) : undefined;
+  const hasEvenStrokes = pattern ? evenStep(pattern) !== undefined : false;
+  const timeline = pattern
+    ? buildTimeline(pattern, scaleToStep(pattern, fraction(1, subdivision)))
+    : undefined;
 
   return (
     <SafeAreaView edges={["top", "bottom"]} style={styles.screen}>
@@ -92,7 +93,7 @@ export default function RudimentScreen() {
           fitPad(viewportHeight, content);
         }}
       >
-        {rudiment && pattern ? (
+        {rudiment && timeline ? (
           <>
             <Text accessibilityRole="header" style={styles.title}>
               {rudiment.name}
@@ -108,15 +109,17 @@ export default function RudimentScreen() {
               <Text numberOfLines={1} style={styles.detail}>
                 {rudiment.category} · Lvl {rudiment.level}
               </Text>
-              <NoteValuePicker
-                subdivision={subdivision}
-                onChange={setSubdivision}
-              />
+              {hasEvenStrokes ? (
+                <NoteValuePicker
+                  subdivision={subdivision}
+                  onChange={setSubdivision}
+                />
+              ) : null}
             </View>
             <RudimentPlayer
               key={`${rudiment.id}-${round?.bpm ?? ""}`}
-              pattern={pattern}
-              initialBpm={round?.bpm ?? rudiment.defaultBpm}
+              timeline={timeline}
+              initialBpm={round?.bpm ?? defaultBpm(rudiment)}
               sound={sound}
               padScale={padScale}
             />

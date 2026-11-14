@@ -1,34 +1,34 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { findRudiment } from "./library.ts";
+import { fraction, ONE } from "./fraction.ts";
+import { findRudiment, standardPattern } from "./library.ts";
+import { buildTimeline, scaleToStep, type Timeline } from "./timeline.ts";
 import {
   beatOfOrdinal,
   beatsUntilSameHand,
   clampBpm,
   gapBeforeOrdinal,
   leadMs,
-  loopBeats,
   msPerBeat,
+  msPerQuarterUnit,
   nextIndexOfHand,
   scheduleStrokes,
-  strokeBeats,
 } from "./timing.ts";
-import type { RudimentPattern } from "./types.ts";
 
-const paradiddle: RudimentPattern = {
-  ...findRudiment("single-paradiddle")!.pattern,
-  subdivision: 4,
-};
+const paradiddlePattern = standardPattern(findRudiment("single-paradiddle")!);
+const paradiddle = buildTimeline(paradiddlePattern);
 
-const swung: RudimentPattern = {
-  subdivision: 3,
+const tap = { accent: false, ghost: false, bounce: false, grace: [] };
+const swung: Timeline = {
+  cycleBeats: 2,
   strokes: [
-    { hand: "R", length: 2 },
-    { hand: "L" },
-    { hand: "R", length: 2 },
-    { hand: "L" },
+    { ...tap, id: "s1", hand: "R", beat: 0 },
+    { ...tap, id: "s2", hand: "L", beat: 2 / 3 },
+    { ...tap, id: "s3", hand: "R", beat: 1 },
+    { ...tap, id: "s4", hand: "L", beat: 5 / 3 },
   ],
+  phrases: [[0, 1, 2, 3]],
 };
 
 test("single paradiddle sticking is R L R R L R L L", () => {
@@ -69,12 +69,11 @@ test("halving the tempo doubles every stroke time", () => {
   });
 });
 
-test("stroke lengths shape uneven rhythms", () => {
-  assert.deepEqual(strokeBeats(swung), [0, 2 / 3, 1, 5 / 3]);
-  assert.equal(loopBeats(swung), 2);
+test("uneven rhythms keep their own spacing across the loop", () => {
   assert.equal(beatOfOrdinal(swung, 5), 2 + 2 / 3);
   assert.equal(gapBeforeOrdinal(swung, 1), 2 / 3);
-  assert.equal(gapBeforeOrdinal(swung, 0), 1 / 3);
+  assert.ok(Math.abs(gapBeforeOrdinal(swung, 0) - 1 / 3) < 1e-9);
+  assert.ok(Math.abs(gapBeforeOrdinal(swung, 4) - 1 / 3) < 1e-9);
 });
 
 test("next stroke of the same hand wraps around the loop", () => {
@@ -95,6 +94,14 @@ test("tempo helpers", () => {
   assert.equal(clampBpm(84.6), 85);
 });
 
+test("a dotted-quarter pulse stretches the quarter-note unit", () => {
+  assert.equal(msPerQuarterUnit({ bpm: 120, pulseQuarterUnits: ONE }), 500);
+  assert.equal(
+    msPerQuarterUnit({ bpm: 80, pulseQuarterUnits: fraction(3, 2) }),
+    500,
+  );
+});
+
 test("time until the same hand plays again follows the sticking", () => {
   const gaps = paradiddle.strokes.map((_, index) =>
     beatsUntilSameHand(paradiddle, index),
@@ -102,9 +109,16 @@ test("time until the same hand plays again follows the sticking", () => {
   assert.deepEqual(gaps, [0.5, 0.75, 0.25, 0.5, 0.5, 0.75, 0.25, 0.5]);
 });
 
-test("library rudiments start on quarter notes in groups of four", () => {
-  const pattern = findRudiment("single-paradiddle")!.pattern;
-  const times = scheduleStrokes(pattern, 60, 3).map((stroke) => stroke.timeMs);
+test("an even pattern can be stretched to quarter-note strokes", () => {
+  const quarters = buildTimeline(
+    paradiddlePattern,
+    scaleToStep(paradiddlePattern, ONE),
+  );
+  const times = scheduleStrokes(quarters, 60, 3).map((stroke) => stroke.timeMs);
   assert.deepEqual(times, [0, 1000, 2000]);
-  assert.equal(pattern.grouping, 4);
+  assert.equal(quarters.cycleBeats, 8);
+  assert.deepEqual(quarters.phrases, [
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+  ]);
 });

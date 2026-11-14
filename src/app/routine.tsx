@@ -3,7 +3,7 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { findRudiment } from "@/rudiments/library";
+import { findRudiment, stickingOf } from "@/rudiments/library";
 import { useRoundsDone, useRoutineComplete } from "@/rudiments/round-log";
 import { useRoutine } from "@/rudiments/saved-routines";
 import {
@@ -32,9 +32,7 @@ function SetlistRow({
     return null;
   }
   const isComplete = roundsDone >= exercise.rounds.length;
-  const sticking = rudiment.pattern.strokes
-    .map((stroke) => stroke.hand)
-    .join(" ");
+  const sticking = stickingOf(rudiment);
 
   return (
     <Pressable

@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
+import type { VideoSource } from "expo-video";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -10,42 +11,26 @@ import {
 } from "@/components/rudiment-list-item";
 import { ScreenHeader } from "@/components/screen-header";
 import { SearchField } from "@/components/search-field";
+import { availableRudiments, stickingOf } from "@/rudiments/library";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const categories = ["All", "Rolls", "Diddles", "Flams", "Drags"];
+const video: Record<string, VideoSource> = {
+  "single-paradiddle": require("@/assets/videos/accent_single_paraddilde_85.mp4"),
+};
 
-const rudiments: RudimentSummary[] = [
-  {
-    id: "single-stroke-roll",
-    name: "Single Stroke Roll",
-    category: "Rolls",
-    level: 1,
-    sticking: "R L R L R L R L",
-  },
-  {
-    id: "double-stroke-roll",
-    name: "Double Stroke Roll",
-    category: "Rolls",
-    level: 1,
-    sticking: "R R L L R R L L",
-  },
-  {
-    name: "Triple Stroke Roll",
-    category: "Rolls",
-    level: 2,
-    sticking: "R R R L L L",
-  },
-  {
-    id: "single-paradiddle",
-    name: "Single Paradiddle",
-    category: "Diddles",
-    level: 2,
-    sticking: "R L R R L R L L",
-    video: require("@/assets/videos/accent_single_paraddilde_85.mp4"),
-  },
-  { name: "Flam", category: "Flams", level: 2, sticking: "lR L rL R" },
-  { name: "Drag", category: "Drags", level: 2, sticking: "llR rrL" },
+const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => ({
+  id: rudiment.id,
+  name: rudiment.name,
+  category: rudiment.category,
+  level: rudiment.level,
+  sticking: stickingOf(rudiment),
+  video: video[rudiment.id],
+}));
+
+const categories = [
+  "All",
+  ...new Set(rudiments.map((rudiment) => rudiment.category)),
 ];
 
 function Separator() {

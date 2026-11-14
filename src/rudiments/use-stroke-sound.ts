@@ -5,7 +5,13 @@ import {
   type AudioBufferSourceNode,
 } from "react-native-audio-api";
 
-import type { StrokeSound } from "./types";
+import type { TimelineStroke } from "./timeline";
+
+export type StrokeSound = {
+  now: () => number;
+  schedule: (stroke: TimelineStroke, timeMs: number) => void;
+  cancel: () => void;
+};
 
 const tapSource = require("@/assets/sounds/click.wav");
 const accentSource = require("@/assets/sounds/click-accent.wav");

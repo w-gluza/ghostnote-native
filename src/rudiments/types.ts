@@ -1,29 +1,65 @@
+import type { Fraction } from "./fraction";
+
+export type { Fraction };
+
 export type Hand = "R" | "L";
 
-export type Stroke = {
+export type StrokeDynamics = "normal" | "ghost" | "accent";
+
+export type OnsetStroke = {
+  id: string;
+  kind: "onset";
   hand: Hand;
-  accent?: boolean;
-  grace?: Hand[];
-  length?: number;
+  at: Fraction;
+  dynamics?: StrokeDynamics;
+  technique?: "multiple-bounce";
+};
+
+export type GraceStroke = {
+  id: string;
+  kind: "grace";
+  hand: Hand;
+  beforeStrokeId: string;
+  order: number;
+};
+
+export type Stroke = OnsetStroke | GraceStroke;
+
+export type StrokeGroup = {
+  id: string;
+  kind: "phrase" | "diddle";
+  strokeIds: string[];
+  label?: string;
 };
 
 export type RudimentPattern = {
-  subdivision: number;
-  grouping?: number;
-  strokes: Stroke[];
-};
-
-export type RudimentDefinition = {
   id: string;
-  name: string;
-  category: string;
-  level: number;
-  defaultBpm: number;
-  pattern: RudimentPattern;
+  label: string;
+  version: number;
+  cycleDuration: Fraction;
+  strokes: Stroke[];
+  groups?: StrokeGroup[];
 };
 
-export type StrokeSound = {
-  now: () => number;
-  schedule: (stroke: Stroke, timeMs: number) => void;
-  cancel: () => void;
+export type Tempo = {
+  bpm: number;
+  pulseQuarterUnits: Fraction;
+};
+
+export type RudimentCategory = "Rolls" | "Diddles" | "Flams" | "Drags";
+
+export type Rudiment = {
+  id: string;
+  pasNumber?: number;
+  name: string;
+  category: RudimentCategory;
+  level: number;
+  defaultTempo?: Tempo;
+  patterns: RudimentPattern[];
+};
+
+export type PatternReference = {
+  rudimentId: string;
+  patternId: string;
+  patternVersion: number;
 };

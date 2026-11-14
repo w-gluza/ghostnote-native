@@ -10,7 +10,11 @@ import {
   View,
 } from "react-native";
 
-import { findRudiment, rudimentLibrary } from "@/rudiments/library";
+import {
+  availableRudiments,
+  defaultBpm,
+  findRudiment,
+} from "@/rudiments/library";
 import { findRoutine, saveRoutine } from "@/rudiments/saved-routines";
 import { clampBpm } from "@/rudiments/timing";
 import {
@@ -116,7 +120,7 @@ function ExerciseEditor({
     onChange([
       ...exercise.rounds,
       {
-        bpm: last?.bpm ?? rudiment?.defaultBpm ?? 80,
+        bpm: last?.bpm ?? (rudiment ? defaultBpm(rudiment) : 80),
         seconds: last?.seconds ?? NEW_ROUND_SECONDS,
       },
     ]);
@@ -279,7 +283,7 @@ export default function RoutineEditorScreen() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
-  const available = rudimentLibrary.filter(
+  const available = availableRudiments.filter(
     (rudiment) => !exercises.some((exercise) => exercise.id === rudiment.id),
   );
   const canSave = name.trim().length > 0 && exercises.length > 0;
@@ -447,7 +451,7 @@ export default function RoutineEditorScreen() {
                 key={rudiment.id}
                 accessibilityRole="button"
                 accessibilityLabel={`Add ${rudiment.name}`}
-                onPress={() => add(rudiment.id, rudiment.defaultBpm)}
+                onPress={() => add(rudiment.id, defaultBpm(rudiment))}
                 style={({ pressed }) => [
                   styles.choice,
                   pressed && styles.pressed,

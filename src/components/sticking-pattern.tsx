@@ -1,36 +1,34 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import type { RudimentPattern, Stroke } from "@/rudiments/types";
+import type { Timeline, TimelineStroke } from "@/rudiments/timeline";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 type StickingPatternProps = {
-  pattern: RudimentPattern;
+  timeline: Timeline;
   activeIndex: number | null;
 };
 
-function describe(stroke: Stroke) {
+function describe(stroke: TimelineStroke) {
   const hand = stroke.hand === "R" ? "right" : "left";
   return stroke.accent ? `${hand} accent` : hand;
 }
 
 export function StickingPattern({
-  pattern,
+  timeline,
   activeIndex,
 }: StickingPatternProps) {
-  const groupSize = pattern.grouping ?? pattern.subdivision;
-  const groups: { stroke: Stroke; index: number }[][] = [];
-  pattern.strokes.forEach((stroke, index) => {
-    if (index % groupSize === 0) {
-      groups.push([]);
-    }
-    groups[groups.length - 1]?.push({ stroke, index });
-  });
+  const groups = timeline.phrases.map((phrase) =>
+    phrase.flatMap((index) => {
+      const stroke = timeline.strokes[index];
+      return stroke ? [{ stroke, index }] : [];
+    }),
+  );
 
   return (
     <View
       accessible
-      accessibilityLabel={`Sticking: ${pattern.strokes.map(describe).join(", ")}`}
+      accessibilityLabel={`Sticking: ${timeline.strokes.map(describe).join(", ")}`}
       style={styles.pattern}
     >
       {groups.map((group) => (
@@ -43,7 +41,7 @@ export function StickingPattern({
                   {stroke.accent ? ">" : " "}
                 </Text>
                 <Text style={[styles.letter, isActive && styles.active]}>
-                  {stroke.grace ? (
+                  {stroke.grace.length > 0 ? (
                     <Text style={styles.grace}>{stroke.grace.join("")}</Text>
                   ) : null}
                   {stroke.hand}

@@ -44,7 +44,9 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
         <Text style={styles.meta}>
           {rudiment.category} · Lvl {rudiment.level}
         </Text>
-        <Text style={styles.sticking}>{rudiment.sticking}</Text>
+        <Text numberOfLines={1} style={styles.sticking}>
+          {rudiment.sticking}
+        </Text>
       </View>
       <SymbolView
         name="chevron.right"

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 import { beatOfOrdinal, gapBeforeOrdinal, leadMs, msPerBeat } from "./timing";
-import type { RudimentPattern } from "./types";
+import type { Timeline } from "./timeline";
 
 type PlaybackOptions = {
-  pattern: RudimentPattern;
+  timeline: Timeline;
   bpm: number;
   clock?: () => number;
   onSchedule?: (index: number, timeMs: number) => void;
@@ -20,7 +20,7 @@ const START_DELAY_MS = 250;
 const systemClock = () => performance.now();
 
 export function useRudimentPlayback({
-  pattern,
+  timeline,
   bpm,
   clock = systemClock,
   onSchedule,
@@ -44,7 +44,7 @@ export function useRudimentPlayback({
 
     const beat = msPerBeat(bpm);
     const anchorTime = clock() + START_DELAY_MS;
-    const anchorBeat = beatOfOrdinal(pattern, nextOrdinal.current);
+    const anchorBeat = beatOfOrdinal(timeline, nextOrdinal.current);
     const timers = new Set<ReturnType<typeof setTimeout>>();
     let scheduledOrdinal = nextOrdinal.current;
 
@@ -62,9 +62,9 @@ export function useRudimentPlayback({
     const scheduleDue = () => {
       for (;;) {
         const ordinal = scheduledOrdinal;
-        const index = ordinal % pattern.strokes.length;
+        const index = ordinal % timeline.strokes.length;
         const onset =
-          anchorTime + (beatOfOrdinal(pattern, ordinal) - anchorBeat) * beat;
+          anchorTime + (beatOfOrdinal(timeline, ordinal) - anchorBeat) * beat;
         const now = clock();
         if (onset > now + LOOKAHEAD_MS) {
           return;
@@ -73,7 +73,7 @@ export function useRudimentPlayback({
         handlers.current.onSchedule?.(index, onset);
 
         const heardIn = onset - now;
-        const lead = leadMs(gapBeforeOrdinal(pattern, ordinal) * beat);
+        const lead = leadMs(gapBeforeOrdinal(timeline, ordinal) * beat);
         later(heardIn - lead, () => {
           handlers.current.onApproach?.(index, Math.min(lead, heardIn));
         });
@@ -95,7 +95,7 @@ export function useRudimentPlayback({
       timers.forEach(clearTimeout);
       handlers.current.onCancel?.();
     };
-  }, [isPlaying, bpm, pattern, clock]);
+  }, [isPlaying, bpm, timeline, clock]);
 
   return {
     isPlaying,

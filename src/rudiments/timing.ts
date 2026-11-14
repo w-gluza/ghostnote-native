@@ -1,4 +1,6 @@
-import type { Hand, RudimentPattern } from "./types";
+import { toNumber } from "./fraction.ts";
+import type { Timeline } from "./timeline";
+import type { Hand, Tempo } from "./types";
 
 export const MIN_BPM = 40;
 export const MAX_BPM = 200;
@@ -21,78 +23,65 @@ export function msPerBeat(bpm: number) {
   return 60000 / bpm;
 }
 
-export function strokeBeats(pattern: RudimentPattern) {
-  let units = 0;
-  return pattern.strokes.map((stroke) => {
-    const beat = units / pattern.subdivision;
-    units += stroke.length ?? 1;
-    return beat;
-  });
+export function msPerQuarterUnit(tempo: Tempo) {
+  return 60000 / (tempo.bpm * toNumber(tempo.pulseQuarterUnits));
 }
 
-export function loopBeats(pattern: RudimentPattern) {
-  const units = pattern.strokes.reduce(
-    (total, stroke) => total + (stroke.length ?? 1),
-    0,
-  );
-  return units / pattern.subdivision;
-}
-
-export function beatOfOrdinal(pattern: RudimentPattern, ordinal: number) {
-  const count = pattern.strokes.length;
+export function beatOfOrdinal(timeline: Timeline, ordinal: number) {
+  const count = timeline.strokes.length;
   const cycle = Math.floor(ordinal / count);
-  const beats = strokeBeats(pattern);
-  return cycle * loopBeats(pattern) + (beats[ordinal % count] ?? 0);
+  const index = ordinal - cycle * count;
+  return cycle * timeline.cycleBeats + (timeline.strokes[index]?.beat ?? 0);
 }
 
-export function gapBeforeOrdinal(pattern: RudimentPattern, ordinal: number) {
-  const count = pattern.strokes.length;
-  const previous = pattern.strokes[(ordinal - 1 + count) % count];
-  return (previous?.length ?? 1) / pattern.subdivision;
+export function gapBeforeOrdinal(timeline: Timeline, ordinal: number) {
+  return (
+    beatOfOrdinal(timeline, ordinal) - beatOfOrdinal(timeline, ordinal - 1)
+  );
 }
 
 export function leadMs(gapMs: number) {
   return Math.min(MAX_LEAD_MS, gapMs * LEAD_SHARE);
 }
 
-export function nextIndexOfHand(pattern: RudimentPattern, index: number) {
-  const count = pattern.strokes.length;
-  const hand = pattern.strokes[index]?.hand;
+export function nextIndexOfHand(timeline: Timeline, index: number) {
+  const count = timeline.strokes.length;
+  const hand = timeline.strokes[index]?.hand;
   for (let step = 1; step <= count; step += 1) {
     const candidate = (index + step) % count;
-    if (pattern.strokes[candidate]?.hand === hand) {
+    if (timeline.strokes[candidate]?.hand === hand) {
       return candidate;
     }
   }
   return index;
 }
 
-export function beatsUntilSameHand(pattern: RudimentPattern, index: number) {
-  const target = nextIndexOfHand(pattern, index);
-  const count = pattern.strokes.length;
+export function beatsUntilSameHand(timeline: Timeline, index: number) {
+  const target = nextIndexOfHand(timeline, index);
+  const count = timeline.strokes.length;
   let beats = 0;
   let cursor = index;
   do {
     cursor = (cursor + 1) % count;
-    beats += gapBeforeOrdinal(pattern, cursor);
+    beats += gapBeforeOrdinal(timeline, cursor);
   } while (cursor !== target);
   return beats;
 }
 
 export function scheduleStrokes(
-  pattern: RudimentPattern,
+  timeline: Timeline,
   bpm: number,
   count: number,
 ): ScheduledStroke[] {
   const beat = msPerBeat(bpm);
   return Array.from({ length: count }, (_, ordinal) => {
-    const index = ordinal % pattern.strokes.length;
-    const stroke = pattern.strokes[index];
+    const index = ordinal % timeline.strokes.length;
+    const stroke = timeline.strokes[index];
     return {
       index,
       hand: stroke?.hand ?? "R",
       accent: stroke?.accent ?? false,
-      timeMs: beatOfOrdinal(pattern, ordinal) * beat,
+      timeMs: beatOfOrdinal(timeline, ordinal) * beat,
     };
   });
 }
