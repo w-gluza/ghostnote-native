@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import type { VideoSource } from "expo-video";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -22,12 +21,9 @@ import {
   stickingOf,
 } from "@/rudiments/library";
 import { buildTimeline } from "@/rudiments/timeline";
+import { rudimentVideos } from "@/rudiments/videos";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
-
-const video: Record<string, VideoSource> = {
-  "single-paradiddle": require("@/assets/videos/accent_single_paraddilde_85.mp4"),
-};
 
 const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
@@ -40,7 +36,7 @@ const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
     phrases: timeline.phrases.map((phrase) =>
       phrase.flatMap((index) => timeline.strokes[index] ?? []),
     ),
-    video: video[rudiment.id],
+    video: rudimentVideos[rudiment.id],
   };
 });
 

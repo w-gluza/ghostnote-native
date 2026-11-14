@@ -15,16 +15,16 @@ import {
   routineMinutes,
   todaysRoutine,
 } from "@/rudiments/todays-routine";
+import { rudimentVideos } from "@/rudiments/videos";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const video = require("@/assets/videos/accent_single_paraddilde_85.mp4");
 const rudiments: Rudiment[] = todaysRoutine.exercises.map((exercise) => ({
   name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
   minutes: exerciseMinutes(exercise),
   rounds: exercise.rounds.length,
   bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
-  video,
+  video: rudimentVideos[exercise.pattern.rudimentId],
 }));
 
 export default function PracticeScreen() {

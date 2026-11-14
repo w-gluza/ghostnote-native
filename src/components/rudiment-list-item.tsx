@@ -1,11 +1,12 @@
 import { SymbolView } from "expo-symbols";
 import type { VideoSource } from "expo-video";
 import {
+  Image,
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
+  useWindowDimensions,
 } from "react-native";
 
 import { RudimentVideo } from "@/components/rudiment-video";
@@ -71,10 +72,11 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
         {rudiment.video ? (
           <RudimentVideo source={rudiment.video} label={rudiment.name} />
         ) : (
-          <SymbolView
-            name="play.circle.fill"
-            size={28}
-            tintColor={colors.accent}
+          <Image
+            accessible={false}
+            source={placeholder}
+            resizeMode="cover"
+            style={styles.photo}
           />
         )}
       </View>
@@ -95,7 +97,13 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
   );
 }
 
+const placeholder = require("@/assets/images/rudiment-placeholder.jpg");
+
 const styles = StyleSheet.create({
+  photo: {
+    width: "100%",
+    height: "100%",
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
