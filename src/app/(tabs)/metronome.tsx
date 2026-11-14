@@ -1,6 +1,7 @@
 import { SymbolView } from "expo-symbols";
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -34,86 +35,110 @@ export default function MetronomeScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <ScreenHeader />
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        alwaysBounceVertical={false}
+      >
+        <ScreenHeader />
 
-      <View style={styles.rhythm}>
-        <View style={styles.rhythmControls}>
+        <View style={styles.rhythm}>
+          <View style={styles.rhythmControls}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Time signature, ${timeSignature.beats} ${timeSignature.noteValue}`}
+              style={({ pressed }) => [
+                styles.target,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.signatureLabel}>
+                {timeSignature.beats}/{timeSignature.noteValue}
+              </Text>
+            </Pressable>
+            <View style={styles.rhythmSeparator} />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Subdivision, ${subdivision}`}
+              style={({ pressed }) => [
+                styles.target,
+                styles.subdivision,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.subdivisionIcon}>♫</Text>
+              <Text style={styles.subdivisionLabel}>{subdivision}</Text>
+              <SymbolView
+                name="chevron.down"
+                size={13}
+                weight="medium"
+                tintColor={colors.text.secondary}
+              />
+            </Pressable>
+          </View>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`Time signature, ${timeSignature.beats} ${timeSignature.noteValue}`}
-            hitSlop={8}
+            accessibilityLabel="Rhythm settings"
+            style={({ pressed }) => [
+              styles.target,
+              styles.settings,
+              pressed && styles.pressed,
+            ]}
           >
-            <Text style={styles.signatureLabel}>
-              {timeSignature.beats}/{timeSignature.noteValue}
-            </Text>
-          </Pressable>
-          <View style={styles.rhythmSeparator} />
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Subdivision, ${subdivision}`}
-            hitSlop={8}
-            style={styles.subdivision}
-          >
-            <Text style={styles.subdivisionIcon}>♫</Text>
-            <Text style={styles.subdivisionLabel}>{subdivision}</Text>
             <SymbolView
-              name="chevron.down"
-              size={13}
-              weight="medium"
+              name="slider.vertical.3"
+              size={22}
+              weight="light"
               tintColor={colors.text.secondary}
             />
           </Pressable>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Rhythm settings"
-          hitSlop={12}
-        >
-          <SymbolView
-            name="slider.vertical.3"
-            size={22}
-            weight="light"
-            tintColor={colors.text.secondary}
-          />
-        </Pressable>
-      </View>
 
-      <View style={styles.stage}>
-        <View style={styles.dialRow}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Decrease tempo"
-            hitSlop={8}
-            style={[styles.step, styles.stepStart]}
-          >
-            <SymbolView
-              name="minus"
-              size={28}
-              weight="light"
-              tintColor={colors.text.primary}
-            />
-          </Pressable>
-          <TempoDial {...tempo} size={dialSize} />
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Increase tempo"
-            hitSlop={8}
-            style={[styles.step, styles.stepEnd]}
-          >
-            <SymbolView
-              name="plus"
-              size={28}
-              weight="light"
-              tintColor={colors.text.primary}
-            />
-          </Pressable>
+        <View style={styles.stage}>
+          <View style={styles.dialRow}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Decrease tempo"
+              hitSlop={8}
+              style={({ pressed }) => [
+                styles.step,
+                styles.stepStart,
+                pressed && styles.pressed,
+              ]}
+            >
+              <SymbolView
+                name="minus"
+                size={28}
+                weight="light"
+                tintColor={colors.text.primary}
+              />
+            </Pressable>
+            <TempoDial {...tempo} size={dialSize} />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Increase tempo"
+              hitSlop={8}
+              style={({ pressed }) => [
+                styles.step,
+                styles.stepEnd,
+                pressed && styles.pressed,
+              ]}
+            >
+              <SymbolView
+                name="plus"
+                size={28}
+                weight="light"
+                tintColor={colors.text.primary}
+              />
+            </Pressable>
+          </View>
+          <BeatPattern beats={beatPattern} playingBeat={2} />
         </View>
-        <BeatPattern beats={beatPattern} playingBeat={2} />
-      </View>
 
-      <View style={styles.transport}>
-        <PlayButton isPlaying />
-      </View>
+        <View style={styles.transport}>
+          <PlayButton isPlaying />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -121,13 +146,27 @@ export default function MetronomeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: colors.background,
+  },
+  content: {
+    flexGrow: 1,
     paddingTop: 8,
     paddingHorizontal: SCREEN_PADDING,
-    backgroundColor: colors.background,
+  },
+  target: {
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  settings: {
+    minWidth: 44,
+    alignItems: "flex-end",
+  },
+  pressed: {
+    opacity: 0.7,
   },
   rhythm: {
     marginTop: 24,
-    height: 52,
+    minHeight: 52,
     paddingHorizontal: 16,
     borderRadius: 16,
     flexDirection: "row",

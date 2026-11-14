@@ -155,12 +155,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
+    flexWrap: "wrap",
     gap: 12,
   },
   sectionHeaderSpaced: {
     marginBottom: 20,
   },
   sectionTitle: {
+    flexShrink: 1,
     color: colors.text.primary,
     fontFamily: typography.fontFamily.medium,
     fontSize: typography.fontSize.title,
@@ -171,6 +173,8 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.body,
   },
   period: {
+    minHeight: 44,
+    marginVertical: -10,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,

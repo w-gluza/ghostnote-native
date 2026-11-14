@@ -132,7 +132,9 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.body,
   },
   saved: {
-    marginTop: 16,
+    marginTop: 3,
+    minHeight: 44,
+    justifyContent: "center",
     alignSelf: "center",
   },
   savedLabel: {

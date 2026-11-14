@@ -25,7 +25,7 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      accessibilityLabel={`${rudiment.name}, ${rudiment.category}, level ${rudiment.level}`}
+      accessibilityLabel={`${rudiment.name}, ${rudiment.category}, level ${rudiment.level}, sticking ${rudiment.sticking}`}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.thumbnail}>

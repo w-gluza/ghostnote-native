@@ -47,7 +47,9 @@ export function AchievementRow({ achievement }: AchievementRowProps) {
           <View
             style={[
               styles.fill,
-              { width: `${Math.min(progress / goal, 1) * 100}%` },
+              {
+                width: `${goal > 0 ? Math.min(progress / goal, 1) * 100 : 0}%`,
+              },
             ]}
           />
         </View>

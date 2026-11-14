@@ -51,7 +51,9 @@ export function TempoDial({ bpm, position, size }: TempoDialProps) {
         <View style={styles.marker} />
       </View>
       <View pointerEvents="none" style={styles.readout}>
-        <Text style={styles.value}>{bpm}</Text>
+        <Text maxFontSizeMultiplier={1.3} style={styles.value}>
+          {bpm}
+        </Text>
         <Text style={styles.unit}>BPM</Text>
       </View>
     </View>

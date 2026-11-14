@@ -7,6 +7,7 @@ import { typography } from "@/theme/typography";
 type SearchFieldProps = {
   value: string;
   placeholder: string;
+  label: string;
   onChangeText: (value: string) => void;
   onCancel: () => void;
 };
@@ -14,6 +15,7 @@ type SearchFieldProps = {
 export function SearchField({
   value,
   placeholder,
+  label,
   onChangeText,
   onCancel,
 }: SearchFieldProps) {
@@ -26,6 +28,7 @@ export function SearchField({
           tintColor={colors.text.secondary}
         />
         <TextInput
+          accessibilityLabel={label}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
@@ -40,7 +43,11 @@ export function SearchField({
           style={styles.input}
         />
       </View>
-      <Pressable accessibilityRole="button" hitSlop={12} onPress={onCancel}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={onCancel}
+        style={({ pressed }) => [styles.target, pressed && styles.pressed]}
+      >
         <Text style={styles.cancel}>Cancel</Text>
       </Pressable>
     </View>
@@ -55,7 +62,7 @@ const styles = StyleSheet.create({
   },
   field: {
     flex: 1,
-    height: 44,
+    minHeight: 44,
     paddingHorizontal: 12,
     borderRadius: 12,
     flexDirection: "row",
@@ -65,10 +72,17 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 44,
+    minHeight: 44,
     color: colors.text.primary,
     fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.body,
+  },
+  target: {
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  pressed: {
+    opacity: 0.7,
   },
   cancel: {
     color: colors.accent,

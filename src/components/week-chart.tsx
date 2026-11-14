@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   chart: {
     flexDirection: "row",
     alignItems: "flex-end",
-    height: BAR_AREA_HEIGHT + 52,
+    minHeight: BAR_AREA_HEIGHT + 52,
   },
   column: {
     flex: 1,

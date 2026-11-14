@@ -29,7 +29,11 @@ export function RudimentRow({
 }: RudimentRowProps) {
   return (
     <View style={styles.row}>
-      <View style={styles.timeline}>
+      <View
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        style={styles.timeline}
+      >
         <View style={styles.line} />
         <Text style={styles.position}>{String(position).padStart(2, "0")}</Text>
         <View style={styles.line} />
@@ -37,6 +41,7 @@ export function RudimentRow({
       <View style={[styles.body, !isLast && styles.bodyDivider]}>
         <Pressable
           accessibilityRole={onPress ? "button" : undefined}
+          accessibilityLabel={`${position}. ${rudiment.name}, ${rudiment.minutes} minutes, ${rudiment.rounds} rounds, ${rudiment.bpm} beats per minute`}
           disabled={!onPress}
           onPress={onPress}
           style={({ pressed }) => [styles.details, pressed && styles.pressed]}
@@ -73,7 +78,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   timeline: {
-    width: 24,
+    minWidth: 24,
     alignItems: "center",
     gap: 8,
   },

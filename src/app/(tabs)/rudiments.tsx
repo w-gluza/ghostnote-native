@@ -71,6 +71,11 @@ export default function RudimentsScreen() {
         );
       }}
       ItemSeparatorComponent={Separator}
+      ListEmptyComponent={
+        <Text style={styles.empty}>
+          No rudiments match &quot;{query.trim()}&quot;.
+        </Text>
+      }
       style={styles.screen}
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
@@ -83,6 +88,7 @@ export default function RudimentsScreen() {
             <View style={styles.searchRow}>
               <SearchField
                 value={query}
+                label="Search rudiments"
                 placeholder="Search rudiments..."
                 onChangeText={setQuery}
                 onCancel={closeSearch}
@@ -98,7 +104,10 @@ export default function RudimentsScreen() {
                 accessibilityLabel="Search rudiments"
                 hitSlop={12}
                 onPress={() => setIsSearching(true)}
-                style={styles.search}
+                style={({ pressed }) => [
+                  styles.search,
+                  pressed && styles.pressed,
+                ]}
               >
                 <SymbolView
                   name="magnifyingglass"
@@ -149,9 +158,18 @@ const styles = StyleSheet.create({
   search: {
     paddingBottom: 10,
   },
+  pressed: {
+    opacity: 0.7,
+  },
+  empty: {
+    paddingVertical: 24,
+    color: colors.text.secondary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.body,
+  },
   searchRow: {
     marginTop: 10,
-    height: 56,
+    minHeight: 56,
     justifyContent: "flex-end",
   },
   separator: {

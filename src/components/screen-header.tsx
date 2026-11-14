@@ -18,8 +18,12 @@ export function ScreenHeader({ onBack }: ScreenHeaderProps) {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Back"
-          hitSlop={12}
           onPress={onBack}
+          style={({ pressed }) => [
+            styles.target,
+            styles.back,
+            pressed && styles.pressed,
+          ]}
         >
           <SymbolView
             name="chevron.left"
@@ -34,8 +38,12 @@ export function ScreenHeader({ onBack }: ScreenHeaderProps) {
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Profile"
-        hitSlop={12}
         onPress={() => router.push("/profile")}
+        style={({ pressed }) => [
+          styles.target,
+          styles.profile,
+          pressed && styles.pressed,
+        ]}
       >
         <SymbolView
           name="person"
@@ -50,9 +58,26 @@ export function ScreenHeader({ onBack }: ScreenHeaderProps) {
 
 const styles = StyleSheet.create({
   header: {
+    marginVertical: -10,
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
+  },
+  target: {
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  back: {
+    marginRight: -24,
+    alignItems: "flex-start",
+  },
+  profile: {
+    marginLeft: -20,
+    alignItems: "flex-end",
+  },
+  pressed: {
+    opacity: 0.7,
   },
   wordmark: {
     color: colors.text.primary,
