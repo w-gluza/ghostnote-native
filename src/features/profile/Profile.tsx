@@ -32,7 +32,7 @@ import {
   useWeeklyGoal,
 } from "@/features/practice/stores/weekly-goal";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 
 const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
   key: count,
@@ -54,7 +54,7 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView
-      style={styles.screen}
+      style={layoutStyles.screen}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}
     >
@@ -133,10 +133,6 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   content: {
     paddingTop: 24,
     paddingHorizontal: layout.screenInset,

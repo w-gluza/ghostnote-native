@@ -24,7 +24,7 @@ import { quickWarmUp } from "@/features/routines/domain/starter-routines";
 import type { CompletedExercise } from "@/features/practice/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 function SummaryRow({
@@ -96,7 +96,7 @@ export default function SummaryScreen() {
   };
 
   return (
-    <SafeAreaView edges={["top", "bottom"]} style={styles.screen}>
+    <SafeAreaView edges={["top", "bottom"]} style={layoutStyles.screen}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -151,10 +151,6 @@ export default function SummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   scroll: {
     flex: 1,
   },

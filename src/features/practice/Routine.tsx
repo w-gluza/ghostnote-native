@@ -1,10 +1,11 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { SymbolView } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
@@ -29,7 +30,7 @@ import {
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 
 function SetlistRow({
   done,
@@ -50,15 +51,27 @@ function SetlistRow({
   const sticking = stickingOf(rudiment);
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <NumberedRow
+      position={position}
       accessibilityLabel={`${rudiment.name}, ${exerciseMinutes(exercise)} minutes, ${done} of ${exercise.rounds.length} rounds done, sticking ${sticking}`}
+      density="compact"
+      indicator={isComplete ? "checkmark" : "chevron"}
+      trailing={
+        <View style={styles.rowStatus}>
+          <AppText variant="bodySmall" tone="secondary" tabular>
+            {exerciseMinutes(exercise)} min
+          </AppText>
+          <AppText
+            variant="bodySmall"
+            tone={done > 0 ? "accent" : "secondary"}
+            tabular
+          >
+            {done}/{exercise.rounds.length} rounds
+          </AppText>
+        </View>
+      }
       onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
-      <AppText variant="body" tone="violet" tabular style={styles.position}>
-        {String(position).padStart(2, "0")}
-      </AppText>
       <View style={styles.rowText}>
         <AppText variant="headline" tone={isComplete ? "secondary" : "primary"}>
           {rudiment.name}
@@ -67,25 +80,7 @@ function SetlistRow({
           {sticking}
         </AppText>
       </View>
-      <View style={styles.rowStatus}>
-        <AppText variant="bodySmall" tone="secondary" tabular>
-          {exerciseMinutes(exercise)} min
-        </AppText>
-        <AppText
-          variant="bodySmall"
-          tone={done > 0 ? "accent" : "secondary"}
-          tabular
-        >
-          {done}/{exercise.rounds.length} rounds
-        </AppText>
-      </View>
-      <SymbolView
-        name={isComplete ? "checkmark" : "chevron.right"}
-        size={13}
-        weight="medium"
-        tintColor={isComplete ? colors.accent : colors.text.secondary}
-      />
-    </Pressable>
+    </NumberedRow>
   );
 }
 
@@ -113,7 +108,7 @@ export default function RoutineScreen() {
   const next = nextExercise(session, routine);
 
   return (
-    <SafeAreaView edges={["bottom"]} style={styles.screen}>
+    <SafeAreaView edges={["bottom"]} style={layoutStyles.screen}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -223,10 +218,6 @@ export default function RoutineScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   content: {
     paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
@@ -243,19 +234,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     marginTop: 24,
   },
-  row: {
-    paddingVertical: 20,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  position: {
-    width: 24,
-  },
   rowText: {
-    flex: 1,
     gap: 6,
   },
   sticking: {
@@ -284,8 +263,5 @@ const styles = StyleSheet.create({
   start: {
     marginHorizontal: layout.screenInset,
     marginBottom: 3,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

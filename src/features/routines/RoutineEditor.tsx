@@ -1,5 +1,4 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
   Alert,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { Button } from "@/components/Button/Button";
@@ -49,8 +49,8 @@ import type {
 } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
-import { textVariants, typography } from "@/theme/typography";
+import { layout, layoutStyles } from "@/theme/layout";
+import { textVariants } from "@/theme/typography";
 
 function RoundField({
   label,
@@ -131,7 +131,7 @@ function ExerciseEditor({
     onChange({ rounds: exercise.rounds.filter((round) => round.id !== id) });
 
   return (
-    <View style={styles.screen}>
+    <View style={layoutStyles.screen}>
       <View style={styles.bar}>
         <Button
           variant="text"
@@ -371,7 +371,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
   }
 
   return (
-    <View style={styles.screen}>
+    <View style={layoutStyles.screen}>
       <View style={styles.bar}>
         <Button variant="text" tone="muted" onPress={() => router.back()}>
           Cancel
@@ -421,21 +421,12 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           const rounds = exercise.rounds.length;
           const detail = `${rounds} ${rounds === 1 ? "round" : "rounds"} · ${exerciseMinutes(exercise)} min`;
           return (
-            <Pressable
+            <NumberedRow
               key={exercise.id}
-              accessibilityRole="button"
+              position={index + 1}
               accessibilityLabel={`${rudiment.name}, ${detail}`}
               onPress={() => setOpenId(exercise.id)}
-              style={({ pressed }) => [styles.row, pressed && styles.pressed]}
             >
-              <AppText
-                variant="body"
-                tone="violet"
-                tabular
-                style={styles.position}
-              >
-                {String(index + 1).padStart(2, "0")}
-              </AppText>
               <View style={styles.rowText}>
                 <AppText variant="bodyStrong" numberOfLines={1}>
                   {rudiment.name}
@@ -444,13 +435,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
                   {detail}
                 </AppText>
               </View>
-              <SymbolView
-                name="chevron.right"
-                size={13}
-                weight="medium"
-                tintColor={colors.text.secondary}
-              />
-            </Pressable>
+            </NumberedRow>
           );
         })}
 
@@ -508,10 +493,6 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   bar: {
     paddingTop: 8,
     paddingHorizontal: layout.screenInset,
@@ -550,20 +531,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     marginTop: 28,
   },
-  row: {
-    paddingVertical: 24,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  position: {
-    width: 28,
-    fontSize: typography.fontSize.title,
-  },
   rowText: {
-    flex: 1,
     gap: 8,
   },
   add: {

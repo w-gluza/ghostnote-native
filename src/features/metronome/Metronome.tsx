@@ -45,7 +45,7 @@ import {
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 const STEP_BUTTON_SIZE = 36;
@@ -117,7 +117,7 @@ export default function MetronomeScreen() {
   }));
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={layoutStyles.screen}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -223,10 +223,6 @@ export default function MetronomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   content: {
     flexGrow: 1,
     paddingTop: 8,

@@ -29,7 +29,7 @@ import {
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 
 export default function PracticeScreen() {
   const router = useRouter();
@@ -56,7 +56,7 @@ export default function PracticeScreen() {
 
   return (
     <ScrollView
-      style={styles.screen}
+      style={layoutStyles.screen}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}
     >
@@ -102,10 +102,6 @@ export default function PracticeScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   content: {
     paddingTop: 8,
     paddingHorizontal: layout.screenInset,

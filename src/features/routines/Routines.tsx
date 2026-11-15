@@ -1,8 +1,8 @@
 import { Stack, useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { useSavedRoutines } from "@/features/routines/stores/saved-routines";
@@ -14,8 +14,7 @@ import {
 import type { Routine } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
-import { typography } from "@/theme/typography";
+import { layout, layoutStyles } from "@/theme/layout";
 
 function RoutineRow({
   routine,
@@ -32,19 +31,12 @@ function RoutineRow({
   const recommended = isRecommended(routine);
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <NumberedRow
+      position={position}
       accessibilityLabel={`${routine.name}, ${recommended ? "recommended, " : ""}${minutes} minutes, ${routine.exercises.length} rudiments, level ${routineLevel(routine)}`}
+      isLast={isLast}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.row,
-        !isLast && styles.divided,
-        pressed && styles.pressed,
-      ]}
     >
-      <AppText variant="body" tone="violet" tabular style={styles.position}>
-        {String(position).padStart(2, "0")}
-      </AppText>
       <View style={styles.rowText}>
         {recommended ? (
           <AppText
@@ -61,13 +53,7 @@ function RoutineRow({
           {routineLevel(routine)}
         </AppText>
       </View>
-      <SymbolView
-        name="chevron.right"
-        size={13}
-        weight="medium"
-        tintColor={colors.text.secondary}
-      />
-    </Pressable>
+    </NumberedRow>
   );
 }
 
@@ -77,7 +63,7 @@ export default function RoutinesScreen() {
   const create = () => router.push("/routine-editor");
 
   return (
-    <View style={styles.screen}>
+    <View style={layoutStyles.screen}>
       <Stack.Screen
         options={{
           headerShown: true,
@@ -134,10 +120,6 @@ export default function RoutinesScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   content: {
     paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
@@ -152,22 +134,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 8,
   },
-  row: {
-    paddingVertical: 24,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  divided: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  position: {
-    width: 32,
-    fontSize: typography.fontSize.title,
-  },
   rowText: {
-    flex: 1,
     gap: 10,
   },
   recommended: {
@@ -181,8 +148,5 @@ const styles = StyleSheet.create({
   emptyText: {
     lineHeight: 24,
     textAlign: "center",
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

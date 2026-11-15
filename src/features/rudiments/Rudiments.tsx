@@ -25,7 +25,7 @@ import {
 import { buildTimeline } from "@/features/rudiments/domain/timeline";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 
 const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
@@ -87,7 +87,7 @@ export default function RudimentsScreen() {
             : `No ${category.toLowerCase()} match "${query.trim()}".`}
         </AppText>
       }
-      style={styles.screen}
+      style={layoutStyles.screen}
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
@@ -133,10 +133,6 @@ export default function RudimentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   content: {
     paddingTop: 8,
     paddingHorizontal: layout.screenInset,
