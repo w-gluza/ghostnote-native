@@ -1,10 +1,6 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  type GestureResponderEvent,
-} from "react-native";
+import { StyleSheet, View, type GestureResponderEvent } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -78,10 +74,17 @@ export function TempoDial({ bpm, min, max, size, onChange }: TempoDialProps) {
         <View style={styles.marker} />
       </View>
       <View pointerEvents="none" style={styles.readout}>
-        <Text maxFontSizeMultiplier={1.3} style={styles.value}>
+        <AppText
+          variant="body"
+          tabular
+          maxFontSizeMultiplier={1.3}
+          style={styles.value}
+        >
           {bpm}
-        </Text>
-        <Text style={styles.unit}>BPM</Text>
+        </AppText>
+        <AppText variant="caption" tone="secondary" style={styles.unit}>
+          BPM
+        </AppText>
       </View>
     </View>
   );
@@ -118,16 +121,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   value: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.numeral,
-    fontVariant: ["tabular-nums"],
     letterSpacing: -1,
   },
   unit: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
     letterSpacing: 1,
   },
 });

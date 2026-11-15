@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { AccessibilityInfo, StyleSheet, Text } from "react-native";
+import { AccessibilityInfo } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { roundPlayedMs } from "@/features/practice/stores/practice-session";
 import {
   clockLabel,
   isTargetReached,
   spokenClock,
 } from "@/features/practice/domain/session";
-import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 type RoundClockProps = {
   routineId: string;
@@ -48,31 +47,16 @@ export function RoundClock({
   const isReached = isTargetReached(playedMs, targetMs);
 
   return (
-    <Text
+    <AppText
+      variant="body"
+      tone="secondary"
+      tabular
       accessibilityLabel={`Round ${position}, played ${spokenClock(playedMs)} of ${spokenClock(targetMs)}${isReached ? ", target reached" : ""}`}
-      style={styles.target}
     >
-      <Text style={[styles.played, isReached && styles.reached]}>
+      <AppText variant="heading" tone={isReached ? "accent" : "primary"}>
         {clockLabel(playedMs)}
-      </Text>{" "}
+      </AppText>{" "}
       / {clockLabel(targetMs)}
-    </Text>
+    </AppText>
   );
 }
-
-const styles = StyleSheet.create({
-  target: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
-  },
-  played: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
-  },
-  reached: {
-    color: colors.accent,
-  },
-});

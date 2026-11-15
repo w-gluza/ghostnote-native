@@ -4,11 +4,11 @@ import {
   Image,
   Pressable,
   StyleSheet,
-  Text,
   View,
   useWindowDimensions,
 } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { RudimentVideo } from "@/features/rudiments/components/RudimentVideo/RudimentVideo";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -49,9 +49,17 @@ function Sticking({ phrases }: { phrases: StickingStroke[][] }) {
               style={[styles.cell, { minWidth: CELL_WIDTH * fontScale }]}
             >
               {stroke.grace.length > 0 ? (
-                <Text style={styles.grace}>{stroke.grace.join("")}</Text>
+                <AppText
+                  variant="caption"
+                  tone="secondary"
+                  style={styles.grace}
+                >
+                  {stroke.grace.join("")}
+                </AppText>
               ) : null}
-              <Text style={styles.stroke}>{stroke.hand}</Text>
+              <AppText variant="bodyStrong" style={styles.stroke}>
+                {stroke.hand}
+              </AppText>
             </View>
           ))}
         </View>
@@ -81,10 +89,12 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
         )}
       </View>
       <View style={styles.details}>
-        <Text style={styles.name}>{rudiment.name}</Text>
-        <Text style={styles.meta}>
+        <AppText variant="headline" style={styles.name}>
+          {rudiment.name}
+        </AppText>
+        <AppText variant="bodySmall" tone="secondary" style={styles.meta}>
           {rudiment.category} · Lvl {rudiment.level}
-        </Text>
+        </AppText>
         <Sticking phrases={rudiment.phrases} />
       </View>
       <SymbolView
@@ -127,15 +137,9 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   name: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
     lineHeight: 22,
   },
   meta: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
     lineHeight: 20,
   },
   sticking: {
@@ -155,15 +159,10 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   grace: {
-    color: colors.text.secondary,
     fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
     lineHeight: 16,
   },
   stroke: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
     lineHeight: 22,
   },
 });

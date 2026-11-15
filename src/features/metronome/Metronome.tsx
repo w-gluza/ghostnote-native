@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { AppText } from "@/components/AppText/AppText";
 import { BeatPattern } from "@/features/metronome/components/BeatPattern/BeatPattern";
 import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
 import { PlayButton } from "@/components/PlayButton/PlayButton";
@@ -132,9 +133,7 @@ export default function MetronomeScreen() {
               }
             }}
           >
-            <Text style={styles.signatureLabel}>
-              {meterLabel(settings.meter)}
-            </Text>
+            <AppText variant="heading">{meterLabel(settings.meter)}</AppText>
           </OptionMenu>
           <View style={styles.rhythmSeparator} />
           <OptionMenu
@@ -146,9 +145,13 @@ export default function MetronomeScreen() {
             }
           >
             <Text style={styles.subdivisionIcon}>♫</Text>
-            <Text numberOfLines={1} style={styles.subdivisionLabel}>
+            <AppText
+              variant="body"
+              numberOfLines={1}
+              style={styles.subdivisionLabel}
+            >
               {subdivisionName(settings)}
-            </Text>
+            </AppText>
             <SymbolView
               name="chevron.down"
               size={13}
@@ -267,14 +270,6 @@ const styles = StyleSheet.create({
   },
   subdivisionLabel: {
     flexShrink: 1,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-  },
-  signatureLabel: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
   },
   stage: {
     flex: 1,

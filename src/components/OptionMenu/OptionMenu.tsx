@@ -4,15 +4,14 @@ import {
   Modal,
   Pressable,
   StyleSheet,
-  Text,
   useWindowDimensions,
   View,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 export type MenuOption<Key extends string | number> = {
   key: Key;
@@ -117,7 +116,9 @@ export function OptionMenu<Key extends string | number>({
                       />
                     ) : null}
                   </View>
-                  <Text style={styles.label}>{option.label}</Text>
+                  <AppText variant="body" tabular>
+                    {option.label}
+                  </AppText>
                 </Pressable>
               );
             })}
@@ -159,12 +160,6 @@ const styles = StyleSheet.create({
   check: {
     width: 16,
     alignItems: "center",
-  },
-  label: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
   },
   pressed: {
     opacity: 0.7,

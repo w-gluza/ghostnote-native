@@ -1,9 +1,9 @@
 import type { VideoSource } from "expo-video";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { RudimentVideo } from "@/features/rudiments/components/RudimentVideo/RudimentVideo";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 export type Rudiment = {
   name: string;
@@ -34,7 +34,9 @@ export function RudimentRow({
         style={styles.timeline}
       >
         <View style={styles.line} />
-        <Text style={styles.position}>{String(position).padStart(2, "0")}</Text>
+        <AppText variant="caption" tone="violet">
+          {String(position).padStart(2, "0")}
+        </AppText>
         <View style={styles.line} />
       </View>
       <View style={[styles.body, !isLast && styles.bodyDivider]}>
@@ -45,12 +47,16 @@ export function RudimentRow({
           onPress={onPress}
           style={({ pressed }) => [styles.details, pressed && styles.pressed]}
         >
-          <Text style={styles.name}>{rudiment.name}</Text>
-          <Text style={styles.meta}>
+          <AppText variant="headline">{rudiment.name}</AppText>
+          <AppText variant="bodySmall" tone="secondary" style={styles.meta}>
             {rudiment.minutes} min • {rudiment.rounds} rounds
-          </Text>
-          <Text style={styles.bpm}>{rudiment.bpm}</Text>
-          <Text style={styles.bpmLabel}>BPM</Text>
+          </AppText>
+          <AppText variant="heading" style={styles.bpm}>
+            {rudiment.bpm}
+          </AppText>
+          <AppText variant="overline" tone="secondary">
+            BPM
+          </AppText>
         </Pressable>
         <View style={styles.thumbnail}>
           {rudiment.video ? (
@@ -93,11 +99,6 @@ const styles = StyleSheet.create({
     width: StyleSheet.hairlineWidth,
     backgroundColor: colors.disabled,
   },
-  position: {
-    color: colors.violet,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
-  },
   body: {
     flex: 1,
     flexDirection: "row",
@@ -112,28 +113,11 @@ const styles = StyleSheet.create({
   details: {
     flex: 1,
   },
-  name: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
-  },
   meta: {
     marginTop: 2,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   bpm: {
     marginTop: 6,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
-  },
-  bpmLabel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
   },
   thumbnail: {
     width: 88,

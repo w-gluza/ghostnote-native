@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { minutesLabel } from "@/features/practice/domain/insights";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 export type DayPractice = { day: string; label: string; ms: number };
 
@@ -34,9 +34,14 @@ export function WeekChart({ days, todayIndex }: WeekChartProps) {
           <View key={day.day} style={styles.column}>
             {day.ms > 0 ? (
               <>
-                <Text style={[styles.value, isToday && styles.today]}>
+                <AppText
+                  variant="bodySmall"
+                  tone={isToday ? "accent" : "secondary"}
+                  tabular
+                  style={styles.value}
+                >
                   {minutesLabel(day.ms)}
-                </Text>
+                </AppText>
                 <View
                   style={[
                     styles.bar,
@@ -53,9 +58,13 @@ export function WeekChart({ days, todayIndex }: WeekChartProps) {
             ) : (
               <View style={styles.rest} />
             )}
-            <Text style={[styles.day, isToday && styles.today]}>
+            <AppText
+              variant="caption"
+              tone={isToday ? "accent" : "secondary"}
+              style={styles.day}
+            >
               {day.label}
-            </Text>
+            </AppText>
           </View>
         );
       })}
@@ -76,10 +85,6 @@ const styles = StyleSheet.create({
   },
   value: {
     marginBottom: 6,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
-    fontVariant: ["tabular-nums"],
   },
   bar: {
     width: 8,
@@ -97,11 +102,5 @@ const styles = StyleSheet.create({
   },
   day: {
     marginTop: 8,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
-  },
-  today: {
-    color: colors.accent,
   },
 });

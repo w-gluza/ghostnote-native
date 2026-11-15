@@ -1,9 +1,10 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { AppText } from "@/components/AppText/AppText";
 import {
   finishSession,
   useActiveSession,
@@ -49,10 +50,14 @@ function SummaryRow({
         tintColor={colors.accent}
       />
       <View style={styles.rowText}>
-        <Text style={styles.name}>{played.rudimentName}</Text>
-        <Text style={styles.detail}>{detail}</Text>
+        <AppText variant="headline">{played.rudimentName}</AppText>
+        <AppText variant="caption" tone="secondary">
+          {detail}
+        </AppText>
       </View>
-      <Text style={styles.rounds}>{rounds}</Text>
+      <AppText variant="bodySmall" tone="secondary" tabular>
+        {rounds}
+      </AppText>
     </View>
   );
 }
@@ -60,8 +65,12 @@ function SummaryRow({
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <View accessible style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <AppText variant="heading" tabular style={styles.statValue}>
+        {value}
+      </AppText>
+      <AppText variant="caption" tone="secondary">
+        {label}
+      </AppText>
     </View>
   );
 }
@@ -90,9 +99,13 @@ export default function SummaryScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.heading}>
-          <Text accessibilityRole="header" style={styles.title}>
+          <AppText
+            variant="title"
+            accessibilityRole="header"
+            style={styles.title}
+          >
             Practice complete
-          </Text>
+          </AppText>
           <SymbolView
             name="checkmark.circle"
             size={28}
@@ -100,9 +113,9 @@ export default function SummaryScreen() {
             tintColor={colors.accent}
           />
         </View>
-        <Text style={styles.subtitle}>
+        <AppText variant="bodySmall" tone="secondary" style={styles.subtitle}>
           {session?.routineName ?? routine.name}
-        </Text>
+        </AppText>
 
         <View style={styles.stats}>
           <Stat value={timePlayed.value} label={timePlayed.label} />
@@ -112,9 +125,14 @@ export default function SummaryScreen() {
           <Stat value={`${sessionRoundCount(session)}`} label="rounds" />
         </View>
 
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
+        <AppText
+          variant="overline"
+          tone="secondary"
+          accessibilityRole="header"
+          style={styles.sectionTitle}
+        >
           WHAT YOU PLAYED
-        </Text>
+        </AppText>
         {played.map((exercise, index) => (
           <SummaryRow
             key={exercise.sourceExerciseId ?? index}
@@ -129,10 +147,14 @@ export default function SummaryScreen() {
       </ScrollView>
 
       {saveFailed ? (
-        <Text accessibilityRole="alert" style={styles.saveFailed}>
+        <AppText
+          variant="bodySmall"
+          accessibilityRole="alert"
+          style={styles.saveFailed}
+        >
           This session could not be saved. Your practice is still here - try
           again.
-        </Text>
+        </AppText>
       ) : null}
       <Button style={styles.finish} onPress={finish}>
         Finish
@@ -161,17 +183,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.heading,
-    lineHeight: 34,
     paddingTop: 6,
   },
   subtitle: {
     marginTop: 8,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   stats: {
     marginTop: 28,
@@ -187,15 +202,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   statValue: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
     fontSize: typography.fontSize.heading,
-    fontVariant: ["tabular-nums"],
-  },
-  statLabel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
   },
   statRule: {
     width: StyleSheet.hairlineWidth,
@@ -205,10 +212,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginTop: 32,
     marginBottom: 4,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
   },
   row: {
     paddingVertical: 20,
@@ -222,28 +225,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 6,
   },
-  name: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
-  },
-  detail: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
-  },
-  rounds: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
-    fontVariant: ["tabular-nums"],
-  },
   saveFailed: {
     marginHorizontal: 24,
     marginBottom: 12,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
     textAlign: "center",
   },
   finish: {

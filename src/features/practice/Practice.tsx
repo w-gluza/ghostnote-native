@@ -1,7 +1,8 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import {
   RudimentRow,
   type Rudiment,
@@ -27,7 +28,6 @@ import {
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 export default function PracticeScreen() {
   const router = useRouter();
@@ -60,15 +60,19 @@ export default function PracticeScreen() {
     >
       <ScreenHeader />
 
-      <Text accessibilityRole="header" style={styles.title}>
+      <AppText
+        variant="display"
+        accessibilityRole="header"
+        style={styles.title}
+      >
         {"Your\nPractice"}
-      </Text>
+      </AppText>
 
       <View style={styles.summary}>
-        <Text style={styles.summaryText}>
+        <AppText variant="bodySmall">
           {routineMinutes(routine)} min • {rudiments.length} rudiments • Lvl{" "}
           {routineLevel(routine)}
-        </Text>
+        </AppText>
         <WeekProgress done={sessionsThisWeek} goal={weeklyGoal} />
       </View>
 
@@ -111,12 +115,7 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 30,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.display,
-    lineHeight: 46,
     paddingTop: 10,
-    letterSpacing: -0.5,
   },
   summary: {
     marginTop: 16,
@@ -125,11 +124,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
-  },
-  summaryText: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   card: {
     marginTop: 32,

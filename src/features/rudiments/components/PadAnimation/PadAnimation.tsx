@@ -1,8 +1,8 @@
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import type { Hand } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 export type StickMotion = {
   lift: Animated.Value;
@@ -173,12 +173,18 @@ export function PadAnimation({
             { paddingHorizontal: (BUTT_INSET - 6) * scale },
           ]}
         >
-          <Text style={[styles.hand, activeHand === "L" && styles.handActive]}>
+          <AppText
+            variant="label"
+            tone={activeHand === "L" ? "accent" : "secondary"}
+          >
             L
-          </Text>
-          <Text style={[styles.hand, activeHand === "R" && styles.handActive]}>
+          </AppText>
+          <AppText
+            variant="label"
+            tone={activeHand === "R" ? "accent" : "secondary"}
+          >
             R
-          </Text>
+          </AppText>
         </View>
       ) : null}
     </View>
@@ -248,13 +254,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  hand: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-  },
-  handActive: {
-    color: colors.accent,
   },
 });

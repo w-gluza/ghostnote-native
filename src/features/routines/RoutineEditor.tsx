@@ -6,11 +6,11 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
 import { fraction, multiply } from "@/features/rudiments/domain/fraction";
 import { newId } from "@/features/rudiments/domain/ids";
@@ -44,7 +44,7 @@ import type {
 } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
+import { textVariants, typography } from "@/theme/typography";
 
 function RoundField({
   label,
@@ -140,7 +140,7 @@ function ExerciseEditor({
             weight="medium"
             tintColor={colors.text.primary}
           />
-          <Text style={styles.backLabel}>Edit Routine</Text>
+          <AppText variant="bodySmall">Edit Routine</AppText>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -148,7 +148,9 @@ function ExerciseEditor({
           onPress={onClose}
           style={({ pressed }) => pressed && styles.pressed}
         >
-          <Text style={styles.save}>Done</Text>
+          <AppText variant="bodyStrong" tone="accent">
+            Done
+          </AppText>
         </Pressable>
       </View>
 
@@ -157,13 +159,17 @@ function ExerciseEditor({
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
-        <Text accessibilityRole="header" style={styles.title}>
+        <AppText
+          variant="title"
+          accessibilityRole="header"
+          style={styles.title}
+        >
           {rudiment?.name}
-        </Text>
+        </AppText>
         <View style={styles.subtitleRow}>
-          <Text style={styles.subtitle}>
+          <AppText variant="bodySmall" tone="secondary">
             {rudiment?.category} · Lvl {rudiment?.level}
-          </Text>
+          </AppText>
           {pattern && strokeStep ? (
             <NoteValuePicker
               subdivision={
@@ -179,16 +185,40 @@ function ExerciseEditor({
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text accessibilityRole="header" style={styles.sectionTitle}>
+          <AppText
+            variant="overline"
+            tone="secondary"
+            accessibilityRole="header"
+          >
             ROUNDS
-          </Text>
-          <Text style={styles.sectionCount}>{minutes} min total</Text>
+          </AppText>
+          <AppText variant="caption" tone="secondary">
+            {minutes} min total
+          </AppText>
         </View>
 
         <View style={styles.columns}>
-          <Text style={[styles.column, styles.roundColumn]}>ROUND</Text>
-          <Text style={[styles.column, styles.fieldColumn]}>TEMPO</Text>
-          <Text style={[styles.column, styles.fieldColumn]}>DURATION</Text>
+          <AppText
+            variant="overline"
+            tone="secondary"
+            style={styles.roundColumn}
+          >
+            ROUND
+          </AppText>
+          <AppText
+            variant="overline"
+            tone="secondary"
+            style={styles.fieldColumn}
+          >
+            TEMPO
+          </AppText>
+          <AppText
+            variant="overline"
+            tone="secondary"
+            style={styles.fieldColumn}
+          >
+            DURATION
+          </AppText>
           {exercise.rounds.length > 1 ? (
             <View style={styles.removeColumn} />
           ) : null}
@@ -198,7 +228,9 @@ function ExerciseEditor({
           <View key={round.id} style={styles.roundRow}>
             <View style={styles.roundColumn}>
               <View style={styles.roundBadge}>
-                <Text style={styles.roundNumber}>{index + 1}</Text>
+                <AppText variant="label" tone="violet" tabular>
+                  {index + 1}
+                </AppText>
               </View>
             </View>
             <View style={styles.fieldColumn}>
@@ -260,13 +292,19 @@ function ExerciseEditor({
               weight="medium"
               tintColor={colors.accent}
             />
-            <Text style={styles.addLabel}>Add round</Text>
+            <AppText variant="bodyStrong" tone="accent">
+              Add round
+            </AppText>
           </Pressable>
         ) : null}
 
         <View style={styles.total}>
-          <Text style={styles.totalLabel}>Total duration</Text>
-          <Text style={styles.totalValue}>{minutes} min</Text>
+          <AppText variant="body" tone="secondary">
+            Total duration
+          </AppText>
+          <AppText variant="heading" tabular>
+            {minutes} min
+          </AppText>
         </View>
 
         <Pressable
@@ -275,7 +313,9 @@ function ExerciseEditor({
           onPress={onRemove}
           style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
         >
-          <Text style={styles.removeLabel}>Remove from routine</Text>
+          <AppText variant="bodySmall" tone="secondary">
+            Remove from routine
+          </AppText>
         </Pressable>
       </ScrollView>
     </View>
@@ -377,7 +417,9 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           onPress={() => router.back()}
           style={({ pressed }) => pressed && styles.pressed}
         >
-          <Text style={styles.cancel}>Cancel</Text>
+          <AppText variant="body" tone="secondary">
+            Cancel
+          </AppText>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -389,7 +431,9 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.save}>Save</Text>
+          <AppText variant="bodyStrong" tone="accent">
+            Save
+          </AppText>
         </Pressable>
       </View>
 
@@ -398,14 +442,22 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
-        <Text accessibilityRole="header" style={styles.title}>
+        <AppText
+          variant="title"
+          accessibilityRole="header"
+          style={styles.title}
+        >
           {source ? "Edit Routine" : "New Routine"}
-        </Text>
+        </AppText>
         {saveFailed ? (
-          <Text accessibilityRole="alert" style={styles.saveFailed}>
+          <AppText
+            variant="bodySmall"
+            accessibilityRole="alert"
+            style={styles.saveFailed}
+          >
             This routine could not be saved. Your changes are still here - try
             again.
-          </Text>
+          </AppText>
         ) : null}
 
         <TextInput
@@ -422,12 +474,16 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         />
 
         <View style={styles.sectionHeader}>
-          <Text accessibilityRole="header" style={styles.sectionTitle}>
+          <AppText
+            variant="overline"
+            tone="secondary"
+            accessibilityRole="header"
+          >
             EXERCISES
-          </Text>
-          <Text style={styles.sectionCount}>
+          </AppText>
+          <AppText variant="caption" tone="secondary">
             {routineMinutes({ exercises })} min
-          </Text>
+          </AppText>
         </View>
 
         {exercises.map((exercise, index) => {
@@ -445,14 +501,21 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
               onPress={() => setOpenId(exercise.id)}
               style={({ pressed }) => [styles.row, pressed && styles.pressed]}
             >
-              <Text style={styles.position}>
+              <AppText
+                variant="body"
+                tone="violet"
+                tabular
+                style={styles.position}
+              >
                 {String(index + 1).padStart(2, "0")}
-              </Text>
+              </AppText>
               <View style={styles.rowText}>
-                <Text numberOfLines={1} style={styles.name}>
+                <AppText variant="bodyStrong" numberOfLines={1}>
                   {rudiment.name}
-                </Text>
-                <Text style={styles.meta}>{detail}</Text>
+                </AppText>
+                <AppText variant="bodySmall" tone="secondary" tabular>
+                  {detail}
+                </AppText>
               </View>
               <SymbolView
                 name="chevron.right"
@@ -478,7 +541,9 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
               weight="medium"
               tintColor={colors.accent}
             />
-            <Text style={styles.addLabel}>Add rudiment</Text>
+            <AppText variant="bodyStrong" tone="accent">
+              Add rudiment
+            </AppText>
           </Pressable>
         ) : null}
 
@@ -494,10 +559,10 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
                   pressed && styles.pressed,
                 ]}
               >
-                <Text style={styles.choiceName}>{rudiment.name}</Text>
-                <Text style={styles.meta}>
+                <AppText variant="bodyStrong">{rudiment.name}</AppText>
+                <AppText variant="bodySmall" tone="secondary" tabular>
                   {rudiment.category} · Lvl {rudiment.level}
-                </Text>
+                </AppText>
               </Pressable>
             ))
           : null}
@@ -509,13 +574,19 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
             onPress={confirmDelete}
             style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
           >
-            <Text style={styles.removeLabel}>Delete routine</Text>
+            <AppText variant="bodySmall" tone="secondary">
+              Delete routine
+            </AppText>
           </Pressable>
         ) : null}
         {deleteFailed ? (
-          <Text accessibilityRole="alert" style={styles.deleteFailed}>
+          <AppText
+            variant="bodySmall"
+            accessibilityRole="alert"
+            style={styles.deleteFailed}
+          >
             This routine could not be deleted. Try again.
-          </Text>
+          </AppText>
         ) : null}
       </ScrollView>
     </View>
@@ -534,25 +605,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  cancel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-  },
-  save: {
-    color: colors.accent,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-  },
   back: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-  },
-  backLabel: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   content: {
     paddingTop: 20,
@@ -561,22 +617,12 @@ const styles = StyleSheet.create({
   },
   deleteFailed: {
     marginTop: 12,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
     textAlign: "center",
   },
   saveFailed: {
     marginTop: 12,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   title: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.heading,
-    lineHeight: 34,
     paddingTop: 6,
   },
   subtitleRow: {
@@ -586,19 +632,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 12,
   },
-  subtitle: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
-  },
   input: {
     marginTop: 16,
     height: 52,
     paddingHorizontal: 16,
     borderRadius: 16,
+    ...textVariants.body,
     color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
     backgroundColor: colors.surface,
   },
   sectionHeader: {
@@ -607,17 +647,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  sectionTitle: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
-  },
-  sectionCount: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
   },
   row: {
     paddingVertical: 24,
@@ -629,25 +658,11 @@ const styles = StyleSheet.create({
   },
   position: {
     width: 28,
-    color: colors.violet,
-    fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.title,
-    fontVariant: ["tabular-nums"],
   },
   rowText: {
     flex: 1,
     gap: 8,
-  },
-  name: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-  },
-  meta: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
-    fontVariant: ["tabular-nums"],
   },
   add: {
     marginTop: 24,
@@ -655,11 +670,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-  },
-  addLabel: {
-    color: colors.accent,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
   },
   choice: {
     marginTop: 12,
@@ -669,22 +679,11 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: colors.surface,
   },
-  choiceName: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-  },
   columns: {
     marginTop: 20,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-  },
-  column: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
   },
   roundColumn: {
     width: 64,
@@ -710,12 +709,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.surface,
   },
-  roundNumber: {
-    color: colors.violet,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-    fontVariant: ["tabular-nums"],
-  },
   field: {
     padding: 8,
     borderRadius: 16,
@@ -727,9 +720,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
+    ...textVariants.body,
     color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
     fontVariant: ["tabular-nums"],
   },
   total: {
@@ -741,25 +733,9 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
-  totalLabel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-  },
-  totalValue: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
-    fontVariant: ["tabular-nums"],
-  },
   remove: {
     marginTop: 32,
     alignSelf: "center",
-  },
-  removeLabel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   off: {
     opacity: 0.4,

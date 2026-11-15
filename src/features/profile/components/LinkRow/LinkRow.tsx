@@ -1,9 +1,9 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useState } from "react";
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { Linking, Pressable, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 type LinkRowProps = {
   symbol: SymbolViewProps["name"];
@@ -36,8 +36,12 @@ export function LinkRow({ symbol, label, detail, url, isLast }: LinkRowProps) {
           tintColor={colors.text.secondary}
         />
         <View style={styles.text}>
-          <Text style={styles.label}>{label}</Text>
-          {detail ? <Text style={styles.detail}>{detail}</Text> : null}
+          <AppText variant="body">{label}</AppText>
+          {detail ? (
+            <AppText variant="caption" tone="secondary">
+              {detail}
+            </AppText>
+          ) : null}
         </View>
         <SymbolView
           name="arrow.up.right"
@@ -47,9 +51,14 @@ export function LinkRow({ symbol, label, detail, url, isLast }: LinkRowProps) {
         />
       </Pressable>
       {hasFailed ? (
-        <Text accessibilityRole="alert" selectable style={styles.problem}>
+        <AppText
+          variant="bodySmall"
+          accessibilityRole="alert"
+          selectable
+          style={styles.problem}
+        >
           This page could not be opened. You can find it at {url}
-        </Text>
+        </AppText>
       ) : null}
     </View>
   );
@@ -71,21 +80,8 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
   },
-  label: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-  },
-  detail: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
-  },
   problem: {
     paddingBottom: 16,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   pressed: {
     opacity: 0.7,

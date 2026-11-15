@@ -1,9 +1,10 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { SymbolView } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { AppText } from "@/components/AppText/AppText";
 import { findRudiment, stickingOf } from "@/features/rudiments/domain/library";
 import { useActiveSession } from "@/features/practice/stores/practice-session";
 import {
@@ -25,7 +26,6 @@ import {
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 function SetlistRow({
   done,
@@ -52,18 +52,28 @@ function SetlistRow({
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
-      <Text style={styles.position}>{String(position).padStart(2, "0")}</Text>
+      <AppText variant="body" tone="violet" tabular style={styles.position}>
+        {String(position).padStart(2, "0")}
+      </AppText>
       <View style={styles.rowText}>
-        <Text style={[styles.name, isComplete && styles.nameDone]}>
+        <AppText variant="headline" tone={isComplete ? "secondary" : "primary"}>
           {rudiment.name}
-        </Text>
-        <Text style={styles.sticking}>{sticking}</Text>
+        </AppText>
+        <AppText variant="overline" tone="secondary" style={styles.sticking}>
+          {sticking}
+        </AppText>
       </View>
       <View style={styles.rowStatus}>
-        <Text style={styles.minutes}>{exerciseMinutes(exercise)} min</Text>
-        <Text style={[styles.minutes, done > 0 && styles.roundsStarted]}>
+        <AppText variant="bodySmall" tone="secondary" tabular>
+          {exerciseMinutes(exercise)} min
+        </AppText>
+        <AppText
+          variant="bodySmall"
+          tone={done > 0 ? "accent" : "secondary"}
+          tabular
+        >
           {done}/{exercise.rounds.length} rounds
-        </Text>
+        </AppText>
       </View>
       <SymbolView
         name={isComplete ? "checkmark" : "chevron.right"}
@@ -119,7 +129,9 @@ export default function RoutineScreen() {
                 })
               }
             >
-              <Text style={styles.edit}>Edit</Text>
+              <AppText variant="bodyStrong" tone="accent">
+                Edit
+              </AppText>
             </Pressable>
           ),
         }}
@@ -129,9 +141,13 @@ export default function RoutineScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.content}
       >
-        <Text accessibilityRole="header" style={styles.title}>
+        <AppText
+          variant="title"
+          accessibilityRole="header"
+          style={styles.title}
+        >
           {routine.name}
-        </Text>
+        </AppText>
         <View style={styles.summary}>
           <SymbolView
             name="clock"
@@ -139,19 +155,23 @@ export default function RoutineScreen() {
             weight="regular"
             tintColor={colors.text.secondary}
           />
-          <Text style={styles.summaryText}>
+          <AppText variant="bodySmall" tone="secondary">
             {totalMinutes} min · {routine.exercises.length} rudiments · Lvl{" "}
             {routineLevel(routine)}
-          </Text>
+          </AppText>
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text accessibilityRole="header" style={styles.sectionTitle}>
+          <AppText
+            variant="overline"
+            tone="secondary"
+            accessibilityRole="header"
+          >
             YOUR SETLIST
-          </Text>
-          <Text style={styles.sectionCount}>
+          </AppText>
+          <AppText variant="caption" tone="secondary">
             {routine.exercises.length} exercises
-          </Text>
+          </AppText>
         </View>
 
         {routine.exercises.map((exercise, index) => (
@@ -184,9 +204,13 @@ export default function RoutineScreen() {
             : "Start Practice"}
       </Button>
       {selectFailed ? (
-        <Text accessibilityRole="alert" style={styles.selectFailed}>
+        <AppText
+          variant="bodySmall"
+          accessibilityRole="alert"
+          style={styles.selectFailed}
+        >
           This routine could not be set for practice. Try again.
-        </Text>
+        </AppText>
       ) : null}
       {isPractice ? (
         <View accessible style={styles.use}>
@@ -196,7 +220,9 @@ export default function RoutineScreen() {
             weight="medium"
             tintColor={colors.text.secondary}
           />
-          <Text style={styles.usedLabel}>Used for practice</Text>
+          <AppText variant="label" tone="secondary">
+            Used for practice
+          </AppText>
         </View>
       ) : (
         <Button
@@ -220,16 +246,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
   },
-  edit: {
-    color: colors.accent,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-  },
   title: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.heading,
-    lineHeight: 34,
     paddingTop: 6,
   },
   summary: {
@@ -241,28 +258,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
   },
-  summaryText: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
-  },
   sectionHeader: {
     marginTop: 24,
     marginBottom: 4,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  sectionTitle: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
-  },
-  sectionCount: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.caption,
   },
   row: {
     paddingVertical: 20,
@@ -274,41 +275,17 @@ const styles = StyleSheet.create({
   },
   position: {
     width: 24,
-    color: colors.violet,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
   },
   rowText: {
     flex: 1,
     gap: 6,
   },
-  name: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
-  },
   sticking: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
     letterSpacing: 1,
-  },
-  nameDone: {
-    color: colors.text.secondary,
   },
   rowStatus: {
     alignItems: "flex-end",
     gap: 6,
-  },
-  roundsStarted: {
-    color: colors.accent,
-  },
-  minutes: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
-    fontVariant: ["tabular-nums"],
   },
   choose: {
     alignSelf: "center",
@@ -321,17 +298,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     gap: 6,
   },
-  usedLabel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-  },
   selectFailed: {
     marginHorizontal: 24,
     marginBottom: 4,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
     textAlign: "center",
   },
   start: {

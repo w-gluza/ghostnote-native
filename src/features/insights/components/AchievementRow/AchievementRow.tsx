@@ -1,8 +1,8 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 export type Achievement = {
   symbol: SymbolViewProps["name"];
@@ -36,13 +36,23 @@ export function AchievementRow({ achievement }: AchievementRowProps) {
 
       <View style={styles.body}>
         <View style={styles.heading}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.progress}>
+          <AppText variant="bodyStrong" style={styles.title}>
+            {title}
+          </AppText>
+          <AppText variant="bodyStrong" tabular>
             {progress}
-            <Text style={styles.goal}>/{goal}</Text>
-          </Text>
+            <AppText variant="body" tone="secondary">
+              /{goal}
+            </AppText>
+          </AppText>
         </View>
-        <Text style={styles.description}>{description}</Text>
+        <AppText
+          variant="bodySmall"
+          tone="secondary"
+          style={styles.description}
+        >
+          {description}
+        </AppText>
         <View style={styles.track}>
           <View
             style={[
@@ -83,25 +93,9 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-  },
-  progress: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
-  },
-  goal: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
   },
   description: {
     marginTop: 2,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   track: {
     marginTop: 10,

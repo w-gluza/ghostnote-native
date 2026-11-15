@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import type { BeatKind } from "@/features/metronome/domain/metronome";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -26,7 +27,9 @@ export function BeatPattern({
           onPress={() => onPressBeat(index)}
           style={({ pressed }) => [styles.beat, pressed && styles.pressed]}
         >
-          <Text style={styles.accentMark}>{kind === "accent" ? ">" : " "}</Text>
+          <AppText variant="label" tone="accent" style={styles.accentMark}>
+            {kind === "accent" ? ">" : " "}
+          </AppText>
           <View
             style={[
               styles.pill,
@@ -64,9 +67,7 @@ const styles = StyleSheet.create({
   },
   accentMark: {
     textAlign: "center",
-    color: colors.accent,
     fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.label,
   },
   pill: {
     height: 6,

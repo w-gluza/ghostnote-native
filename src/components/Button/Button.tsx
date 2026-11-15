@@ -2,13 +2,12 @@ import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import {
   Pressable,
   StyleSheet,
-  Text,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 export type ButtonVariant = "fill" | "tonal" | "text";
 export type ButtonTone = "default" | "muted";
@@ -67,15 +66,12 @@ export function Button({
           tintColor={labelColor}
         />
       ) : null}
-      <Text
-        style={[
-          styles.label,
-          variant === "fill" && styles.fillLabel,
-          { color: labelColor },
-        ]}
+      <AppText
+        variant={variant === "fill" ? "headline" : "label"}
+        style={[styles.label, { color: labelColor }]}
       >
         {children}
-      </Text>
+      </AppText>
     </Pressable>
   );
 }
@@ -114,11 +110,5 @@ const styles = StyleSheet.create({
   label: {
     flexShrink: 1,
     textAlign: "center",
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-  },
-  fillLabel: {
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
   },
 });

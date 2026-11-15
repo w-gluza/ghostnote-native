@@ -2,8 +2,9 @@ import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { LinkRow } from "@/features/profile/components/LinkRow/LinkRow";
 import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
 import { StatRow } from "@/components/StatRow/StatRow";
@@ -26,7 +27,6 @@ import {
   useWeeklyGoal,
 } from "@/features/practice/stores/weekly-goal";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
   key: count,
@@ -53,23 +53,34 @@ export default function ProfileScreen() {
       contentContainerStyle={styles.content}
     >
       <View style={styles.bar}>
-        <Text accessibilityRole="header" style={styles.title}>
+        <AppText
+          variant="title"
+          accessibilityRole="header"
+          style={styles.title}
+        >
           Profile
-        </Text>
+        </AppText>
         <Pressable
           accessibilityRole="button"
           hitSlop={12}
           onPress={() => router.back()}
           style={({ pressed }) => pressed && styles.pressed}
         >
-          <Text style={styles.done}>Done</Text>
+          <AppText variant="bodyStrong" tone="accent">
+            Done
+          </AppText>
         </Pressable>
       </View>
 
       <View style={styles.section}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
+        <AppText
+          variant="overline"
+          tone="secondary"
+          accessibilityRole="header"
+          style={styles.sectionTitle}
+        >
           YOUR PRACTICE
-        </Text>
+        </AppText>
         <View style={styles.goalRow}>
           <SymbolView
             name="calendar"
@@ -77,7 +88,9 @@ export default function ProfileScreen() {
             weight="light"
             tintColor={colors.text.secondary}
           />
-          <Text style={styles.goalLabel}>Weekly goal</Text>
+          <AppText variant="body" tone="secondary" style={styles.goalLabel}>
+            Weekly goal
+          </AppText>
           <OptionMenu
             name="Weekly goal"
             options={GOAL_OPTIONS}
@@ -85,7 +98,9 @@ export default function ProfileScreen() {
             onChange={(goal) => setGoalSaveFailed(!setWeeklyGoal(goal))}
             align="end"
           >
-            <Text style={styles.goalValue}>{sessionsLabel(weeklyGoal)}</Text>
+            <AppText variant="bodyStrong" tabular>
+              {sessionsLabel(weeklyGoal)}
+            </AppText>
             <SymbolView
               name="chevron.down"
               size={12}
@@ -95,9 +110,13 @@ export default function ProfileScreen() {
           </OptionMenu>
         </View>
         {goalSaveFailed ? (
-          <Text accessibilityRole="alert" style={styles.problem}>
+          <AppText
+            variant="bodySmall"
+            accessibilityRole="alert"
+            style={styles.problem}
+          >
             Your weekly goal could not be saved. Choose it again to retry.
-          </Text>
+          </AppText>
         ) : null}
         <StatRow
           symbol="clock"
@@ -108,9 +127,14 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
+        <AppText
+          variant="overline"
+          tone="secondary"
+          accessibilityRole="header"
+          style={styles.sectionTitle}
+        >
           ABOUT
-        </Text>
+        </AppText>
         <LinkRow
           symbol="person"
           label="Made by Wiola Gluza"
@@ -150,26 +174,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.heading,
-    lineHeight: 34,
     paddingTop: 6,
-  },
-  done: {
-    color: colors.accent,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
   },
   section: {
     marginTop: 28,
   },
   sectionTitle: {
     marginBottom: 4,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
   },
   goalRow: {
     flexDirection: "row",
@@ -181,21 +192,9 @@ const styles = StyleSheet.create({
   },
   goalLabel: {
     flex: 1,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-  },
-  goalValue: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
   },
   problem: {
     paddingVertical: 12,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   pressed: {
     opacity: 0.7,

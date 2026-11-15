@@ -1,8 +1,9 @@
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { FilterChips } from "@/features/rudiments/components/FilterChips/FilterChips";
 import {
   RudimentListItem,
@@ -23,7 +24,6 @@ import {
 import { buildTimeline } from "@/features/rudiments/domain/timeline";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
@@ -79,11 +79,11 @@ export default function RudimentsScreen() {
       }}
       ItemSeparatorComponent={Separator}
       ListEmptyComponent={
-        <Text style={styles.empty}>
+        <AppText variant="body" tone="secondary" style={styles.empty}>
           {category === ALL_CATEGORIES
             ? `No rudiments match "${query.trim()}".`
             : `No ${category.toLowerCase()} match "${query.trim()}".`}
-        </Text>
+        </AppText>
       }
       style={styles.screen}
       contentContainerStyle={styles.content}
@@ -105,9 +105,13 @@ export default function RudimentsScreen() {
             </View>
           ) : (
             <View style={styles.titleRow}>
-              <Text accessibilityRole="header" style={styles.title}>
+              <AppText
+                variant="display"
+                accessibilityRole="header"
+                style={styles.title}
+              >
                 Rudiments
-              </Text>
+              </AppText>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Search rudiments"
@@ -161,12 +165,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flexShrink: 1,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.display,
-    lineHeight: 46,
     paddingTop: 10,
-    letterSpacing: -0.5,
   },
   search: {
     paddingBottom: 10,
@@ -176,9 +175,6 @@ const styles = StyleSheet.create({
   },
   empty: {
     paddingVertical: 24,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
   },
   searchRow: {
     marginTop: 10,

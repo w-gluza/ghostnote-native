@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
+import { AppText } from "@/components/AppText/AppText";
 
 export type TechniqueShare = { name: string; percent: number; color: string };
 
@@ -35,8 +34,12 @@ export function TechniqueBalance({ techniques }: TechniqueBalanceProps) {
             style={styles.item}
           >
             <View style={[styles.dot, { backgroundColor: technique.color }]} />
-            <Text style={styles.name}>{technique.name}</Text>
-            <Text style={styles.percent}>{technique.percent}%</Text>
+            <AppText variant="body" tone="secondary" style={styles.name}>
+              {technique.name}
+            </AppText>
+            <AppText variant="bodyStrong" tabular>
+              {technique.percent}%
+            </AppText>
           </View>
         ))}
       </View>
@@ -73,14 +76,5 @@ const styles = StyleSheet.create({
   },
   name: {
     flex: 1,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-  },
-  percent: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
   },
 });

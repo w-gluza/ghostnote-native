@@ -1,7 +1,7 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 type FilterChipsProps = {
   options: string[];
@@ -29,9 +29,12 @@ export function FilterChips({ options, selected, onSelect }: FilterChipsProps) {
             style={({ pressed }) => [styles.target, pressed && styles.pressed]}
           >
             <View style={[styles.chip, isSelected && styles.chipSelected]}>
-              <Text style={[styles.label, isSelected && styles.labelSelected]}>
+              <AppText
+                variant="label"
+                tone={isSelected ? "onAccent" : "secondary"}
+              >
                 {option}
-              </Text>
+              </AppText>
             </View>
           </Pressable>
         );
@@ -64,13 +67,5 @@ const styles = StyleSheet.create({
   },
   chipSelected: {
     backgroundColor: colors.accent,
-  },
-  label: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-  },
-  labelSelected: {
-    color: colors.text.onAccent,
   },
 });

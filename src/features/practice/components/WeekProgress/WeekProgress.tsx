@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 type WeekProgressProps = {
   done: number;
@@ -26,9 +26,9 @@ export function WeekProgress({
           />
         ))}
       </View>
-      <Text style={styles.label}>
+      <AppText variant="bodySmall" tone="secondary">
         {done}/{goal} {unit}
-      </Text>
+      </AppText>
     </View>
   );
 }
@@ -52,10 +52,5 @@ const styles = StyleSheet.create({
   },
   markDone: {
     backgroundColor: colors.accent,
-  },
-  label: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
 });

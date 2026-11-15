@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -59,7 +60,9 @@ export function NoteValuePicker({
         style={({ pressed }) => [styles.picker, pressed && styles.pressed]}
       >
         <Text style={styles.icon}>♫</Text>
-        <Text style={styles.label}>{current?.label}</Text>
+        <AppText variant="body" tabular>
+          {current?.label}
+        </AppText>
         <SymbolView
           name="chevron.down"
           size={13}
@@ -112,7 +115,9 @@ export function NoteValuePicker({
                       />
                     ) : null}
                   </View>
-                  <Text style={styles.label}>{noteValue.label}</Text>
+                  <AppText variant="body" tabular>
+                    {noteValue.label}
+                  </AppText>
                 </Pressable>
               );
             })}
@@ -132,12 +137,6 @@ const styles = StyleSheet.create({
   icon: {
     color: colors.accent,
     fontSize: typography.fontSize.title,
-  },
-  label: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
   },
   menu: {
     position: "absolute",

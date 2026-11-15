@@ -1,7 +1,8 @@
 import { Stack, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { useSavedRoutines } from "@/features/routines/stores/saved-routines";
 import { isRecommended } from "@/features/routines/domain/starter-routines";
 import {
@@ -38,16 +39,24 @@ function RoutineRow({
         pressed && styles.pressed,
       ]}
     >
-      <Text style={styles.position}>{String(position).padStart(2, "0")}</Text>
+      <AppText variant="body" tone="violet" tabular style={styles.position}>
+        {String(position).padStart(2, "0")}
+      </AppText>
       <View style={styles.rowText}>
         {recommended ? (
-          <Text style={styles.recommended}>RECOMMENDED</Text>
+          <AppText
+            variant="overline"
+            tone="secondary"
+            style={styles.recommended}
+          >
+            RECOMMENDED
+          </AppText>
         ) : null}
-        <Text style={styles.name}>{routine.name}</Text>
-        <Text style={styles.meta}>
+        <AppText variant="heading">{routine.name}</AppText>
+        <AppText variant="bodySmall" tone="secondary">
           {minutes} min · {routine.exercises.length} rudiments · Lvl{" "}
           {routineLevel(routine)}
-        </Text>
+        </AppText>
       </View>
       <SymbolView
         name="chevron.right"
@@ -82,9 +91,13 @@ export default function RoutinesScreen() {
         contentContainerStyle={styles.content}
       >
         <View style={styles.heading}>
-          <Text accessibilityRole="header" style={styles.title}>
+          <AppText
+            variant="title"
+            accessibilityRole="header"
+            style={styles.title}
+          >
             Saved Routines
-          </Text>
+          </AppText>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Create new routine"
@@ -99,7 +112,9 @@ export default function RoutinesScreen() {
             />
           </Pressable>
         </View>
-        <Text style={styles.count}>YOUR ROUTINES · {savedRoutines.length}</Text>
+        <AppText variant="overline" tone="secondary" style={styles.count}>
+          YOUR ROUTINES · {savedRoutines.length}
+        </AppText>
 
         {savedRoutines.map((routine, index) => (
           <RoutineRow
@@ -115,10 +130,10 @@ export default function RoutinesScreen() {
 
         {savedRoutines.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>
+            <AppText variant="body" tone="secondary" style={styles.emptyText}>
               No saved routines yet. Build one from the rudiments you want to
               practise.
-            </Text>
+            </AppText>
             <Button onPress={create}>Create routine</Button>
           </View>
         ) : null}
@@ -151,19 +166,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   title: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.heading,
-    lineHeight: 34,
     paddingTop: 6,
   },
   count: {
     marginTop: 12,
     marginBottom: 8,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
   },
   row: {
     paddingVertical: 24,
@@ -177,10 +184,7 @@ const styles = StyleSheet.create({
   },
   position: {
     width: 32,
-    color: colors.violet,
-    fontFamily: typography.fontFamily.body,
     fontSize: typography.fontSize.title,
-    fontVariant: ["tabular-nums"],
   },
   rowText: {
     flex: 1,
@@ -188,20 +192,6 @@ const styles = StyleSheet.create({
   },
   recommended: {
     marginBottom: -4,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
-  },
-  name: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
-  },
-  meta: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
   },
   empty: {
     marginTop: 32,
@@ -209,9 +199,6 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   emptyText: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
     lineHeight: 24,
     textAlign: "center",
   },

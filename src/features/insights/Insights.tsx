@@ -1,8 +1,9 @@
 import { useFocusEffect } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import {
   AchievementRow,
   type Achievement,
@@ -39,7 +40,6 @@ import {
   useUnfinishedPractice,
 } from "@/features/practice/stores/practice-session";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 const DAYS = [
   { day: "Monday", label: "M" },
@@ -115,25 +115,39 @@ export default function InsightsScreen() {
     >
       <ScreenHeader />
 
-      <Text accessibilityRole="header" style={styles.title}>
+      <AppText
+        variant="display"
+        accessibilityRole="header"
+        style={styles.title}
+      >
         Insights
-      </Text>
+      </AppText>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text accessibilityRole="header" style={styles.sectionTitle}>
+          <AppText
+            variant="heading"
+            accessibilityRole="header"
+            style={styles.sectionTitle}
+          >
             This week
-          </Text>
-          <Text style={styles.sectionAside}>{weekMinutes} min</Text>
+          </AppText>
+          <AppText variant="body" tone="secondary">
+            {weekMinutes} min
+          </AppText>
         </View>
         <WeekChart days={week} todayIndex={todayIndex(now)} />
       </View>
 
       <View style={[styles.section, styles.divided]}>
         <View style={[styles.sectionHeader, styles.sectionHeaderSpaced]}>
-          <Text accessibilityRole="header" style={styles.sectionTitle}>
+          <AppText
+            variant="heading"
+            accessibilityRole="header"
+            style={styles.sectionTitle}
+          >
             Technique balance
-          </Text>
+          </AppText>
           <OptionMenu
             name="Period"
             options={PERIODS}
@@ -142,9 +156,9 @@ export default function InsightsScreen() {
             align="end"
             style={styles.period}
           >
-            <Text style={styles.sectionAside}>
+            <AppText variant="body" tone="secondary">
               {PERIODS.find((option) => option.key === period)?.label}
-            </Text>
+            </AppText>
             <SymbolView
               name="chevron.down"
               size={12}
@@ -156,16 +170,20 @@ export default function InsightsScreen() {
         {hasBalance ? (
           <TechniqueBalance techniques={techniques} />
         ) : (
-          <Text style={styles.empty}>
+          <AppText variant="bodySmall" tone="secondary" style={styles.empty}>
             Play a round in a routine to see how your practice is split.
-          </Text>
+          </AppText>
         )}
       </View>
 
       <View style={[styles.section, styles.divided]}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
+        <AppText
+          variant="heading"
+          accessibilityRole="header"
+          style={styles.sectionTitle}
+        >
           Your activity
-        </Text>
+        </AppText>
         <View style={styles.stats}>
           <StatRow
             symbol="clock"
@@ -187,9 +205,13 @@ export default function InsightsScreen() {
       </View>
 
       <View style={[styles.section, styles.divided]}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
+        <AppText
+          variant="heading"
+          accessibilityRole="header"
+          style={styles.sectionTitle}
+        >
           Achievements
-        </Text>
+        </AppText>
         <View style={styles.achievements}>
           {achievements.map((achievement) => (
             <AchievementRow key={achievement.title} achievement={achievement} />
@@ -212,12 +234,7 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 30,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.display,
-    lineHeight: 46,
     paddingTop: 10,
-    letterSpacing: -0.5,
   },
   section: {
     marginTop: 28,
@@ -239,19 +256,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     flexShrink: 1,
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
-  },
-  sectionAside: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
   },
   empty: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.label,
     lineHeight: 20,
   },
   period: {

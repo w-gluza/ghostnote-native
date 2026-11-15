@@ -1,8 +1,8 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 type StatRowProps = {
   symbol: SymbolViewProps["name"];
@@ -20,8 +20,12 @@ export function StatRow({ symbol, label, value, isLast }: StatRowProps) {
         weight="light"
         tintColor={colors.text.secondary}
       />
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <AppText variant="body" tone="secondary" style={styles.label}>
+        {label}
+      </AppText>
+      <AppText variant="bodyStrong" tabular>
+        {value}
+      </AppText>
     </View>
   );
 }
@@ -39,14 +43,5 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.fontSize.body,
-  },
-  value: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.body,
-    fontVariant: ["tabular-nums"],
   },
 });

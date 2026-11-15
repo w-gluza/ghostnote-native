@@ -12,12 +12,12 @@ import {
   Easing,
   Pressable,
   StyleSheet,
-  Text,
   useAnimatedValue,
   useWindowDimensions,
   View,
 } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import {
   ACCENT_LIFT,
   PadAnimation,
@@ -206,8 +206,12 @@ export function RudimentPlayer({
           accessibilityLabel={`${bpm} beats per minute`}
           style={styles.readout}
         >
-          <Text style={styles.bpm}>{bpm}</Text>
-          <Text style={styles.bpmLabel}>BPM</Text>
+          <AppText variant="heading" tabular style={styles.bpm}>
+            {bpm}
+          </AppText>
+          <AppText variant="overline" tone="secondary">
+            BPM
+          </AppText>
         </View>
         <Pressable
           accessibilityRole="button"
@@ -257,16 +261,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bpm: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
     fontSize: typography.fontSize.heading,
-    fontVariant: ["tabular-nums"],
-  },
-  bpmLabel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
-    letterSpacing: 0.5,
   },
   pressed: {
     opacity: 0.7,

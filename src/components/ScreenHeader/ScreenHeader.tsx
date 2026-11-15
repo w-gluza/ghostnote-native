@@ -1,9 +1,9 @@
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 type ScreenHeaderProps = {
   onBack?: () => void;
@@ -33,7 +33,7 @@ export function ScreenHeader({ onBack }: ScreenHeaderProps) {
           />
         </Pressable>
       ) : null}
-      <Text style={styles.wordmark}>ghostnote</Text>
+      <AppText variant="headline">ghostnote</AppText>
       <View style={styles.rule} />
       <Pressable
         accessibilityRole="button"
@@ -78,11 +78,6 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.7,
-  },
-  wordmark: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
   },
   rule: {
     flex: 1,

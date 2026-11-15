@@ -4,7 +4,7 @@ import type {
   Timeline,
   TimelineStroke,
 } from "@/features/rudiments/domain/timeline";
-import { colors } from "@/theme/colors";
+import { AppText } from "@/components/AppText/AppText";
 import { typography } from "@/theme/typography";
 
 type StickingPatternProps = {
@@ -40,15 +40,22 @@ export function StickingPattern({
             const isActive = index === activeIndex;
             return (
               <View key={index} style={styles.cell}>
-                <Text style={[styles.accent, isActive && styles.active]}>
+                <AppText
+                  variant="label"
+                  tone={isActive ? "accent" : "secondary"}
+                  style={styles.accent}
+                >
                   {stroke.accent ? ">" : " "}
-                </Text>
-                <Text style={[styles.letter, isActive && styles.active]}>
+                </AppText>
+                <AppText
+                  variant="heading"
+                  tone={isActive ? "accent" : "secondary"}
+                >
                   {stroke.grace.length > 0 ? (
                     <Text style={styles.grace}>{stroke.grace.join("")}</Text>
                   ) : null}
                   {stroke.hand}
-                </Text>
+                </AppText>
               </View>
             );
           })}
@@ -74,19 +81,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   accent: {
-    color: colors.text.secondary,
     fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.label,
-  },
-  letter: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
   },
   grace: {
     fontSize: typography.fontSize.caption,
-  },
-  active: {
-    color: colors.accent,
   },
 });
