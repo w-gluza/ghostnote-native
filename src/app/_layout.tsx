@@ -1,5 +1,6 @@
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 
+import { LaunchPad } from "@/components/launch-pad";
 import { colors } from "@/theme/colors";
 
 const theme = {
@@ -24,6 +25,7 @@ export default function RootLayout() {
           options={{ presentation: "modal" }}
         />
       </Stack>
+      <LaunchPad />
     </ThemeProvider>
   );
 }
