@@ -7,6 +7,7 @@ export const quickWarmUp: Routine = {
   exercises: [
     presetExercise("quick-warm-up-e1", "single-stroke-roll", 2, 70, 3),
     presetExercise("quick-warm-up-e2", "double-stroke-roll", 2, 60, 3),
+    presetExercise("quick-warm-up-e3", "single-paradiddle", 2, 60, 3),
   ],
 };
 

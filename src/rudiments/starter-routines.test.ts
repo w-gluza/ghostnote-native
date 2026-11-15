@@ -19,10 +19,13 @@ test("an untouched starter is recommended, also after being stored", () => {
 });
 
 test("a starter whose exercises were changed is no longer recommended", () => {
-  const [first, second] = quickWarmUp.exercises;
-  assert.equal(isRecommended({ ...quickWarmUp, exercises: [first!] }), false);
+  const [first, second, third] = quickWarmUp.exercises;
   assert.equal(
-    isRecommended({ ...quickWarmUp, exercises: [second!, first!] }),
+    isRecommended({ ...quickWarmUp, exercises: [first!, second!] }),
+    false,
+  );
+  assert.equal(
+    isRecommended({ ...quickWarmUp, exercises: [second!, first!, third!] }),
     false,
   );
   const faster = {
@@ -33,7 +36,7 @@ test("a starter whose exercises were changed is no longer recommended", () => {
     })),
   };
   assert.equal(
-    isRecommended({ ...quickWarmUp, exercises: [faster, second!] }),
+    isRecommended({ ...quickWarmUp, exercises: [faster, second!, third!] }),
     false,
   );
 });

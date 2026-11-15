@@ -36,12 +36,10 @@ function RoutineRow({
     >
       <Text style={styles.position}>{String(position).padStart(2, "0")}</Text>
       <View style={styles.rowText}>
-        <View style={styles.nameRow}>
-          <Text style={styles.name}>{routine.name}</Text>
-          {recommended ? (
-            <Text style={styles.recommended}>Recommended</Text>
-          ) : null}
-        </View>
+        {recommended ? (
+          <Text style={styles.recommended}>RECOMMENDED</Text>
+        ) : null}
+        <Text style={styles.name}>{routine.name}</Text>
         <Text style={styles.meta}>
           {minutes} min · {routine.exercises.length} rudiments · Lvl{" "}
           {routineLevel(routine)}
@@ -193,28 +191,17 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
   },
-  nameRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    columnGap: 10,
-    rowGap: 6,
+  recommended: {
+    marginBottom: -4,
+    color: colors.text.secondary,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.caption,
+    letterSpacing: 0.5,
   },
   name: {
-    flexShrink: 1,
     color: colors.text.primary,
     fontFamily: typography.fontFamily.medium,
     fontSize: typography.fontSize.title,
-  },
-  recommended: {
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    borderRadius: 999,
-    overflow: "hidden",
-    color: colors.text.secondary,
-    backgroundColor: colors.surface,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.caption,
   },
   meta: {
     color: colors.text.secondary,

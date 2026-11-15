@@ -34,7 +34,7 @@ test("the three recommended routines keep their lengths", () => {
   assert.deepEqual(
     starterRoutines.map((routine) => [routine.name, routineMinutes(routine)]),
     [
-      ["Quick Warm-up", 6],
+      ["Quick Warm-up", 9],
       ["Paradiddle Focus", 14],
       ["Roll Builder", 20],
     ],
@@ -126,5 +126,5 @@ test("the fallback is usable even after Quick Warm-up itself was deleted", () =>
     quickWarmUp,
   );
   assert.equal(fallback, quickWarmUp);
-  assert.equal(fallback.exercises.length, 2);
+  assert.equal(fallback.exercises.length, 3);
 });
