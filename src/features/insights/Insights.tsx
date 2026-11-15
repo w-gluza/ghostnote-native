@@ -41,7 +41,7 @@ import {
   useUnfinishedPractice,
 } from "@/features/practice/stores/practice-session";
 import { colors } from "@/theme/colors";
-import { divider, layoutStyles } from "@/theme/layout";
+import { divider, layoutStyles, spacing } from "@/theme/layout";
 
 const DAYS = [
   { day: "Monday", label: "M" },
@@ -161,7 +161,7 @@ export default function InsightsScreen() {
 
       <View style={[styles.section, styles.divided]}>
         <SectionHeader variant="heading" title="Your activity" />
-        <View style={styles.stats}>
+        <View>
           <StatRow
             symbol="clock"
             label="Total practice time"
@@ -195,17 +195,17 @@ export default function InsightsScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    marginTop: 30,
+    marginTop: spacing.xxl,
   },
   section: {
-    marginTop: 28,
+    marginTop: spacing.section,
   },
   divided: {
-    paddingTop: 28,
+    paddingTop: spacing.section,
     ...divider.top,
   },
   sectionHeaderSpaced: {
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
   empty: {
     lineHeight: 20,
@@ -213,13 +213,9 @@ const styles = StyleSheet.create({
   period: {
     marginVertical: -10,
     flexShrink: 0,
-    gap: 6,
-  },
-  stats: {
-    marginTop: 4,
   },
   achievements: {
-    marginTop: 20,
-    gap: 24,
+    marginTop: spacing.lg,
+    gap: spacing.xl,
   },
 });

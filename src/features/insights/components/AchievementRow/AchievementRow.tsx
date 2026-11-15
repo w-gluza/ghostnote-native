@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/layout";
 
 export type Achievement = {
   symbol: SymbolViewProps["name"];
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: spacing.lg,
   },
   badge: {
     width: 52,
@@ -89,16 +90,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
-    gap: 12,
+    gap: spacing.md,
   },
   title: {
     flex: 1,
   },
   description: {
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   track: {
-    marginTop: 10,
+    marginTop: spacing.md,
     height: 6,
     borderRadius: 3,
     overflow: "hidden",

@@ -1,6 +1,7 @@
 import { StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { spacing } from "@/theme/layout";
 
 export type TechniqueShare = { name: string; percent: number; color: string };
 
@@ -56,18 +57,18 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   legend: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     flexDirection: "row",
     flexWrap: "wrap",
-    columnGap: 24,
+    columnGap: spacing.xl,
   },
   item: {
     flexBasis: "40%",
     flexGrow: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    marginTop: 12,
+    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   dot: {
     width: 8,

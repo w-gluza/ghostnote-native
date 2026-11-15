@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import { minutesLabel } from "@/features/practice/domain/insights";
 import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/layout";
 
 export type DayPractice = { day: string; label: string; ms: number };
 
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   value: {
-    marginBottom: 6,
+    marginBottom: spacing.xs,
   },
   bar: {
     width: 8,
@@ -101,6 +102,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.disabled,
   },
   day: {
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
 });

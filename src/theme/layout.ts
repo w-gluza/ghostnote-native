@@ -12,6 +12,16 @@ export const layout = {
   },
 } as const;
 
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+  section: 32,
+} as const;
+
 export const divider = {
   top: {
     borderTopWidth: StyleSheet.hairlineWidth,
