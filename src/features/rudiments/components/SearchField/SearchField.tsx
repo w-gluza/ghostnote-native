@@ -1,10 +1,10 @@
 import { SymbolView } from "expo-symbols";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { TextField } from "@/components/TextField/TextField";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { layout, spacing } from "@/theme/layout";
-import { textVariants } from "@/theme/typography";
 
 type SearchFieldProps = {
   value: string;
@@ -29,14 +29,11 @@ export function SearchField({
           size={18}
           tintColor={colors.text.secondary}
         />
-        <TextInput
+        <TextField
           accessibilityLabel={label}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={colors.text.secondary}
-          selectionColor={colors.accent}
-          keyboardAppearance="dark"
           returnKeyType="search"
           clearButtonMode="while-editing"
           autoCapitalize="none"
@@ -71,7 +68,5 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     minHeight: layout.minTouchSize,
-    ...textVariants.body,
-    color: colors.text.primary,
   },
 });

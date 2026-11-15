@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
+import { TextField } from "@/components/TextField/TextField";
 import { colors } from "@/theme/colors";
 import { layout, spacing } from "@/theme/layout";
-import { textVariants } from "@/theme/typography";
 export function RoundField({
   label,
   value,
@@ -23,7 +23,7 @@ export function RoundField({
 
   return (
     <View style={styles.field}>
-      <TextInput
+      <TextField
         accessibilityLabel={label}
         value={draft}
         onChangeText={(text) => {
@@ -35,8 +35,6 @@ export function RoundField({
         }}
         onEndEditing={() => setDraft(format(value))}
         keyboardType={keyboardType}
-        keyboardAppearance="dark"
-        selectionColor={colors.accent}
         selectTextOnFocus
         maxLength={5}
         style={styles.fieldInput}
@@ -57,8 +55,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
-    ...textVariants.body,
-    color: colors.text.primary,
     fontVariant: ["tabular-nums"],
   },
 });

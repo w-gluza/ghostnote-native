@@ -1,14 +1,8 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { TextField } from "@/components/TextField/TextField";
 import { AppText } from "@/components/AppText/AppText";
 import { RowText } from "@/components/RowText/RowText";
 import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
@@ -34,7 +28,6 @@ import type { RoutineExercise } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
-import { textVariants } from "@/theme/typography";
 import { editorStyles } from "@/features/routines/editorStyles";
 import { ExerciseEditor } from "@/features/routines/components/ExerciseEditor/ExerciseEditor";
 
@@ -148,14 +141,11 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           </InlineMessage>
         ) : null}
 
-        <TextInput
+        <TextField
           accessibilityLabel="Routine name"
           value={name}
           onChangeText={setName}
           placeholder="Routine name"
-          placeholderTextColor={colors.text.secondary}
-          selectionColor={colors.accent}
-          keyboardAppearance="dark"
           returnKeyType="done"
           maxLength={40}
           style={styles.input}
@@ -252,8 +242,6 @@ const styles = StyleSheet.create({
     height: 52,
     paddingHorizontal: spacing.lg,
     borderRadius: layout.radius.panel,
-    ...textVariants.body,
-    color: colors.text.primary,
     backgroundColor: colors.surface,
   },
   choice: {
