@@ -11,8 +11,8 @@ export const typography = {
 
   fontSize: {
     numeral: 72,
-    display: 44,
-    title: 28,
+    title: 32,
+    value: 28,
     heading: 20,
     body: 16,
     label: 14,
@@ -21,16 +21,10 @@ export const typography = {
 } as const;
 
 export const textVariants = {
-  display: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.display,
-    lineHeight: 46,
-    letterSpacing: -0.5,
-  },
   title: {
     fontFamily: typography.fontFamily.display,
     fontSize: typography.fontSize.title,
-    lineHeight: 34,
+    lineHeight: 38,
   },
   heading: {
     fontFamily: typography.fontFamily.medium,

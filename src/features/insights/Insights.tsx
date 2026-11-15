@@ -118,9 +118,7 @@ export default function InsightsScreen() {
     >
       <ScreenHeader />
 
-      <PageTitle size="large" style={styles.title}>
-        Insights
-      </PageTitle>
+      <PageTitle style={styles.title}>Insights</PageTitle>
 
       <View style={styles.section}>
         <SectionHeader
@@ -196,7 +194,7 @@ export default function InsightsScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    marginTop: spacing.xxl,
+    marginTop: spacing.lg,
   },
   section: {
     marginTop: spacing.section,

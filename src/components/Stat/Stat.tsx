@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   value: {
-    fontSize: typography.fontSize.title,
+    fontSize: typography.fontSize.value,
   },
 });

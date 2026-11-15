@@ -8,22 +8,16 @@ type PageTitleProps = Omit<
   ComponentProps<typeof AppText>,
   "variant" | "tone" | "tabular" | "accessibilityRole"
 > & {
-  size?: "default" | "large";
   trailing?: ReactNode;
 };
 
-export function PageTitle({
-  size = "default",
-  trailing,
-  style,
-  ...props
-}: PageTitleProps) {
+export function PageTitle({ trailing, style, ...props }: PageTitleProps) {
   const title = (
     <AppText
       {...props}
-      variant={size === "large" ? "display" : "title"}
+      variant="title"
       accessibilityRole="header"
-      style={[styles[size], trailing !== undefined && styles.shrink, style]}
+      style={[styles.title, trailing !== undefined && styles.shrink, style]}
     />
   );
 
@@ -40,11 +34,8 @@ export function PageTitle({
 }
 
 const styles = StyleSheet.create({
-  default: {
+  title: {
     paddingTop: 6,
-  },
-  large: {
-    paddingTop: 10,
   },
   row: {
     flexDirection: "row",

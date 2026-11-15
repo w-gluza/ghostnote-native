@@ -9,21 +9,12 @@ function styleOf(name: string) {
   return StyleSheet.flatten(screen.getByRole("header", { name }).props.style);
 }
 
-test("is a header in the title style by default", async () => {
+test("is a header in the title style", async () => {
   await render(<PageTitle>Saved Routines</PageTitle>);
 
   expect(styleOf("Saved Routines")).toMatchObject({
     ...textVariants.title,
     paddingTop: 6,
-  });
-});
-
-test("uses the display style when large", async () => {
-  await render(<PageTitle size="large">Insights</PageTitle>);
-
-  expect(styleOf("Insights")).toMatchObject({
-    ...textVariants.display,
-    paddingTop: 10,
   });
 });
 

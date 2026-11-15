@@ -62,9 +62,7 @@ export default function PracticeScreen() {
     >
       <ScreenHeader />
 
-      <PageTitle size="large" style={styles.title}>
-        {"Your\nPractice"}
-      </PageTitle>
+      <PageTitle style={styles.title}>Your Practice</PageTitle>
 
       <View style={styles.summary}>
         <AppText variant="bodySmall">
@@ -103,7 +101,7 @@ export default function PracticeScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    marginTop: spacing.xxl,
+    marginTop: spacing.lg,
   },
   summary: {
     marginTop: spacing.lg,
