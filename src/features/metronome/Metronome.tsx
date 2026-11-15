@@ -1,6 +1,6 @@
 import { useIsFocused } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 import {
   AppState,
   Pressable,
@@ -91,19 +91,16 @@ export default function MetronomeScreen() {
   });
 
   const isFocused = useIsFocused();
-  const pause = useRef(() => {});
-  useEffect(() => {
-    pause.current = playback.pause;
-  });
+  const pause = useEffectEvent(() => playback.pause());
   useEffect(() => {
     if (!isFocused) {
-      pause.current();
+      pause();
     }
   }, [isFocused]);
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state !== "active") {
-        pause.current();
+        pause();
       }
     });
     return () => subscription.remove();

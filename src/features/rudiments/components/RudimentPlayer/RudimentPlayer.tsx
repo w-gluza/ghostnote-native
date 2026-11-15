@@ -1,5 +1,11 @@
 import { SymbolView } from "expo-symbols";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   Animated,
   AppState,
@@ -143,20 +149,17 @@ export function RudimentPlayer({
     playback.toggle();
   };
 
-  const leaveForeground = useRef(() => {});
-  useEffect(() => {
-    leaveForeground.current = () => {
-      if (playback.isPlaying) {
-        isHeard.current = false;
-        onActivity?.(false, tempo);
-        playback.pause();
-      }
-    };
+  const leaveForeground = useEffectEvent(() => {
+    if (playback.isPlaying) {
+      isHeard.current = false;
+      onActivity?.(false, tempo);
+      playback.pause();
+    }
   });
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state !== "active") {
-        leaveForeground.current();
+        leaveForeground();
       }
     });
     return () => subscription.remove();

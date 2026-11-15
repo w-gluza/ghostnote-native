@@ -1,5 +1,5 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useId, useRef, useState } from "react";
 
 import {
   beatOfOrdinal,
@@ -45,13 +45,15 @@ export function useRudimentPlayback({
   const nextOrdinal = useRef(0);
   const playedTimeline = useRef(timeline);
   const unitMs = msPerQuarterUnit(tempo);
-  const unit = useRef(unitMs);
-  const handlers = useRef({ onSchedule, onCancel, onApproach, onStroke });
-
-  useEffect(() => {
-    unit.current = unitMs;
-    handlers.current = { onSchedule, onCancel, onApproach, onStroke };
-  });
+  const currentUnitMs = useEffectEvent(() => unitMs);
+  const schedule = useEffectEvent((index: number, timeMs: number) =>
+    onSchedule?.(index, timeMs),
+  );
+  const cancel = useEffectEvent(() => onCancel?.());
+  const approach = useEffectEvent((index: number, msUntilStroke: number) =>
+    onApproach?.(index, msUntilStroke),
+  );
+  const stroke = useEffectEvent((index: number) => onStroke?.(index));
 
   useEffect(() => {
     if (!isPlaying) {
@@ -69,7 +71,7 @@ export function useRudimentPlayback({
     let anchor: Anchor = {
       time: clock() + START_DELAY_MS,
       beat: beatOfOrdinal(timeline, firstOrdinal),
-      unitMs: unit.current,
+      unitMs: currentUnitMs(),
     };
 
     const later = (delayMs: number, run: () => void) => {
@@ -84,11 +86,12 @@ export function useRudimentPlayback({
     };
 
     const scheduleDue = () => {
-      if (unit.current !== anchor.unitMs) {
+      const latestUnitMs = currentUnitMs();
+      if (latestUnitMs !== anchor.unitMs) {
         anchor =
           scheduledOrdinal > firstOrdinal
-            ? retimed(anchor, timeline, scheduledOrdinal - 1, unit.current)
-            : { ...anchor, unitMs: unit.current };
+            ? retimed(anchor, timeline, scheduledOrdinal - 1, latestUnitMs)
+            : { ...anchor, unitMs: latestUnitMs };
       }
 
       for (;;) {
@@ -100,19 +103,19 @@ export function useRudimentPlayback({
           return;
         }
 
-        handlers.current.onSchedule?.(index, onset);
+        schedule(index, onset);
 
         const heardIn = onset - now;
         const lead = leadMs(
           gapBeforeOrdinal(timeline, ordinal) * anchor.unitMs,
         );
         later(heardIn - lead, () => {
-          handlers.current.onApproach?.(index, Math.min(lead, heardIn));
+          approach(index, Math.min(lead, heardIn));
         });
         later(heardIn, () => {
           nextOrdinal.current = ordinal + 1;
           setActiveIndex(index);
-          handlers.current.onStroke?.(index);
+          stroke(index);
         });
 
         scheduledOrdinal = ordinal + 1;
@@ -125,7 +128,7 @@ export function useRudimentPlayback({
     return () => {
       clearInterval(ticker);
       timers.forEach(clearTimeout);
-      handlers.current.onCancel?.();
+      cancel();
     };
   }, [isPlaying, timeline, clock, restartOnPlay]);
 
