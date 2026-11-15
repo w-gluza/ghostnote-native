@@ -13,7 +13,7 @@ import {
 } from "@/features/routines/domain/routine-builder";
 import type { Routine } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
-import { colors } from "@/theme/colors";
+import { nativeHeader } from "@/theme/navigation";
 import { layoutStyles } from "@/theme/layout";
 
 function RoutineRow({
@@ -66,12 +66,8 @@ export default function RoutinesScreen() {
     <View style={layoutStyles.screen}>
       <Stack.Screen
         options={{
-          headerShown: true,
-          title: "",
+          ...nativeHeader,
           headerBackTitle: "Practice",
-          headerShadowVisible: false,
-          headerTintColor: colors.text.primary,
-          headerStyle: { backgroundColor: colors.background },
         }}
       />
 
@@ -79,16 +75,19 @@ export default function RoutinesScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={layoutStyles.content}
       >
-        <View style={styles.heading}>
-          <PageTitle>Saved Routines</PageTitle>
-          <IconButton
-            icon="plus"
-            accessibilityLabel="Create new routine"
-            variant="tonal"
-            size={18}
-            onPress={create}
-          />
-        </View>
+        <PageTitle
+          trailing={
+            <IconButton
+              icon="plus"
+              accessibilityLabel="Create new routine"
+              variant="tonal"
+              size={18}
+              onPress={create}
+            />
+          }
+        >
+          Saved Routines
+        </PageTitle>
         <AppText variant="overline" tone="secondary" style={styles.count}>
           YOUR ROUTINES · {savedRoutines.length}
         </AppText>
@@ -120,12 +119,6 @@ export default function RoutinesScreen() {
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
   count: {
     marginTop: 12,
     marginBottom: 8,

@@ -12,277 +12,30 @@ import {
 import { AppText } from "@/components/AppText/AppText";
 import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
-import { IconButton } from "@/components/IconButton/IconButton";
 import { Button } from "@/components/Button/Button";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
-import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
-import { fraction, multiply } from "@/features/rudiments/domain/fraction";
 import { newId } from "@/features/rudiments/domain/ids";
 import {
   availableRudiments,
-  defaultBpm,
   findRudiment,
-  resolvePattern,
 } from "@/features/rudiments/domain/library";
 import {
   findRoutine,
   saveRoutine,
 } from "@/features/routines/stores/saved-routines";
-import { evenStep, scaleToStep } from "@/features/rudiments/domain/timeline";
-import {
-  formatDuration,
-  MAX_ROUNDS,
-  parseDuration,
-  parseTempo,
-} from "@/features/routines/domain/routine-form";
 import {
   exerciseMinutes,
-  NEW_ROUND_SECONDS,
   newExercise,
-  newRound,
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
-import type {
-  RoutineExercise,
-  RoutineRound,
-} from "@/features/routines/domain/types";
+import type { RoutineExercise } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
-import { divider, layout, layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 import { textVariants } from "@/theme/typography";
-
-function RoundField({
-  label,
-  value,
-  format,
-  parse,
-  keyboardType,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  format: (value: number) => string;
-  parse: (text: string) => number | undefined;
-  keyboardType: "number-pad" | "numbers-and-punctuation";
-  onChange: (value: number) => void;
-}) {
-  const [draft, setDraft] = useState(format(value));
-
-  return (
-    <View style={styles.field}>
-      <TextInput
-        accessibilityLabel={label}
-        value={draft}
-        onChangeText={(text) => {
-          setDraft(text);
-          const parsed = parse(text);
-          if (parsed !== undefined) {
-            onChange(parsed);
-          }
-        }}
-        onEndEditing={() => setDraft(format(value))}
-        keyboardType={keyboardType}
-        keyboardAppearance="dark"
-        selectionColor={colors.accent}
-        selectTextOnFocus
-        maxLength={5}
-        style={styles.fieldInput}
-      />
-    </View>
-  );
-}
-
-function ExerciseEditor({
-  exercise,
-  onChange,
-  onRemove,
-  onClose,
-}: {
-  exercise: RoutineExercise;
-  onChange: (change: Partial<RoutineExercise>) => void;
-  onRemove: () => void;
-  onClose: () => void;
-}) {
-  const rudiment = findRudiment(exercise.pattern.rudimentId);
-  const pattern = resolvePattern(exercise.pattern);
-  const step = pattern ? evenStep(pattern) : undefined;
-  const strokeStep = step ? multiply(step, exercise.rhythmicScale) : undefined;
-  const minutes = exerciseMinutes(exercise);
-  const changeRound = (id: string, change: Partial<RoutineRound>) =>
-    onChange({
-      rounds: exercise.rounds.map((round) =>
-        round.id === id ? { ...round, ...change } : round,
-      ),
-    });
-  const addRound = () => {
-    const last = exercise.rounds[exercise.rounds.length - 1];
-    onChange({
-      rounds: [
-        ...exercise.rounds,
-        newRound(
-          last?.tempo.bpm ?? (rudiment ? defaultBpm(rudiment) : 80),
-          last?.durationSeconds ?? NEW_ROUND_SECONDS,
-        ),
-      ],
-    });
-  };
-  const removeRound = (id: string) =>
-    onChange({ rounds: exercise.rounds.filter((round) => round.id !== id) });
-
-  return (
-    <View style={layoutStyles.screen}>
-      <View style={styles.bar}>
-        <Button
-          variant="text"
-          icon="chevron.left"
-          accessibilityLabel="Back to Edit Routine"
-          onPress={onClose}
-        >
-          Edit Routine
-        </Button>
-        <Button variant="text" tone="accent" onPress={onClose}>
-          Done
-        </Button>
-      </View>
-
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-      >
-        <PageTitle>{rudiment?.name}</PageTitle>
-        <View style={styles.subtitleRow}>
-          <AppText variant="body" tone="secondary">
-            {rudiment?.category} · Lvl {rudiment?.level}
-          </AppText>
-          {pattern && strokeStep ? (
-            <NoteValuePicker
-              subdivision={
-                strokeStep.numerator === 1 ? strokeStep.denominator : 0
-              }
-              onChange={(value) =>
-                onChange({
-                  rhythmicScale: scaleToStep(pattern, fraction(1, value)),
-                })
-              }
-            />
-          ) : null}
-        </View>
-
-        <SectionHeader
-          title="ROUNDS"
-          trailing={`${minutes} min total`}
-          style={styles.sectionHeader}
-        />
-
-        <View style={styles.columns}>
-          <AppText
-            variant="overline"
-            tone="secondary"
-            style={styles.roundColumn}
-          >
-            ROUND
-          </AppText>
-          <AppText
-            variant="overline"
-            tone="secondary"
-            style={styles.fieldColumn}
-          >
-            TEMPO
-          </AppText>
-          <AppText
-            variant="overline"
-            tone="secondary"
-            style={styles.fieldColumn}
-          >
-            DURATION
-          </AppText>
-          {exercise.rounds.length > 1 ? (
-            <View style={styles.removeColumn} />
-          ) : null}
-        </View>
-
-        {exercise.rounds.map((round, index) => (
-          <View key={round.id} style={styles.roundRow}>
-            <View style={styles.roundColumn}>
-              <View style={styles.roundBadge}>
-                <AppText variant="label" tone="violet" tabular>
-                  {index + 1}
-                </AppText>
-              </View>
-            </View>
-            <View style={styles.fieldColumn}>
-              <RoundField
-                label={`Round ${index + 1} tempo in beats per minute`}
-                value={round.tempo.bpm}
-                format={String}
-                parse={parseTempo}
-                keyboardType="number-pad"
-                onChange={(bpm) =>
-                  changeRound(round.id, { tempo: { ...round.tempo, bpm } })
-                }
-              />
-            </View>
-            <View style={styles.fieldColumn}>
-              <RoundField
-                label={`Round ${index + 1} duration, minutes and seconds`}
-                value={round.durationSeconds}
-                format={formatDuration}
-                parse={parseDuration}
-                keyboardType="numbers-and-punctuation"
-                onChange={(durationSeconds) =>
-                  changeRound(round.id, { durationSeconds })
-                }
-              />
-            </View>
-            {exercise.rounds.length > 1 ? (
-              <IconButton
-                icon="minus.circle"
-                accessibilityLabel={`Remove round ${index + 1}`}
-                tone="muted"
-                weight="regular"
-                hitSlop={8}
-                style={styles.removeColumn}
-                onPress={() => removeRound(round.id)}
-              />
-            ) : null}
-          </View>
-        ))}
-
-        {exercise.rounds.length < MAX_ROUNDS ? (
-          <Button
-            variant="text"
-            tone="accent"
-            icon="plus"
-            style={styles.add}
-            onPress={addRound}
-          >
-            Add round
-          </Button>
-        ) : null}
-
-        <View style={styles.total}>
-          <AppText variant="body" tone="secondary">
-            Total duration
-          </AppText>
-          <AppText variant="heading" tabular>
-            {minutes} min
-          </AppText>
-        </View>
-
-        <Button
-          variant="text"
-          tone="muted"
-          style={styles.remove}
-          onPress={onRemove}
-        >
-          Remove from routine
-        </Button>
-      </ScrollView>
-    </View>
-  );
-}
+import { editorStyles } from "@/features/routines/editorStyles";
+import { ExerciseEditor } from "@/features/routines/components/ExerciseEditor/ExerciseEditor";
 
 type RoutineEditorProps = {
   onDelete: (routineId: string) => boolean;
@@ -372,7 +125,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
 
   return (
     <View style={layoutStyles.screen}>
-      <View style={styles.bar}>
+      <View style={editorStyles.bar}>
         <Button variant="text" tone="muted" onPress={() => router.back()}>
           Cancel
         </Button>
@@ -382,7 +135,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={editorStyles.content}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
@@ -410,7 +163,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         <SectionHeader
           title="EXERCISES"
           trailing={`${routineMinutes({ exercises })} min`}
-          style={styles.sectionHeader}
+          style={editorStyles.sectionHeader}
         />
 
         {exercises.map((exercise, index) => {
@@ -445,7 +198,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
             tone="accent"
             icon="plus"
             accessibilityState={{ expanded: isAdding }}
-            style={styles.add}
+            style={editorStyles.add}
             onPress={() => setIsAdding((adding) => !adding)}
           >
             Add rudiment
@@ -476,7 +229,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           <Button
             variant="text"
             tone="muted"
-            style={styles.remove}
+            style={editorStyles.remove}
             onPress={confirmDelete}
           >
             Delete routine
@@ -493,31 +246,12 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    paddingTop: 8,
-    paddingHorizontal: layout.screenInset,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  content: {
-    paddingTop: 8,
-    paddingHorizontal: layout.screenInset,
-    paddingBottom: 40,
-  },
   deleteFailed: {
     marginTop: 12,
     textAlign: "center",
   },
   saveFailed: {
     marginTop: 12,
-  },
-  subtitleRow: {
-    marginTop: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
   },
   input: {
     marginTop: 16,
@@ -528,15 +262,8 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     backgroundColor: colors.surface,
   },
-  sectionHeader: {
-    marginTop: 28,
-  },
   rowText: {
     gap: 8,
-  },
-  add: {
-    marginTop: 11,
-    alignSelf: "center",
   },
   choice: {
     marginTop: 12,
@@ -545,62 +272,5 @@ const styles = StyleSheet.create({
     borderRadius: layout.radius.panel,
     gap: 4,
     backgroundColor: colors.surface,
-  },
-  columns: {
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  roundColumn: {
-    width: 64,
-  },
-  fieldColumn: {
-    flex: 1,
-  },
-  removeColumn: {
-    width: 24,
-    minWidth: 24,
-  },
-  roundRow: {
-    marginTop: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  roundBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.surface,
-  },
-  field: {
-    padding: 8,
-    borderRadius: layout.radius.panel,
-    backgroundColor: colors.surface,
-  },
-  fieldInput: {
-    height: 40,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...textVariants.body,
-    color: colors.text.primary,
-    fontVariant: ["tabular-nums"],
-  },
-  total: {
-    marginTop: 19,
-    paddingTop: 24,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...divider.top,
-  },
-  remove: {
-    marginTop: 19,
-    alignSelf: "center",
   },
 });
