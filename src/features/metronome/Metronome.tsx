@@ -12,6 +12,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import {
+  RhythmBar,
+  RhythmBarSeparator,
+} from "@/components/RhythmBar/RhythmBar";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { BeatPattern } from "@/features/metronome/components/BeatPattern/BeatPattern";
 import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
@@ -121,7 +125,7 @@ export default function MetronomeScreen() {
       >
         <ScreenHeader />
 
-        <View style={styles.rhythm}>
+        <RhythmBar style={styles.rhythm}>
           <OptionMenu
             name="Time signature"
             options={meterOptions}
@@ -135,7 +139,7 @@ export default function MetronomeScreen() {
           >
             <AppText variant="bodyStrong">{meterLabel(settings.meter)}</AppText>
           </OptionMenu>
-          <View style={styles.rhythmSeparator} />
+          <RhythmBarSeparator />
           <OptionMenu
             name="Subdivision"
             options={subdivisionOptions}
@@ -159,7 +163,7 @@ export default function MetronomeScreen() {
               tintColor={colors.text.secondary}
             />
           </OptionMenu>
-        </View>
+        </RhythmBar>
 
         <View style={styles.stage}>
           <View style={styles.dialRow}>
@@ -230,22 +234,10 @@ const styles = StyleSheet.create({
   },
   rhythm: {
     marginTop: 24,
-    minHeight: 52,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: colors.surface,
   },
   subdivisionIcon: {
     color: colors.accent,
     fontSize: typography.fontSize.body,
-  },
-  rhythmSeparator: {
-    width: StyleSheet.hairlineWidth,
-    height: 22,
-    backgroundColor: colors.disabled,
   },
   subdivisionLabel: {
     flexShrink: 1,

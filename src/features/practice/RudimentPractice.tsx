@@ -5,6 +5,10 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import {
+  RhythmBar,
+  RhythmBarSeparator,
+} from "@/components/RhythmBar/RhythmBar";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
 import { STAGE_HEIGHT } from "@/features/rudiments/components/PadAnimation/PadAnimation";
@@ -105,14 +109,14 @@ export default function RudimentScreen() {
         {rudiment && timeline ? (
           <>
             <PageTitle style={styles.title}>{rudiment.name}</PageTitle>
-            <View style={styles.settings}>
+            <RhythmBar style={styles.settings}>
               <AppText
                 variant="bodyStrong"
                 accessibilityLabel="Time signature, 4 4"
               >
                 4/4
               </AppText>
-              <View style={styles.separator} />
+              <RhythmBarSeparator />
               <AppText
                 variant="body"
                 tone="secondary"
@@ -129,7 +133,7 @@ export default function RudimentScreen() {
                   }
                 />
               ) : null}
-            </View>
+            </RhythmBar>
             <RudimentPlayer
               key={`${rudiment.id}-${round?.id ?? ""}`}
               timeline={timeline}
@@ -203,13 +207,6 @@ const styles = StyleSheet.create({
   },
   settings: {
     marginBottom: 16,
-    height: 52,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: colors.surface,
   },
   rounds: {
     marginTop: 16,
@@ -224,11 +221,6 @@ const styles = StyleSheet.create({
   },
   undo: {
     marginRight: "auto",
-  },
-  separator: {
-    width: StyleSheet.hairlineWidth,
-    height: 22,
-    backgroundColor: colors.disabled,
   },
   detail: {
     flex: 1,
