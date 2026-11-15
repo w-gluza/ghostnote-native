@@ -1,6 +1,5 @@
 import { ONE } from "./fraction.ts";
 import { newId } from "./ids.ts";
-import { todayIndex } from "./insights.ts";
 import {
   defaultBpm,
   defaultPattern,
@@ -51,87 +50,6 @@ export function presetExercise(
       durationSeconds,
     })),
   };
-}
-
-const DAILY_ROUNDS = 3;
-const DAILY_MINUTES = [7, 7, 6];
-const DAILY_BPM: Record<string, number> = {
-  "single-stroke-roll": 80,
-  "double-stroke-roll": 70,
-  "triple-stroke-roll": 60,
-  "single-paradiddle": 60,
-  "double-paradiddle": 60,
-  "triple-paradiddle": 60,
-  "single-paradiddle-diddle": 60,
-};
-
-function dailyRoutine(day: string, rudimentIds: string[]): Routine {
-  const id = `daily-${day.toLowerCase()}`;
-  return {
-    id,
-    name: `${day} Practice`,
-    exercises: rudimentIds.map((rudimentId, index) =>
-      presetExercise(
-        `${id}-e${index + 1}`,
-        rudimentId,
-        DAILY_ROUNDS,
-        DAILY_BPM[rudimentId] ?? 60,
-        DAILY_MINUTES[index] ?? 6,
-      ),
-    ),
-  };
-}
-
-export const fallbackRoutine = dailyRoutine("Monday", [
-  "single-stroke-roll",
-  "double-stroke-roll",
-  "single-paradiddle",
-]);
-
-export const dailyRoutines: Routine[] = [
-  fallbackRoutine,
-  dailyRoutine("Tuesday", [
-    "triple-stroke-roll",
-    "single-paradiddle",
-    "double-paradiddle",
-  ]),
-  dailyRoutine("Wednesday", [
-    "single-stroke-roll",
-    "double-paradiddle",
-    "single-paradiddle-diddle",
-  ]),
-  dailyRoutine("Thursday", [
-    "double-stroke-roll",
-    "triple-stroke-roll",
-    "triple-paradiddle",
-  ]),
-  dailyRoutine("Friday", [
-    "single-paradiddle",
-    "triple-paradiddle",
-    "single-paradiddle-diddle",
-  ]),
-  dailyRoutine("Saturday", [
-    "single-stroke-roll",
-    "double-stroke-roll",
-    "double-paradiddle",
-  ]),
-  dailyRoutine("Sunday", [
-    "triple-stroke-roll",
-    "triple-paradiddle",
-    "single-paradiddle-diddle",
-  ]),
-];
-
-export function routineForDay(now: Date) {
-  return dailyRoutines[todayIndex(now)] ?? fallbackRoutine;
-}
-
-export function findDailyRoutine(id: string | undefined) {
-  return dailyRoutines.find((routine) => routine.id === id);
-}
-
-export function isDailyRoutine(id: string | undefined) {
-  return findDailyRoutine(id) !== undefined;
 }
 
 function minutesOf(seconds: number) {

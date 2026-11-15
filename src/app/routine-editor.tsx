@@ -30,7 +30,6 @@ import {
   newExercise,
   newRound,
   routineMinutes,
-  isDailyRoutine,
 } from "@/rudiments/todays-routine";
 import type {
   RoutineExercise,
@@ -304,7 +303,6 @@ export default function RoutineEditorScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const source = id ? findRoutine(id) : undefined;
-  const isCopy = isDailyRoutine(source?.id);
   const [name, setName] = useState(source?.name ?? "");
   const [exercises, setExercises] = useState<RoutineExercise[]>(
     source?.exercises ?? [],
@@ -322,7 +320,7 @@ export default function RoutineEditorScreen() {
   const [saveFailed, setSaveFailed] = useState(false);
   const save = () => {
     const isSaved = saveRoutine({
-      id: source && !isCopy ? source.id : newId("routine"),
+      id: source ? source.id : newId("routine"),
       name: name.trim(),
       exercises,
     });
@@ -333,7 +331,7 @@ export default function RoutineEditorScreen() {
     }
   };
 
-  const canDelete = source !== undefined && !isCopy;
+  const canDelete = source !== undefined;
   const [deleteFailed, setDeleteFailed] = useState(false);
   const confirmDelete = () => {
     if (!source) {
@@ -404,7 +402,7 @@ export default function RoutineEditorScreen() {
             pressed && styles.pressed,
           ]}
         >
-          <Text style={styles.save}>{isCopy ? "Save copy" : "Save"}</Text>
+          <Text style={styles.save}>Save</Text>
         </Pressable>
       </View>
 

@@ -3,6 +3,7 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { useSavedRoutines } from "@/rudiments/saved-routines";
+import { isRecommended } from "@/rudiments/starter-routines";
 import { routineLevel, routineMinutes } from "@/rudiments/todays-routine";
 import type { Routine } from "@/rudiments/types";
 import { colors } from "@/theme/colors";
@@ -20,11 +21,12 @@ function RoutineRow({
   onPress: () => void;
 }) {
   const minutes = routineMinutes(routine);
+  const recommended = isRecommended(routine.id);
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${routine.name}, ${minutes} minutes, ${routine.exercises.length} rudiments, level ${routineLevel(routine)}`}
+      accessibilityLabel={`${routine.name}, ${recommended ? "recommended, " : ""}${minutes} minutes, ${routine.exercises.length} rudiments, level ${routineLevel(routine)}`}
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
@@ -34,7 +36,12 @@ function RoutineRow({
     >
       <Text style={styles.position}>{String(position).padStart(2, "0")}</Text>
       <View style={styles.rowText}>
-        <Text style={styles.name}>{routine.name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{routine.name}</Text>
+          {recommended ? (
+            <Text style={styles.recommended}>Recommended</Text>
+          ) : null}
+        </View>
         <Text style={styles.meta}>
           {minutes} min · {routine.exercises.length} rudiments · Lvl{" "}
           {routineLevel(routine)}
@@ -186,10 +193,28 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
   },
+  nameRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    columnGap: 10,
+    rowGap: 6,
+  },
   name: {
+    flexShrink: 1,
     color: colors.text.primary,
     fontFamily: typography.fontFamily.medium,
     fontSize: typography.fontSize.title,
+  },
+  recommended: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+    overflow: "hidden",
+    color: colors.text.secondary,
+    backgroundColor: colors.surface,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.caption,
   },
   meta: {
     color: colors.text.secondary,

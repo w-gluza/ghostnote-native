@@ -12,7 +12,7 @@ import {
   sessionActiveMs,
   sessionRoundCount,
 } from "@/rudiments/session";
-import { fallbackRoutine } from "@/rudiments/todays-routine";
+import { quickWarmUp } from "@/rudiments/starter-routines";
 import type { CompletedExercise } from "@/rudiments/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -64,7 +64,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 export default function SummaryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ routine?: string }>();
-  const routine = useRoutine(params.routine) ?? fallbackRoutine;
+  const routine = useRoutine(params.routine) ?? quickWarmUp;
   const session = useActiveSession(routine.id);
   const played = session?.exercises ?? [];
   const activeSeconds = sessionActiveMs(session) / 1000;

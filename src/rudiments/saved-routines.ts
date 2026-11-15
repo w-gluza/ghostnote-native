@@ -2,36 +2,7 @@ import { useSyncExternalStore } from "react";
 
 import { createRoutineStore } from "./routine-store";
 import { load, save } from "./storage";
-import { findDailyRoutine, presetExercise } from "./todays-routine";
-import type { Routine } from "./types";
-
-const starterRoutines: Routine[] = [
-  {
-    id: "quick-warm-up",
-    name: "Quick Warm-up",
-    exercises: [
-      presetExercise("quick-warm-up-e1", "single-stroke-roll", 2, 70, 3),
-      presetExercise("quick-warm-up-e2", "double-stroke-roll", 2, 60, 3),
-    ],
-  },
-  {
-    id: "paradiddle-focus",
-    name: "Paradiddle Focus",
-    exercises: [
-      presetExercise("paradiddle-focus-e1", "single-stroke-roll", 2, 80, 4),
-      presetExercise("paradiddle-focus-e2", "single-paradiddle", 4, 70, 10),
-    ],
-  },
-  {
-    id: "roll-builder",
-    name: "Roll Builder",
-    exercises: [
-      presetExercise("roll-builder-e1", "single-stroke-roll", 4, 100, 8),
-      presetExercise("roll-builder-e2", "double-stroke-roll", 4, 90, 8),
-      presetExercise("roll-builder-e3", "single-paradiddle", 2, 80, 4),
-    ],
-  },
-];
+import { quickWarmUp, starterRoutines } from "./starter-routines";
 
 const store = createRoutineStore({ load, save }, starterRoutines);
 
@@ -49,7 +20,7 @@ export function useRoutine(id: string | undefined) {
 
 export function findRoutine(id: string | undefined) {
   return (
-    findDailyRoutine(id) ??
-    store.routines().find((routine) => routine.id === id)
+    store.routines().find((routine) => routine.id === id) ??
+    (id === quickWarmUp.id ? quickWarmUp : undefined)
   );
 }

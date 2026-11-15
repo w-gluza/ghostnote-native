@@ -227,3 +227,43 @@ test("the round clock counts playing time only and carries on after a pause", ()
   store.completeRound(routine, first, round, 105000);
   assert.equal(store.roundPlayedMs("r", "e1", round.id, 110000), 0);
 });
+
+test("switching to another routine keeps the unfinished progress of both", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  const other: Routine = { ...routine, id: "other", name: "Other" };
+  store.trackRound(routine, first, first.rounds[0]!, playing, 0);
+  store.completeRound(routine, first, first.rounds[0]!, 60000);
+  store.trackRound(other, second, second.rounds[0]!, playing, 70000);
+  store.completeRound(other, second, second.rounds[0]!, 100000);
+
+  assert.equal(store.activeSession("r")?.exercises.length, 1);
+  assert.equal(store.activeSession("other")?.exercises.length, 1);
+  const reopened = createSessionStore(storage);
+  assert.equal(
+    reopened.activeSession("r")?.exercises[0]?.sourceExerciseId,
+    "e1",
+  );
+  assert.equal(
+    reopened.activeSession("other")?.exercises[0]?.sourceExerciseId,
+    "e2",
+  );
+});
+
+test("after finishing, the same routine starts a fresh session and history is kept", () => {
+  const store = createSessionStore(memory());
+  store.trackRound(routine, first, first.rounds[0]!, playing, 0);
+  store.completeRound(routine, first, first.rounds[0]!, 60000);
+  assert.equal(store.finishSession("r", 70000), true);
+  assert.equal(store.activeSession("r"), undefined);
+
+  store.trackRound(routine, first, first.rounds[0]!, playing, 100000);
+  store.completeRound(routine, first, first.rounds[0]!, 130000);
+  assert.equal(
+    store.activeSession("r")?.startedAt,
+    new Date(100000).toISOString(),
+  );
+  assert.equal(store.activeSession("r")?.exercises.length, 1);
+  assert.equal(store.history().length, 1);
+  assert.equal(store.history()[0]?.activeDurationMs, 60000);
+});

@@ -1,18 +1,22 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment, stickingOf } from "@/rudiments/library";
 import { useActiveSession } from "@/rudiments/practice-session";
+import {
+  selectPracticeRoutine,
+  usePracticeRoutine,
+} from "@/rudiments/practice-choice";
 import { useRoutine } from "@/rudiments/saved-routines";
+import { quickWarmUp } from "@/rudiments/starter-routines";
 import { isRoutineComplete, roundsDone } from "@/rudiments/session";
 import {
   exerciseMinutes,
   routineLevel,
   routineMinutes,
-  fallbackRoutine,
-  isDailyRoutine,
 } from "@/rudiments/todays-routine";
 import type { RoutineExercise } from "@/rudiments/types";
 import { colors } from "@/theme/colors";
@@ -69,8 +73,11 @@ function SetlistRow({
 export default function RoutineScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string }>();
-  const routine = useRoutine(params.id) ?? fallbackRoutine;
-  const isToday = isDailyRoutine(routine.id);
+  const routine = useRoutine(params.id) ?? quickWarmUp;
+  const isPractice = usePracticeRoutine().id === routine.id;
+  const [selectFailed, setSelectFailed] = useState(false);
+  const chooseForPractice = () =>
+    setSelectFailed(!selectPracticeRoutine(routine.id));
   const totalMinutes = routineMinutes(routine);
   const openExercise = (exercise: RoutineExercise) =>
     router.push({
@@ -91,7 +98,7 @@ export default function RoutineScreen() {
         options={{
           headerShown: true,
           title: "",
-          headerBackTitle: isToday ? "Practice" : "Routines",
+          headerBackTitle: isPractice ? "Practice" : "Routines",
           headerShadowVisible: false,
           headerTintColor: colors.text.primary,
           headerStyle: { backgroundColor: colors.background },
@@ -174,6 +181,31 @@ export default function RoutineScreen() {
           {isComplete ? "View Summary" : "Start Practice"}
         </Text>
       </Pressable>
+      {selectFailed ? (
+        <Text accessibilityRole="alert" style={styles.selectFailed}>
+          This routine could not be set for practice. Try again.
+        </Text>
+      ) : null}
+      {isPractice ? (
+        <View accessible style={styles.use}>
+          <SymbolView
+            name="checkmark"
+            size={12}
+            weight="medium"
+            tintColor={colors.text.secondary}
+          />
+          <Text style={styles.usedLabel}>Used for practice</Text>
+        </View>
+      ) : (
+        <Pressable
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={chooseForPractice}
+          style={({ pressed }) => [styles.use, pressed && styles.pressed]}
+        >
+          <Text style={styles.useLabel}>Use for practice</Text>
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 }
@@ -277,9 +309,35 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.label,
     fontVariant: ["tabular-nums"],
   },
+  use: {
+    minHeight: 44,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    gap: 6,
+  },
+  useLabel: {
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.label,
+  },
+  usedLabel: {
+    color: colors.text.secondary,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.fontSize.label,
+  },
+  selectFailed: {
+    marginHorizontal: 24,
+    marginBottom: 4,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.body,
+    fontSize: typography.fontSize.label,
+    textAlign: "center",
+  },
   start: {
     marginHorizontal: 24,
-    marginBottom: 8,
+    marginBottom: 3,
     minHeight: 56,
     borderRadius: 999,
     flexDirection: "row",

@@ -7,13 +7,16 @@ import { ScreenHeader } from "@/components/screen-header";
 import { WeekProgress } from "@/components/week-progress";
 import { periodStart, sessionsSince } from "@/rudiments/insights";
 import { findRudiment } from "@/rudiments/library";
-import { usePracticeHistory } from "@/rudiments/practice-session";
+import { usePracticeRoutine } from "@/rudiments/practice-choice";
+import {
+  useActiveSession,
+  usePracticeHistory,
+} from "@/rudiments/practice-session";
 import { useWeeklyGoal } from "@/rudiments/weekly-goal";
 import {
   exerciseMinutes,
   routineLevel,
   routineMinutes,
-  routineForDay,
 } from "@/rudiments/todays-routine";
 import { rudimentVideos } from "@/rudiments/videos";
 import { colors } from "@/theme/colors";
@@ -29,7 +32,8 @@ export default function PracticeScreen() {
     }, []),
   );
   const weeklyGoal = useWeeklyGoal();
-  const routine = routineForDay(now);
+  const routine = usePracticeRoutine();
+  const hasUnfinishedPractice = useActiveSession(routine.id) !== undefined;
   const rudiments: Rudiment[] = routine.exercises.map((exercise) => ({
     name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
     minutes: exerciseMinutes(exercise),
@@ -50,7 +54,7 @@ export default function PracticeScreen() {
       <ScreenHeader />
 
       <Text accessibilityRole="header" style={styles.title}>
-        {"Today's\nPractice"}
+        {"Your\nPractice"}
       </Text>
 
       <View style={styles.summary}>
@@ -78,7 +82,9 @@ export default function PracticeScreen() {
         onPress={open}
         style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >
-        <Text style={styles.startLabel}>Start Practice</Text>
+        <Text style={styles.startLabel}>
+          {hasUnfinishedPractice ? "Resume Practice" : "Start Practice"}
+        </Text>
       </Pressable>
 
       <Pressable
