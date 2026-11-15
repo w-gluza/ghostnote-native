@@ -3,10 +3,12 @@ import type {
   CompletedExercise,
   CompletedRound,
   PracticeSession,
+} from "./types";
+import type {
   Routine,
   RoutineExercise,
   RoutineRound,
-} from "../../rudiments/domain/types";
+} from "../../routines/domain/types";
 
 export function startSession(
   routine: Pick<Routine, "id" | "name">,

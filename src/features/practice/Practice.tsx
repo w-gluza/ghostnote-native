@@ -23,7 +23,7 @@ import {
   exerciseMinutes,
   routineLevel,
   routineMinutes,
-} from "@/features/practice/domain/todays-routine";
+} from "@/features/routines/domain/routine-builder";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";

@@ -1,6 +1,7 @@
 import { withoutRoutine, withRoutine } from "./routine-list.ts";
-import { isRoutine, validItems } from "../../rudiments/domain/stored.ts";
-import type { Routine } from "../../rudiments/domain/types";
+import { isRoutine } from "./stored.ts";
+import { validItems } from "../../../storage/validators.ts";
+import type { Routine } from "./types";
 
 type RoutineStorage = {
   load: (key: string) => unknown;

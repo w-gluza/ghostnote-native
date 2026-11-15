@@ -1,5 +1,5 @@
 import { compare, isReduced, ZERO } from "./fraction.ts";
-import type { Fraction } from "./types";
+import type { Fraction, PatternReference } from "./types";
 
 const DYNAMICS = ["normal", "ghost", "accent"];
 const HANDS = ["R", "L"];
@@ -26,6 +26,16 @@ function isFraction(value: unknown): value is Fraction {
 
 export function isPositive(value: unknown): value is Fraction {
   return isFraction(value) && compare(value, ZERO) > 0;
+}
+
+export function isPatternReference(value: unknown): value is PatternReference {
+  return (
+    isFields(value) &&
+    isName(value.rudimentId) &&
+    isName(value.patternId) &&
+    typeof value.patternVersion === "number" &&
+    Number.isInteger(value.patternVersion)
+  );
 }
 
 export function validateTempo(tempo: unknown): string[] {

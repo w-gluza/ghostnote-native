@@ -8,12 +8,8 @@ import {
 } from "../../rudiments/domain/library.ts";
 import { scaleToStep } from "../../rudiments/domain/timeline.ts";
 import { quarterTempo } from "../../rudiments/domain/timing.ts";
-import type {
-  Routine,
-  RoutineExercise,
-  RoutineRound,
-  Rudiment,
-} from "../../rudiments/domain/types";
+import type { Routine, RoutineExercise, RoutineRound } from "./types";
+import type { Rudiment } from "../../rudiments/domain/types";
 
 export const NEW_ROUND_SECONDS = 120;
 const NEW_EXERCISE_ROUNDS = 3;

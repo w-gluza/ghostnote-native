@@ -2,8 +2,8 @@ import { defaultPatternReference } from "../../rudiments/domain/library.ts";
 import type {
   RoutineExercise,
   RoutineRound,
-  Rudiment,
-} from "../../rudiments/domain/types";
+} from "../../routines/domain/types";
+import type { Rudiment } from "../../rudiments/domain/types";
 
 export function freePracticePattern(
   round: RoutineRound | undefined,

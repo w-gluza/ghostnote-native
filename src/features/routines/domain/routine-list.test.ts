@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { withoutRoutine, withRoutine } from "./routine-list.ts";
-import type { Routine } from "../../rudiments/domain/types.ts";
+import type { Routine } from "./types.ts";
 
 const routine = (id: string, name = id): Routine => ({
   id,

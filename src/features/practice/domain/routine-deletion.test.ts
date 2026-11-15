@@ -6,9 +6,9 @@ import {
   createRoutineStore,
   PENDING_DELETION_KEY,
   ROUTINES_KEY,
-} from "./routine-store.ts";
+} from "../../routines/domain/routine-store.ts";
 import { createSessionStore, HISTORY_KEY } from "./session-store.ts";
-import type { Routine } from "../../rudiments/domain/types.ts";
+import type { Routine } from "../../routines/domain/types.ts";
 
 const tempo = { bpm: 80, pulseQuarterUnits: ONE };
 const routine = (id: string): Routine => ({

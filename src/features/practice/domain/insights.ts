@@ -3,8 +3,8 @@ import type {
   CompletedExercise,
   PracticeSegment,
   PracticeSession,
-  RudimentCategory,
-} from "../../rudiments/domain/types";
+} from "./types";
+import type { RudimentCategory } from "../../rudiments/domain/types";
 
 export const WEEKLY_SESSION_GOAL = 3;
 export const WEEKLY_GOAL_CHOICES = [1, 2, 3, 4, 5, 6, 7];

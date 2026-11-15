@@ -1,4 +1,4 @@
-import type { Routine } from "../../rudiments/domain/types";
+import type { Routine } from "../../routines/domain/types";
 
 type ChoiceStorage = {
   load: (key: string) => unknown;

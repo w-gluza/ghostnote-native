@@ -8,7 +8,7 @@ import {
   finishSession,
   useActiveSession,
 } from "@/features/practice/hooks/practice-session";
-import { useRoutine } from "@/features/practice/hooks/saved-routines";
+import { useRoutine } from "@/features/routines/hooks/saved-routines";
 import {
   completedRoundCount,
   playedTempoLabel,
@@ -16,8 +16,8 @@ import {
   sessionRoundCount,
 } from "@/features/practice/domain/session";
 import { playedStat } from "@/features/practice/domain/insights";
-import { quickWarmUp } from "@/features/practice/domain/starter-routines";
-import type { CompletedExercise } from "@/features/rudiments/domain/types";
+import { quickWarmUp } from "@/features/routines/domain/starter-routines";
+import type { CompletedExercise } from "@/features/practice/domain/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 

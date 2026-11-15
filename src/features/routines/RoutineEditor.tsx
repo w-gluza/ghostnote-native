@@ -20,30 +20,29 @@ import {
   findRudiment,
   resolvePattern,
 } from "@/features/rudiments/domain/library";
-import { removeRoutine } from "@/features/practice/hooks/practice-session";
 import {
   findRoutine,
   saveRoutine,
-} from "@/features/practice/hooks/saved-routines";
+} from "@/features/routines/hooks/saved-routines";
 import { evenStep, scaleToStep } from "@/features/rudiments/domain/timeline";
 import {
   formatDuration,
   MAX_ROUNDS,
   parseDuration,
   parseTempo,
-} from "@/features/practice/domain/routine-form";
+} from "@/features/routines/domain/routine-form";
 import {
   exerciseMinutes,
   NEW_ROUND_SECONDS,
   newExercise,
   newRound,
   routineMinutes,
-} from "@/features/practice/domain/todays-routine";
+} from "@/features/routines/domain/routine-builder";
 import type {
   RoutineExercise,
   RoutineRound,
-  Rudiment,
-} from "@/features/rudiments/domain/types";
+} from "@/features/routines/domain/types";
+import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -283,7 +282,11 @@ function ExerciseEditor({
   );
 }
 
-export default function RoutineEditorScreen() {
+type RoutineEditorProps = {
+  onDelete: (routineId: string) => boolean;
+};
+
+export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const source = id ? findRoutine(id) : undefined;
@@ -330,7 +333,7 @@ export default function RoutineEditorScreen() {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            const isDeleted = removeRoutine(source.id);
+            const isDeleted = onDelete(source.id);
             if (isDeleted) {
               router.dismissTo("/routines");
             } else {

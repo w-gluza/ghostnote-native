@@ -19,7 +19,7 @@ import {
   weekDayMs,
   weeklyGoalFrom,
 } from "./insights.ts";
-import type { PracticeSession } from "../../rudiments/domain/types.ts";
+import type { PracticeSession } from "./types.ts";
 
 const SATURDAY = new Date(2026, 10, 14, 18, 0);
 const at = (day: number, hour = 10) =>

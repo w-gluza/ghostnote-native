@@ -1,5 +1,5 @@
-import { presetExercise } from "./todays-routine.ts";
-import type { Routine } from "../../rudiments/domain/types";
+import { presetExercise } from "./routine-builder.ts";
+import type { Routine } from "./types";
 
 export const quickWarmUp: Routine = {
   id: "quick-warm-up",

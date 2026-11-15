@@ -3,7 +3,7 @@ import { test } from "node:test";
 
 import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
 import { findRudiment } from "../../rudiments/domain/library.ts";
-import type { RoutineExercise } from "../../rudiments/domain/types.ts";
+import type { RoutineExercise } from "../../routines/domain/types.ts";
 import { freePracticePattern } from "./practice-pattern.ts";
 
 const pattern = {

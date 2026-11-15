@@ -1,1 +1,1 @@
-export { default } from "@/features/routines/Routine";
+export { default } from "@/features/practice/Routine";

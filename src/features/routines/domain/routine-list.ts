@@ -1,4 +1,4 @@
-import type { Routine } from "../../rudiments/domain/types";
+import type { Routine } from "./types";
 
 export function withRoutine(routines: Routine[], routine: Routine) {
   return routines.some((saved) => saved.id === routine.id)

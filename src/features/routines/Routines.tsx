@@ -2,13 +2,13 @@ import { Stack, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { useSavedRoutines } from "@/features/practice/hooks/saved-routines";
-import { isRecommended } from "@/features/practice/domain/starter-routines";
+import { useSavedRoutines } from "@/features/routines/hooks/saved-routines";
+import { isRecommended } from "@/features/routines/domain/starter-routines";
 import {
   routineLevel,
   routineMinutes,
-} from "@/features/practice/domain/todays-routine";
-import type { Routine } from "@/features/rudiments/domain/types";
+} from "@/features/routines/domain/routine-builder";
+import type { Routine } from "@/features/routines/domain/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 

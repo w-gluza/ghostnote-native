@@ -6,10 +6,13 @@ import {
   PRACTICE_ROUTINE_KEY,
   practiceRoutine,
 } from "./practice-choice-store.ts";
-import { createRoutineStore } from "./routine-store.ts";
-import { quickWarmUp, starterRoutines } from "./starter-routines.ts";
-import { routineMinutes } from "./todays-routine.ts";
-import type { Routine } from "../../rudiments/domain/types.ts";
+import { createRoutineStore } from "../../routines/domain/routine-store.ts";
+import {
+  quickWarmUp,
+  starterRoutines,
+} from "../../routines/domain/starter-routines.ts";
+import { routineMinutes } from "../../routines/domain/routine-builder.ts";
+import type { Routine } from "../../routines/domain/types.ts";
 
 function memory() {
   const data = new Map<string, string>();

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,39 +10,14 @@ import { RoundClock } from "@/features/practice/components/RoundClock/RoundClock
 import { RudimentPlayer } from "@/features/rudiments/components/RudimentPlayer/RudimentPlayer";
 import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
 import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
-import { fraction, multiply, ONE } from "@/features/rudiments/domain/fraction";
-import {
-  defaultBpm,
-  defaultPattern,
-  findRudiment,
-  resolvePattern,
-} from "@/features/rudiments/domain/library";
-import {
-  activeSession,
-  completeRound,
-  finishFree,
-  pauseRound,
-  rescaleFree,
-  rescaleRound,
-  trackFree,
-  trackRound,
-  undoRound,
-  useActiveSession,
-} from "@/features/practice/hooks/practice-session";
-import { freePracticePattern } from "@/features/practice/domain/practice-pattern";
-import {
-  isRoutineComplete,
-  nextRound,
-  roundsDone,
-} from "@/features/practice/domain/session";
-import { useRoutine } from "@/features/practice/hooks/saved-routines";
+import { fraction, multiply } from "@/features/rudiments/domain/fraction";
+import { findRudiment } from "@/features/rudiments/domain/library";
+import { useRoundPractice } from "@/features/practice/hooks/use-round-practice";
 import {
   buildTimeline,
   evenStep,
   scaleToStep,
 } from "@/features/rudiments/domain/timeline";
-import { quarterTempo } from "@/features/rudiments/domain/timing";
-import type { Fraction, Tempo } from "@/features/rudiments/domain/types";
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -62,96 +37,31 @@ export default function RudimentScreen() {
   const rudiment = findRudiment(id);
   const router = useRouter();
   const sound = useStrokeSound();
-  const openedRoutine = useRoutine(routine);
-  const activeRoutine = routine ? openedRoutine : undefined;
-  const exercise = activeRoutine?.exercises.find(
-    (item) => item.id === exerciseId,
-  );
-  const session = useActiveSession(activeRoutine?.id ?? "");
-  const roundGoal = exercise?.rounds.length ?? 0;
-  const done = exercise ? roundsDone(session, exercise) : 0;
-  const round = exercise ? nextRound(session, exercise) : undefined;
-  const isComplete = exercise ? round === undefined : false;
-  const pattern = exercise
-    ? resolvePattern(exercise.pattern)
-    : rudiment
-      ? defaultPattern(rudiment)
-      : undefined;
-  const [rhythmicScale, setRhythmicScale] = useState(
-    () =>
-      exercise?.rhythmicScale ?? (pattern ? scaleToStep(pattern, ONE) : ONE),
-  );
-  const initialTempo =
-    round?.tempo ??
-    exercise?.rounds[roundGoal - 1]?.tempo ??
-    quarterTempo(rudiment ? defaultBpm(rudiment) : 80);
-  const freePattern = freePracticePattern(round, exercise, rudiment);
-  const freeRudimentId = freePattern?.rudimentId;
-  const track = (isPlaying: boolean, tempo: Tempo) => {
-    if (activeRoutine && exercise && round) {
-      trackRound(
-        activeRoutine,
-        exercise,
-        round,
-        { isPlaying, tempo, rhythmicScale },
-        Date.now(),
-      );
-    } else if (freePattern) {
-      trackFree(freePattern, { isPlaying, tempo, rhythmicScale }, Date.now());
-    }
-  };
-  const changeScale = (scale: Fraction) => {
-    setRhythmicScale(scale);
-    if (activeRoutine && exercise && round) {
-      rescaleRound(activeRoutine.id, exercise.id, round.id, scale, Date.now());
-    } else if (freeRudimentId) {
-      rescaleFree(freeRudimentId, scale, Date.now());
-    }
-  };
-  useEffect(() => {
-    if (!freeRudimentId) {
-      return;
-    }
-    return () => {
-      finishFree(freeRudimentId, Date.now());
-    };
-  }, [freeRudimentId]);
-  const trackedRoutineId = activeRoutine?.id;
-  const trackedExerciseId = exercise?.id;
-  const trackedRoundId = round?.id;
-  useEffect(() => {
-    if (!trackedRoutineId || !trackedExerciseId || !trackedRoundId) {
-      return;
-    }
-    return () => {
-      pauseRound(
-        trackedRoutineId,
-        trackedExerciseId,
-        trackedRoundId,
-        Date.now(),
-      );
-    };
-  }, [trackedRoutineId, trackedExerciseId, trackedRoundId]);
+  const {
+    routine: activeRoutine,
+    exercise,
+    round,
+    done,
+    roundGoal,
+    isComplete,
+    pattern,
+    rhythmicScale,
+    initialTempo,
+    track,
+    changeScale,
+    finishRound: completeRound,
+    undo,
+  } = useRoundPractice({ rudiment, routineId: routine, exerciseId });
   const finishRound = () => {
-    if (!exercise || !activeRoutine || !round) {
-      return;
-    }
-    completeRound(activeRoutine, exercise, round, Date.now());
-    const isLastOfExercise = done + 1 >= roundGoal;
-    if (isRoutineComplete(activeSession(activeRoutine.id), activeRoutine)) {
+    const outcome = completeRound();
+    if (outcome === "routine-complete" && activeRoutine) {
       router.replace({
         pathname: "/summary",
         params: { routine: activeRoutine.id },
       });
-    } else if (isLastOfExercise) {
+    } else if (outcome === "exercise-complete") {
       router.back();
     }
-  };
-  const undo = () => {
-    if (!exercise || !activeRoutine) {
-      return;
-    }
-    undoRound(activeRoutine.id, exercise.id, Date.now());
   };
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);

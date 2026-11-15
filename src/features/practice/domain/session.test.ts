@@ -26,13 +26,9 @@ import {
   isTargetReached,
   spokenClock,
 } from "./session.ts";
-import type {
-  ActiveSession,
-  CompletedRound,
-  Routine,
-  RoutineExercise,
-  Tempo,
-} from "../../rudiments/domain/types.ts";
+import type { ActiveSession, CompletedRound } from "./types.ts";
+import type { Routine, RoutineExercise } from "../../routines/domain/types.ts";
+import type { Tempo } from "../../rudiments/domain/types.ts";
 
 const at = (bpm: number): Tempo => ({ bpm, pulseQuarterUnits: ONE });
 const pattern = {

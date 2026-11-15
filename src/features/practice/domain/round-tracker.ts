@@ -1,9 +1,6 @@
 import { equals } from "../../rudiments/domain/fraction.ts";
-import type {
-  Fraction,
-  PracticeSegment,
-  Tempo,
-} from "../../rudiments/domain/types";
+import type { Fraction, Tempo } from "../../rudiments/domain/types";
+import type { PracticeSegment } from "./types";
 
 type Setting = { tempo: Tempo; rhythmicScale: Fraction };
 

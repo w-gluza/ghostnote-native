@@ -16,24 +16,20 @@ import {
   removeLastRound,
   startSession,
 } from "./session.ts";
+import { isActiveSession, isPracticeSession, isSegment } from "./stored.ts";
 import {
-  isActiveSession,
   isPatternReference,
-  isPracticeSession,
-  isSegment,
-  validItems,
-} from "../../rudiments/domain/stored.ts";
-import { isFields, isName } from "../../rudiments/domain/validate.ts";
+  isFields,
+  isName,
+} from "../../rudiments/domain/validate.ts";
+import { validItems } from "../../../storage/validators.ts";
+import type { ActiveSession, PracticeSegment, PracticeSession } from "./types";
+import type { Fraction, PatternReference } from "../../rudiments/domain/types";
 import type {
-  ActiveSession,
-  Fraction,
-  PatternReference,
-  PracticeSegment,
-  PracticeSession,
   Routine,
   RoutineExercise,
   RoutineRound,
-} from "../../rudiments/domain/types";
+} from "../../routines/domain/types";
 
 export type KeyValueStorage = {
   load: (key: string) => unknown;

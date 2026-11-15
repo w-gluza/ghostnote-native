@@ -8,11 +8,8 @@ import {
   FREE_KEY,
   HISTORY_KEY,
 } from "./session-store.ts";
-import type {
-  Routine,
-  RoutineExercise,
-  Tempo,
-} from "../../rudiments/domain/types.ts";
+import type { Routine, RoutineExercise } from "../../routines/domain/types.ts";
+import type { Tempo } from "../../rudiments/domain/types.ts";
 
 const tempo: Tempo = { bpm: 80, pulseQuarterUnits: ONE };
 const exercise = (id: string, rudimentId: string): RoutineExercise => ({

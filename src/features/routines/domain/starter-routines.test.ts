@@ -6,7 +6,7 @@ import {
   quickWarmUp,
   starterRoutines,
 } from "./starter-routines.ts";
-import type { Routine } from "../../rudiments/domain/types.ts";
+import type { Routine } from "./types.ts";
 
 const stored = (routine: Routine): Routine =>
   JSON.parse(JSON.stringify(routine));

@@ -10,8 +10,8 @@ import {
   selectPracticeRoutine,
   usePracticeRoutine,
 } from "@/features/practice/hooks/practice-choice";
-import { useRoutine } from "@/features/practice/hooks/saved-routines";
-import { quickWarmUp } from "@/features/practice/domain/starter-routines";
+import { useRoutine } from "@/features/routines/hooks/saved-routines";
+import { quickWarmUp } from "@/features/routines/domain/starter-routines";
 import {
   isRoutineComplete,
   nextExercise,
@@ -21,8 +21,8 @@ import {
   exerciseMinutes,
   routineLevel,
   routineMinutes,
-} from "@/features/practice/domain/todays-routine";
-import type { RoutineExercise } from "@/features/rudiments/domain/types";
+} from "@/features/routines/domain/routine-builder";
+import type { RoutineExercise } from "@/features/routines/domain/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 

@@ -4,8 +4,8 @@ import {
   createPracticeChoiceStore,
   practiceRoutine,
 } from "../domain/practice-choice-store";
-import { useSavedRoutines } from "./saved-routines";
-import { quickWarmUp } from "../domain/starter-routines";
+import { useSavedRoutines } from "../../routines/hooks/saved-routines";
+import { quickWarmUp } from "../../routines/domain/starter-routines";
 import { load, save } from "../../../storage/storage";
 
 const store = createPracticeChoiceStore({ load, save });
