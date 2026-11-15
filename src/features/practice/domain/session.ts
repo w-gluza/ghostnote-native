@@ -100,6 +100,17 @@ export function nextRound(
   return exercise.rounds.find((round) => !done.has(round.id));
 }
 
+export function nextExercise(
+  session: ActiveSession | undefined,
+  routine: Routine,
+): RoutineExercise | undefined {
+  return (
+    routine.exercises.find(
+      (exercise) => nextRound(session, exercise) !== undefined,
+    ) ?? routine.exercises[0]
+  );
+}
+
 export function isRoutineComplete(
   session: ActiveSession | undefined,
   routine: Routine,

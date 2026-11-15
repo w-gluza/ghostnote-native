@@ -37,6 +37,9 @@ export type Played = {
 type Unfinished = { rudimentId: string; segments: PracticeSegment[] };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+const SESSIONS_GOAL = 50;
+const HOURS_GOAL = 30;
 const MINUTE_MS = 60 * 1000;
 
 function endOf(segment: PracticeSegment) {
@@ -182,4 +185,30 @@ export function lastPractisedLabel(rounds: Played[], now: Date) {
     return "Today";
   }
   return days === 1 ? "Yesterday" : `${days} days ago`;
+}
+
+export function achievements(sessionCount: number, practisedMs: number) {
+  return [
+    {
+      key: "sessions" as const,
+      title: "Getting into rhythm",
+      description: `Complete ${SESSIONS_GOAL} practice sessions`,
+      progress: Math.min(sessionCount, SESSIONS_GOAL),
+      goal: SESSIONS_GOAL,
+    },
+    {
+      key: "hours" as const,
+      title: "Dedicated drummer",
+      description: `Complete ${HOURS_GOAL} hours of practice`,
+      progress: Math.min(Math.floor(practisedMs / HOUR_MS), HOURS_GOAL),
+      goal: HOURS_GOAL,
+    },
+  ];
+}
+
+export function playedStat(ms: number) {
+  const seconds = ms / 1000;
+  return seconds < 60
+    ? { value: `${Math.round(seconds)}`, label: "seconds played" }
+    : { value: `${Math.round(seconds / 60)}`, label: "minutes played" };
 }

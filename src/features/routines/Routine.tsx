@@ -14,6 +14,7 @@ import { useRoutine } from "@/features/practice/hooks/saved-routines";
 import { quickWarmUp } from "@/features/practice/domain/starter-routines";
 import {
   isRoutineComplete,
+  nextExercise,
   roundsDone,
 } from "@/features/practice/domain/session";
 import {
@@ -94,10 +95,7 @@ export default function RoutineScreen() {
   const session = useActiveSession(routine.id);
   const isComplete = isRoutineComplete(session, routine);
   const isStarted = session !== undefined;
-  const next =
-    routine.exercises.find(
-      (exercise) => roundsDone(session, exercise) < exercise.rounds.length,
-    ) ?? routine.exercises[0];
+  const next = nextExercise(session, routine);
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.screen}>

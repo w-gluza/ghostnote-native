@@ -11,6 +11,7 @@ import {
 } from "./round-tracker.ts";
 import {
   closeSession,
+  nextExercise,
   completedRoundCount,
   sessionActiveMs,
   sessionRoundCount,
@@ -318,4 +319,29 @@ test("the round target is reached at the planned time and stays reached after it
 test("a round without a planned time never reports its target as reached", () => {
   assert.equal(isTargetReached(0, 0), false);
   assert.equal(isTargetReached(5000, 0), false);
+});
+
+test("practice resumes at the first exercise that still has rounds left", () => {
+  assert.equal(nextExercise(undefined, routine)?.id, "e1");
+  let session = recordRound(begin(), first, NAME, played("e1-r1", 60));
+  assert.equal(nextExercise(session, routine)?.id, "e1");
+  session = recordRound(session, first, NAME, played("e1-r2", 80));
+  session = recordRound(session, first, NAME, played("e1-r3", 120));
+  assert.equal(nextExercise(session, routine)?.id, "e2");
+});
+
+test("a finished routine opens at its first exercise and an empty one at none", () => {
+  let session = begin();
+  for (const item of routine.exercises) {
+    for (const round of item.rounds) {
+      session = recordRound(
+        session,
+        item,
+        NAME,
+        played(round.id, round.tempo.bpm),
+      );
+    }
+  }
+  assert.equal(nextExercise(session, routine)?.id, "e1");
+  assert.equal(nextExercise(session, { ...routine, exercises: [] }), undefined);
 });

@@ -3,10 +3,12 @@ import { test } from "node:test";
 
 import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
 import {
+  achievements,
   durationLabel,
   lastPractisedLabel,
   minutesLabel,
   periodStart,
+  playedStat,
   playedTime,
   practiceSessions,
   sessionsLabel,
@@ -232,4 +234,46 @@ test("the weekly goal is one to seven sessions and falls back to three", () => {
   assert.equal(weeklyGoalFrom("4"), 3);
   assert.equal(sessionsLabel(1), "1 session");
   assert.equal(sessionsLabel(4), "4 sessions");
+});
+
+const HOUR = 60 * 60 * 1000;
+
+test("achievements count sessions towards fifty and whole hours towards thirty", () => {
+  const [sessions, hours] = achievements(12, 2.9 * HOUR);
+  assert.equal(sessions?.title, "Getting into rhythm");
+  assert.equal(sessions?.description, "Complete 50 practice sessions");
+  assert.equal(sessions?.progress, 12);
+  assert.equal(sessions?.goal, 50);
+  assert.equal(hours?.title, "Dedicated drummer");
+  assert.equal(hours?.description, "Complete 30 hours of practice");
+  assert.equal(hours?.progress, 2);
+  assert.equal(hours?.goal, 30);
+});
+
+test("achievements start at nothing and stop at their goal", () => {
+  assert.deepEqual(
+    achievements(0, 0).map((achievement) => achievement.progress),
+    [0, 0],
+  );
+  assert.deepEqual(
+    achievements(80, 45 * HOUR).map((achievement) => achievement.progress),
+    [50, 30],
+  );
+});
+
+test("a session under a minute is summed up in seconds, a longer one in minutes", () => {
+  assert.deepEqual(playedStat(0), { value: "0", label: "seconds played" });
+  assert.deepEqual(playedStat(42_400), {
+    value: "42",
+    label: "seconds played",
+  });
+  assert.deepEqual(playedStat(59_999), {
+    value: "60",
+    label: "seconds played",
+  });
+  assert.deepEqual(playedStat(60_000), { value: "1", label: "minutes played" });
+  assert.deepEqual(playedStat(9 * 60_000 + 20_000), {
+    value: "9",
+    label: "minutes played",
+  });
 });

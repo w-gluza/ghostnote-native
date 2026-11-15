@@ -26,7 +26,12 @@ import {
   saveRoutine,
 } from "@/features/practice/hooks/saved-routines";
 import { evenStep, scaleToStep } from "@/features/rudiments/domain/timeline";
-import { clampBpm } from "@/features/rudiments/domain/timing";
+import {
+  formatDuration,
+  MAX_ROUNDS,
+  parseDuration,
+  parseTempo,
+} from "@/features/practice/domain/routine-form";
 import {
   exerciseMinutes,
   NEW_ROUND_SECONDS,
@@ -41,30 +46,6 @@ import type {
 } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
-
-const MAX_ROUNDS = 10;
-const MIN_ROUND_SECONDS = 10;
-const MAX_ROUND_SECONDS = 30 * 60;
-
-function formatDuration(seconds: number) {
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-}
-
-function parseDuration(text: string) {
-  const match = /^(\d{1,2})(?::(\d{1,2}))?$/.exec(text.trim());
-  if (!match) {
-    return undefined;
-  }
-  const seconds = Number(match[1]) * 60 + Number(match[2] ?? 0);
-  return seconds >= MIN_ROUND_SECONDS && seconds <= MAX_ROUND_SECONDS
-    ? seconds
-    : undefined;
-}
-
-function parseTempo(text: string) {
-  const bpm = Number(text.trim());
-  return Number.isInteger(bpm) && bpm === clampBpm(bpm) ? bpm : undefined;
-}
 
 function RoundField({
   label,

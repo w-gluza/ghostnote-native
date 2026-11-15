@@ -16,7 +16,6 @@ import {
   defaultPattern,
   findRudiment,
   resolvePattern,
-  defaultPatternReference,
 } from "@/features/rudiments/domain/library";
 import {
   activeSession,
@@ -30,6 +29,7 @@ import {
   undoRound,
   useActiveSession,
 } from "@/features/practice/hooks/practice-session";
+import { freePracticePattern } from "@/features/practice/domain/practice-pattern";
 import {
   isRoutineComplete,
   nextRound,
@@ -85,10 +85,7 @@ export default function RudimentScreen() {
     round?.tempo ??
     exercise?.rounds[roundGoal - 1]?.tempo ??
     quarterTempo(rudiment ? defaultBpm(rudiment) : 80);
-  const freePattern = round
-    ? undefined
-    : (exercise?.pattern ??
-      (rudiment ? defaultPatternReference(rudiment) : undefined));
+  const freePattern = freePracticePattern(round, exercise, rudiment);
   const freeRudimentId = freePattern?.rudimentId;
   const track = (isPlaying: boolean, tempo: Tempo) => {
     if (activeRoutine && exercise && round) {

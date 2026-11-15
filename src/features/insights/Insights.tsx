@@ -19,6 +19,7 @@ import {
   type DayPractice,
 } from "@/features/insights/components/WeekChart/WeekChart";
 import {
+  achievements as practiceAchievements,
   durationLabel,
   lastPractisedLabel,
   periodStart,
@@ -63,9 +64,10 @@ const PERIODS: { key: Period; label: string }[] = [
   { key: "all", label: "All time" },
 ];
 
-const SESSIONS_GOAL = 50;
-const HOURS_GOAL = 30;
-const HOUR_MS = 60 * 60 * 1000;
+const ACHIEVEMENT_SYMBOLS = {
+  sessions: "waveform",
+  hours: "hourglass",
+} as const;
 
 export default function InsightsScreen() {
   const history = usePracticeHistory();
@@ -97,22 +99,13 @@ export default function InsightsScreen() {
   }));
   const hasBalance = shares.some((share) => share.percent > 0);
   const practised = totalMs(rounds);
-  const achievements: Achievement[] = [
-    {
-      symbol: "waveform",
-      title: "Getting into rhythm",
-      description: `Complete ${SESSIONS_GOAL} practice sessions`,
-      progress: Math.min(practiceSessions(history).length, SESSIONS_GOAL),
-      goal: SESSIONS_GOAL,
-    },
-    {
-      symbol: "hourglass",
-      title: "Dedicated drummer",
-      description: `Complete ${HOURS_GOAL} hours of practice`,
-      progress: Math.min(Math.floor(practised / HOUR_MS), HOURS_GOAL),
-      goal: HOURS_GOAL,
-    },
-  ];
+  const achievements: Achievement[] = practiceAchievements(
+    practiceSessions(history).length,
+    practised,
+  ).map((achievement) => ({
+    ...achievement,
+    symbol: ACHIEVEMENT_SYMBOLS[achievement.key],
+  }));
 
   return (
     <ScrollView

@@ -15,6 +15,7 @@ import {
   sessionActiveMs,
   sessionRoundCount,
 } from "@/features/practice/domain/session";
+import { playedStat } from "@/features/practice/domain/insights";
 import { quickWarmUp } from "@/features/practice/domain/starter-routines";
 import type { CompletedExercise } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
@@ -70,8 +71,7 @@ export default function SummaryScreen() {
   const routine = useRoutine(params.routine) ?? quickWarmUp;
   const session = useActiveSession(routine.id);
   const played = session?.exercises ?? [];
-  const activeSeconds = sessionActiveMs(session) / 1000;
-  const showsSeconds = activeSeconds < 60;
+  const timePlayed = playedStat(sessionActiveMs(session));
   const [saveFailed, setSaveFailed] = useState(false);
   const finish = () => {
     if (!finishSession(routine.id, Date.now())) {
@@ -104,10 +104,7 @@ export default function SummaryScreen() {
         </Text>
 
         <View style={styles.stats}>
-          <Stat
-            value={`${Math.round(showsSeconds ? activeSeconds : activeSeconds / 60)}`}
-            label={showsSeconds ? "seconds played" : "minutes played"}
-          />
+          <Stat value={timePlayed.value} label={timePlayed.label} />
           <View style={styles.statRule} />
           <Stat value={`${played.length}`} label="exercises" />
           <View style={styles.statRule} />
