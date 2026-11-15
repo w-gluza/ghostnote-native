@@ -32,6 +32,7 @@ import {
   useWeeklyGoal,
 } from "@/features/practice/stores/weekly-goal";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
   key: count,
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 24,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
   },
   bar: {

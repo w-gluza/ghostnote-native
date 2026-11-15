@@ -25,6 +25,7 @@ import {
 import { buildTimeline } from "@/features/rudiments/domain/timeline";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
   },
   header: {

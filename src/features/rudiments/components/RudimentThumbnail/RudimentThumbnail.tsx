@@ -3,6 +3,7 @@ import { Image, StyleSheet, View } from "react-native";
 
 import { RudimentVideo } from "@/features/rudiments/components/RudimentVideo/RudimentVideo";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 type RudimentThumbnailProps = {
   label: string;
@@ -35,7 +36,7 @@ const placeholder = require("@/assets/images/rudiment-placeholder.jpg");
 
 const styles = StyleSheet.create({
   thumbnail: {
-    borderRadius: 12,
+    borderRadius: layout.radius.thumbnail,
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",

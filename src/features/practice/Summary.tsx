@@ -24,6 +24,7 @@ import { quickWarmUp } from "@/features/routines/domain/starter-routines";
 import type { CompletedExercise } from "@/features/practice/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 function SummaryRow({
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 24,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
   },
   heading: {
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
   stats: {
     marginTop: 28,
     paddingVertical: 20,
-    borderRadius: 16,
+    borderRadius: layout.radius.panel,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.surface,
@@ -208,12 +209,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   saveFailed: {
-    marginHorizontal: 24,
+    marginHorizontal: layout.screenInset,
     marginBottom: 12,
     textAlign: "center",
   },
   finish: {
-    marginHorizontal: 24,
+    marginHorizontal: layout.screenInset,
     marginBottom: 8,
   },
 });

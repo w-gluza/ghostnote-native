@@ -14,6 +14,7 @@ import {
 import type { Routine } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 function RoutineRow({
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
   },
   heading: {

@@ -2,6 +2,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 type FilterChipsProps = {
   options: string[];
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     flexGrow: 0,
   },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     gap: 8,
   },
   target: {

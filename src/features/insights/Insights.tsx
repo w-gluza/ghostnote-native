@@ -42,6 +42,7 @@ import {
   useUnfinishedPractice,
 } from "@/features/practice/stores/practice-session";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 const DAYS = [
   { day: "Monday", label: "M" },
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
   },
   title: {

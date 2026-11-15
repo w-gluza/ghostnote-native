@@ -49,6 +49,7 @@ import type {
 } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 import { textVariants, typography } from "@/theme/typography";
 
 function RoundField({
@@ -513,14 +514,14 @@ const styles = StyleSheet.create({
   },
   bar: {
     paddingTop: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   content: {
     paddingTop: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 40,
   },
   deleteFailed: {
@@ -541,7 +542,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     height: 52,
     paddingHorizontal: 16,
-    borderRadius: 16,
+    borderRadius: layout.radius.panel,
     ...textVariants.body,
     color: colors.text.primary,
     backgroundColor: colors.surface,
@@ -573,7 +574,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    borderRadius: 16,
+    borderRadius: layout.radius.panel,
     gap: 4,
     backgroundColor: colors.surface,
   },
@@ -609,7 +610,7 @@ const styles = StyleSheet.create({
   },
   field: {
     padding: 8,
-    borderRadius: 16,
+    borderRadius: layout.radius.panel,
     backgroundColor: colors.surface,
   },
   fieldInput: {

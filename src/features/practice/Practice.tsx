@@ -29,6 +29,7 @@ import {
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 export default function PracticeScreen() {
   const router = useRouter();
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
   },
   title: {

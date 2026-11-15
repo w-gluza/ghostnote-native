@@ -45,9 +45,9 @@ import {
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
-const SCREEN_PADDING = 24;
 const STEP_BUTTON_SIZE = 36;
 const DIAL_GAP = 4;
 const MAX_DIAL_SIZE = 300;
@@ -61,7 +61,7 @@ const meterOptions = METERS.map((meter) => ({
 export default function MetronomeScreen() {
   const { width } = useWindowDimensions();
   const dialSize = Math.min(
-    width - 2 * (SCREEN_PADDING + STEP_BUTTON_SIZE + DIAL_GAP),
+    width - 2 * (layout.screenInset + STEP_BUTTON_SIZE + DIAL_GAP),
     MAX_DIAL_SIZE,
   );
   const settings = useMetronomeSettings();
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     paddingTop: 8,
-    paddingHorizontal: SCREEN_PADDING,
+    paddingHorizontal: layout.screenInset,
   },
   rhythm: {
     marginTop: 24,

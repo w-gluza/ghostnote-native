@@ -27,6 +27,7 @@ import {
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 const MIN_PAD_SCALE = 0.6;
 
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingTop: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     backgroundColor: colors.background,
   },
   scroll: {

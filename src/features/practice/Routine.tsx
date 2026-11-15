@@ -29,6 +29,7 @@ import {
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 
 function SetlistRow({
   done,
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    paddingHorizontal: 24,
+    paddingHorizontal: layout.screenInset,
     paddingBottom: 24,
   },
   summary: {
@@ -276,12 +277,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   selectFailed: {
-    marginHorizontal: 24,
+    marginHorizontal: layout.screenInset,
     marginBottom: 4,
     textAlign: "center",
   },
   start: {
-    marginHorizontal: 24,
+    marginHorizontal: layout.screenInset,
     marginBottom: 3,
   },
   pressed: {
