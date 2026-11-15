@@ -27,6 +27,7 @@ import {
 } from "@/rudiments/insights";
 import {
   useActiveSessions,
+  useFreePractice,
   usePracticeHistory,
   useUnfinishedPractice,
 } from "@/rudiments/practice-session";
@@ -62,6 +63,7 @@ const HOUR_MS = 60 * 60 * 1000;
 
 export default function InsightsScreen() {
   const history = usePracticeHistory();
+  const free = useFreePractice();
   const active = useActiveSessions();
   const unfinished = useUnfinishedPractice();
   const [period, setPeriod] = useState<Period>("month");
@@ -72,7 +74,10 @@ export default function InsightsScreen() {
     }, []),
   );
 
-  const rounds = playedTime([...history, ...Object.values(active)], unfinished);
+  const rounds = playedTime(
+    [...history, ...free, ...Object.values(active)],
+    unfinished,
+  );
   const dayMs = weekDayMs(rounds, now);
   const week: DayPractice[] = DAYS.map((day, index) => ({
     ...day,

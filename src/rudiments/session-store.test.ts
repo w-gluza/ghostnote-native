@@ -5,6 +5,7 @@ import { fraction, ONE } from "./fraction.ts";
 import {
   createSessionStore,
   CURRENT_KEY,
+  FREE_KEY,
   HISTORY_KEY,
 } from "./session-store.ts";
 import type { Routine, RoutineExercise, Tempo } from "./types.ts";
@@ -266,4 +267,99 @@ test("after finishing, the same routine starts a fresh session and history is ke
   assert.equal(store.activeSession("r")?.exercises.length, 1);
   assert.equal(store.history().length, 1);
   assert.equal(store.history()[0]?.activeDurationMs, 60000);
+});
+
+const paradiddle = first.pattern;
+
+test("free practice is saved on its own when the drummer leaves, apart from routine sessions", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackFree(paradiddle, playing, 1000);
+  store.trackFree(paradiddle, paused, 31000);
+  assert.equal(store.finishFree("single-paradiddle", 40000), true);
+
+  assert.equal(store.history().length, 0);
+  const [saved] = store.freeHistory();
+  assert.equal(saved?.kind, "free");
+  assert.equal(saved?.routineId, undefined);
+  assert.equal(saved?.activeDurationMs, 30000);
+  assert.equal(saved?.startedAt, new Date(1000).toISOString());
+  assert.equal(saved?.exercises[0]?.rudimentName, "Single Paradiddle");
+  assert.equal(store.unfinished().length, 0);
+  assert.equal(createSessionStore(storage).freeHistory().length, 1);
+});
+
+test("leaving while still playing counts the time up to that moment", () => {
+  const store = createSessionStore(memory());
+  store.trackFree(paradiddle, playing, 0);
+  store.finishFree("single-paradiddle", 12000);
+  assert.equal(store.freeHistory()[0]?.activeDurationMs, 12000);
+});
+
+test("opening a rudiment without playing saves nothing", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackFree(paradiddle, paused, 0);
+  assert.equal(store.finishFree("single-paradiddle", 5000), true);
+  assert.equal(store.freeHistory().length, 0);
+  assert.equal(storage.data.has(FREE_KEY), false);
+});
+
+test("free practice shows as played time while the drummer is still on the screen", () => {
+  const store = createSessionStore(memory());
+  store.trackFree(paradiddle, playing, 0);
+  store.trackFree(paradiddle, paused, 20000);
+  assert.deepEqual(
+    store
+      .unfinished()
+      .map((entry) => [entry.rudimentId, entry.segments[0]?.activeDurationMs]),
+    [["single-paradiddle", 20000]],
+  );
+});
+
+test("free practice interrupted by the app closing is saved once at the next launch", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackFree(paradiddle, playing, 0);
+  store.checkpoint(15000);
+
+  const reopened = createSessionStore(storage);
+  assert.equal(reopened.freeHistory().length, 1);
+  assert.equal(reopened.freeHistory()[0]?.activeDurationMs, 15000);
+  assert.equal(
+    reopened.freeHistory()[0]?.completedAt,
+    new Date(15000).toISOString(),
+  );
+  assert.equal(createSessionStore(storage).freeHistory().length, 1);
+});
+
+test("free practice that cannot be saved is kept and saved on a later attempt", () => {
+  const storage = memory([FREE_KEY]);
+  const store = createSessionStore(storage);
+  store.trackFree(paradiddle, playing, 0);
+  assert.equal(store.finishFree("single-paradiddle", 10000), false);
+  assert.equal(store.freeHistory().length, 0);
+  assert.equal(store.unfinished()[0]?.segments[0]?.activeDurationMs, 10000);
+
+  storage.failing = [];
+  store.trackFree(paradiddle, playing, 20000);
+  assert.equal(store.finishFree("single-paradiddle", 25000), true);
+  assert.equal(store.freeHistory().length, 1);
+  assert.equal(store.freeHistory()[0]?.activeDurationMs, 15000);
+  assert.equal(store.unfinished().length, 0);
+});
+
+test("changing the note value during free practice splits the time into two stretches", () => {
+  const store = createSessionStore(memory());
+  store.trackFree(paradiddle, playing, 0);
+  store.rescaleFree("single-paradiddle", fraction(2), 10000);
+  store.finishFree("single-paradiddle", 30000);
+  assert.deepEqual(
+    store
+      .freeHistory()[0]
+      ?.exercises[0]?.rounds[0]?.segments.map(
+        (segment) => segment.activeDurationMs,
+      ),
+    [10000, 20000],
+  );
 });

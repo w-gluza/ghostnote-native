@@ -24,6 +24,9 @@ export const {
   undoRound,
   finishSession,
   roundPlayedMs,
+  trackFree,
+  rescaleFree,
+  finishFree,
 } = store;
 
 export function useActiveSession(routineId: string) {
@@ -42,6 +45,10 @@ export function removeRoutine(routineId: string) {
 
 export function useUnfinishedPractice() {
   return useSyncExternalStore(store.subscribe, store.unfinished);
+}
+
+export function useFreePractice() {
+  return useSyncExternalStore(store.subscribe, store.freeHistory);
 }
 
 export function usePracticeHistory() {

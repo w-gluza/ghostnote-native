@@ -88,9 +88,13 @@ export default function RoutineScreen() {
         exercise: exercise.id,
       },
     });
-  const first = routine.exercises[0];
   const session = useActiveSession(routine.id);
   const isComplete = isRoutineComplete(session, routine);
+  const isStarted = session !== undefined;
+  const next =
+    routine.exercises.find(
+      (exercise) => roundsDone(session, exercise) < exercise.rounds.length,
+    ) ?? routine.exercises[0];
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.screen}>
@@ -167,7 +171,7 @@ export default function RoutineScreen() {
                 pathname: "/summary",
                 params: { routine: routine.id },
               })
-            : first && openExercise(first)
+            : next && openExercise(next)
         }
         style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >
@@ -178,7 +182,11 @@ export default function RoutineScreen() {
           tintColor={colors.text.onAccent}
         />
         <Text style={styles.startLabel}>
-          {isComplete ? "View Summary" : "Start Practice"}
+          {isComplete
+            ? "View Summary"
+            : isStarted
+              ? "Resume Practice"
+              : "Start Practice"}
         </Text>
       </Pressable>
       {selectFailed ? (

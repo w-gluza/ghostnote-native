@@ -109,6 +109,7 @@ export type CompletedExercise = {
 
 export type PracticeSession = {
   id: string;
+  kind?: "free";
   routineId?: string;
   routineName?: string;
   startedAt: string;

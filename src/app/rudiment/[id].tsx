@@ -16,12 +16,16 @@ import {
   defaultPattern,
   findRudiment,
   resolvePattern,
+  defaultPatternReference,
 } from "@/rudiments/library";
 import {
   activeSession,
   completeRound,
+  finishFree,
   pauseRound,
+  rescaleFree,
   rescaleRound,
+  trackFree,
   trackRound,
   undoRound,
   useActiveSession,
@@ -73,6 +77,11 @@ export default function RudimentScreen() {
     round?.tempo ??
     exercise?.rounds[roundGoal - 1]?.tempo ??
     quarterTempo(rudiment ? defaultBpm(rudiment) : 80);
+  const freePattern = round
+    ? undefined
+    : (exercise?.pattern ??
+      (rudiment ? defaultPatternReference(rudiment) : undefined));
+  const freeRudimentId = freePattern?.rudimentId;
   const track = (isPlaying: boolean, tempo: Tempo) => {
     if (activeRoutine && exercise && round) {
       trackRound(
@@ -82,14 +91,26 @@ export default function RudimentScreen() {
         { isPlaying, tempo, rhythmicScale },
         Date.now(),
       );
+    } else if (freePattern) {
+      trackFree(freePattern, { isPlaying, tempo, rhythmicScale }, Date.now());
     }
   };
   const changeScale = (scale: Fraction) => {
     setRhythmicScale(scale);
     if (activeRoutine && exercise && round) {
       rescaleRound(activeRoutine.id, exercise.id, round.id, scale, Date.now());
+    } else if (freeRudimentId) {
+      rescaleFree(freeRudimentId, scale, Date.now());
     }
   };
+  useEffect(() => {
+    if (!freeRudimentId) {
+      return;
+    }
+    return () => {
+      finishFree(freeRudimentId, Date.now());
+    };
+  }, [freeRudimentId]);
   const trackedRoutineId = activeRoutine?.id;
   const trackedExerciseId = exercise?.id;
   const trackedRoundId = round?.id;

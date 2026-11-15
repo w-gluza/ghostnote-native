@@ -27,6 +27,7 @@ import { isFields, isName } from "./validate.ts";
 import type {
   ActiveSession,
   Fraction,
+  PatternReference,
   PracticeSegment,
   PracticeSession,
   Routine,
@@ -51,6 +52,17 @@ type StoredTrackedRound = Omit<TrackedRound, "tracker"> & {
   segments: PracticeSegment[];
 };
 
+type FreeTracked = {
+  id: string;
+  pattern: PatternReference;
+  rudimentName: string;
+  tracker: RoundTracker;
+};
+
+type StoredFreeTracked = Omit<FreeTracked, "tracker"> & {
+  segments: PracticeSegment[];
+};
+
 export type UnfinishedPractice = {
   rudimentId: string;
   segments: PracticeSegment[];
@@ -58,6 +70,54 @@ export type UnfinishedPractice = {
 
 export const CURRENT_KEY = "sessions.current";
 export const HISTORY_KEY = "sessions.history";
+export const FREE_KEY = "sessions.free";
+
+function isStoredFreeTracked(value: unknown): value is StoredFreeTracked {
+  return (
+    isFields(value) &&
+    isName(value.id) &&
+    isPatternReference(value.pattern) &&
+    isName(value.rudimentName) &&
+    Array.isArray(value.segments) &&
+    value.segments.every(isSegment)
+  );
+}
+
+function endOf(segments: PracticeSegment[]) {
+  const last = segments.at(-1);
+  return last?.startedAt
+    ? timestamp(Date.parse(last.startedAt) + last.activeDurationMs)
+    : timestamp(0);
+}
+
+function freeSession(
+  entry: FreeTracked,
+  played: { segments: PracticeSegment[]; activeDurationMs: number },
+  completedAt: string,
+): PracticeSession {
+  return {
+    id: entry.id,
+    kind: "free",
+    startedAt: played.segments[0]?.startedAt ?? completedAt,
+    completedAt,
+    activeDurationMs: played.activeDurationMs,
+    exercises: [
+      {
+        rudimentName: entry.rudimentName,
+        pattern: entry.pattern,
+        rounds: [
+          {
+            id: newId("played"),
+            outcome: "completed",
+            segments: played.segments,
+            activeDurationMs: played.activeDurationMs,
+            completedAt,
+          },
+        ],
+      },
+    ],
+  };
+}
 
 function isStoredTrackedRound(value: unknown): value is StoredTrackedRound {
   return (
@@ -121,18 +181,40 @@ export function createSessionStore(storage: KeyValueStorage) {
       ]),
   );
 
+  let freeHistory: PracticeSession[] =
+    validItems(storage.load(FREE_KEY), isPracticeSession) ?? [];
+  const savedFreeIds = new Set(freeHistory.map((session) => session.id));
+  const freeTracked = new Map<string, FreeTracked>(
+    (
+      validItems(
+        isFields(current) ? current.free : undefined,
+        isStoredFreeTracked,
+      ) ?? []
+    )
+      .filter((entry) => !savedFreeIds.has(entry.id))
+      .map(({ segments, ...entry }) => [
+        entry.pattern.rudimentId,
+        { ...entry, tracker: { segments } },
+      ]),
+  );
+
   const notify = () => listeners.forEach((listener) => listener());
 
   let hasUnsavedChanges = false;
   let unfinished: UnfinishedPractice[] = [];
 
   const refreshUnfinished = () => {
-    unfinished = [...tracked.values()].map((entry) => ({
-      rudimentId: entry.exercise.pattern.rudimentId,
-      segments: entry.tracker.segments,
-    }));
+    unfinished = [
+      ...[...tracked.values()].map((entry) => ({
+        rudimentId: entry.exercise.pattern.rudimentId,
+        segments: entry.tracker.segments,
+      })),
+      ...[...freeTracked.values()].map((entry) => ({
+        rudimentId: entry.pattern.rudimentId,
+        segments: entry.tracker.segments,
+      })),
+    ];
   };
-  refreshUnfinished();
 
   const saveCurrent = (now: number) => {
     const isSaved = storage.save(CURRENT_KEY, {
@@ -141,10 +223,54 @@ export function createSessionStore(storage: KeyValueStorage) {
         ...entry,
         segments: pauseTracking(tracker, now).segments,
       })),
+      free: [...freeTracked.values()].map(({ tracker, ...entry }) => ({
+        ...entry,
+        segments: pauseTracking(tracker, now).segments,
+      })),
     });
     hasUnsavedChanges = !isSaved;
     return isSaved;
   };
+
+  const saveFree = (
+    rudimentId: string,
+    played: { segments: PracticeSegment[]; activeDurationMs: number },
+    completedAt: string,
+  ) => {
+    const entry = freeTracked.get(rudimentId);
+    if (!entry) {
+      return true;
+    }
+    if (played.activeDurationMs > 0) {
+      const next = [...freeHistory, freeSession(entry, played, completedAt)];
+      if (!storage.save(FREE_KEY, next)) {
+        freeTracked.set(rudimentId, {
+          ...entry,
+          tracker: { segments: played.segments },
+        });
+        return false;
+      }
+      freeHistory = next;
+    }
+    freeTracked.delete(rudimentId);
+    return true;
+  };
+
+  for (const [rudimentId, entry] of [...freeTracked]) {
+    const segments = entry.tracker.segments;
+    saveFree(
+      rudimentId,
+      {
+        segments,
+        activeDurationMs: segments.reduce(
+          (total, segment) => total + segment.activeDurationMs,
+          0,
+        ),
+      },
+      endOf(segments),
+    );
+  }
+  refreshUnfinished();
 
   const ensureSession = (routine: Routine, now: number) => {
     const existing = active[routine.id];
@@ -218,6 +344,55 @@ export function createSessionStore(storage: KeyValueStorage) {
       return unfinished;
     },
 
+    freeHistory() {
+      return freeHistory;
+    },
+
+    trackFree(pattern: PatternReference, activity: Activity, now: number) {
+      const entry = freeTracked.get(pattern.rudimentId);
+      if (!activity.isPlaying && !entry) {
+        return;
+      }
+      freeTracked.set(pattern.rudimentId, {
+        id: entry?.id ?? newId("session"),
+        pattern,
+        rudimentName: nameOf({ pattern }),
+        tracker: trackActivity(entry?.tracker ?? idleTracker, activity, now),
+      });
+      saveCurrent(now);
+      refreshUnfinished();
+      notify();
+    },
+
+    rescaleFree(rudimentId: string, rhythmicScale: Fraction, now: number) {
+      const entry = freeTracked.get(rudimentId);
+      if (entry) {
+        freeTracked.set(rudimentId, {
+          ...entry,
+          tracker: rescaleTracking(entry.tracker, rhythmicScale, now),
+        });
+        saveCurrent(now);
+        refreshUnfinished();
+        notify();
+      }
+    },
+
+    finishFree(rudimentId: string, now: number) {
+      const entry = freeTracked.get(rudimentId);
+      if (!entry) {
+        return true;
+      }
+      const isSaved = saveFree(
+        rudimentId,
+        finishTracking(entry.tracker, now),
+        timestamp(now),
+      );
+      saveCurrent(now);
+      refreshUnfinished();
+      notify();
+      return isSaved;
+    },
+
     roundPlayedMs(
       routineId: string,
       exerciseId: string,
@@ -277,7 +452,7 @@ export function createSessionStore(storage: KeyValueStorage) {
     },
 
     checkpoint(now: number) {
-      const isPlaying = [...tracked.values()].some(
+      const isPlaying = [...tracked.values(), ...freeTracked.values()].some(
         (entry) => entry.tracker.open !== undefined,
       );
       return isPlaying || hasUnsavedChanges ? saveCurrent(now) : true;

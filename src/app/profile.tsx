@@ -17,6 +17,7 @@ import {
 } from "@/rudiments/insights";
 import {
   useActiveSessions,
+  useFreePractice,
   usePracticeHistory,
   useUnfinishedPractice,
 } from "@/rudiments/practice-session";
@@ -34,10 +35,11 @@ export default function ProfileScreen() {
   const weeklyGoal = useWeeklyGoal();
   const [goalSaveFailed, setGoalSaveFailed] = useState(false);
   const history = usePracticeHistory();
+  const free = useFreePractice();
   const active = useActiveSessions();
   const unfinished = useUnfinishedPractice();
   const playedThisWeek = weekDayMs(
-    playedTime([...history, ...Object.values(active)], unfinished),
+    playedTime([...history, ...free, ...Object.values(active)], unfinished),
     new Date(),
   ).reduce((total, ms) => total + ms, 0);
 
