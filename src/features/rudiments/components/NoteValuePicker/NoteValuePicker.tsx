@@ -1,4 +1,3 @@
-import { SymbolView } from "expo-symbols";
 import { StyleSheet, Text } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
@@ -39,12 +38,6 @@ export function NoteValuePicker({
       <AppText variant="bodyStrong" tabular>
         {current?.label}
       </AppText>
-      <SymbolView
-        name="chevron.down"
-        size={13}
-        weight="medium"
-        tintColor={colors.text.secondary}
-      />
     </OptionMenu>
   );
 }

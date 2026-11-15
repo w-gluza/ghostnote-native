@@ -106,3 +106,34 @@ test("an option can be spoken differently from how it is written", async () => {
   expect(screen.getByRole("menuitem", { name: "Quarter notes" })).toBeTruthy();
   expect(screen.getByText("1/4")).toBeTruthy();
 });
+
+test("draws its own down-chevron unless told not to", async () => {
+  await render(
+    <>
+      <OptionMenu
+        name="Period"
+        options={options}
+        selected="month"
+        onChange={jest.fn()}
+      >
+        <Text>This month</Text>
+      </OptionMenu>
+      <OptionMenu
+        name="Time signature"
+        options={options}
+        selected="week"
+        chevron={false}
+        onChange={jest.fn()}
+      >
+        <Text>4/4</Text>
+      </OptionMenu>
+    </>,
+  );
+
+  expect(
+    screen.getByRole("button", { name: "Period, This month" }).children,
+  ).toHaveLength(2);
+  expect(
+    screen.getByRole("button", { name: "Time signature, This week" }).children,
+  ).toHaveLength(1);
+});

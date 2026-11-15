@@ -27,6 +27,7 @@ type OptionMenuProps<Key extends string | number> = {
   onChange: (key: Key) => void;
   align?: "start" | "end";
   hitSlop?: PressableProps["hitSlop"];
+  chevron?: boolean;
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
 };
@@ -42,6 +43,7 @@ export function OptionMenu<Key extends string | number>({
   onChange,
   align = "start",
   hitSlop,
+  chevron = true,
   style,
   children,
 }: OptionMenuProps<Key>) {
@@ -78,6 +80,14 @@ export function OptionMenu<Key extends string | number>({
         ]}
       >
         {children}
+        {chevron ? (
+          <SymbolView
+            name="chevron.down"
+            size={13}
+            weight="medium"
+            tintColor={colors.text.secondary}
+          />
+        ) : null}
       </Pressable>
 
       <Modal

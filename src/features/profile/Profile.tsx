@@ -1,6 +1,5 @@
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -31,7 +30,6 @@ import {
   setWeeklyGoal,
   useWeeklyGoal,
 } from "@/features/practice/stores/weekly-goal";
-import { colors } from "@/theme/colors";
 import { layout, layoutStyles } from "@/theme/layout";
 
 const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
@@ -91,12 +89,6 @@ export default function ProfileScreen() {
             <AppText variant="bodyStrong" tabular>
               {sessionsLabel(weeklyGoal)}
             </AppText>
-            <SymbolView
-              name="chevron.down"
-              size={12}
-              weight="medium"
-              tintColor={colors.text.secondary}
-            />
           </OptionMenu>
         </SettingsRow>
         <StatRow

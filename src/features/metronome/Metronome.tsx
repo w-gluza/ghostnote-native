@@ -1,5 +1,4 @@
 import { useIsFocused } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 import {
   AppState,
@@ -128,6 +127,7 @@ export default function MetronomeScreen() {
         <RhythmBar style={styles.rhythm}>
           <OptionMenu
             name="Time signature"
+            chevron={false}
             options={meterOptions}
             selected={meterLabel(settings.meter)}
             onChange={(label) => {
@@ -156,12 +156,6 @@ export default function MetronomeScreen() {
             >
               {subdivisionName(settings)}
             </AppText>
-            <SymbolView
-              name="chevron.down"
-              size={13}
-              weight="medium"
-              tintColor={colors.text.secondary}
-            />
           </OptionMenu>
         </RhythmBar>
 

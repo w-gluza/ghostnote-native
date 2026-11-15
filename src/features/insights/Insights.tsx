@@ -1,5 +1,4 @@
 import { useFocusEffect } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -148,12 +147,6 @@ export default function InsightsScreen() {
               <AppText variant="body" tone="secondary">
                 {PERIODS.find((option) => option.key === period)?.label}
               </AppText>
-              <SymbolView
-                name="chevron.down"
-                size={12}
-                weight="medium"
-                tintColor={colors.text.secondary}
-              />
             </OptionMenu>
           }
         />
