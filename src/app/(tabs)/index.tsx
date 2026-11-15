@@ -13,19 +13,11 @@ import {
   exerciseMinutes,
   routineLevel,
   routineMinutes,
-  todaysRoutine,
+  routineForDay,
 } from "@/rudiments/todays-routine";
 import { rudimentVideos } from "@/rudiments/videos";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
-
-const rudiments: Rudiment[] = todaysRoutine.exercises.map((exercise) => ({
-  name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
-  minutes: exerciseMinutes(exercise),
-  rounds: exercise.rounds.length,
-  bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
-  video: rudimentVideos[exercise.pattern.rudimentId],
-}));
 
 export default function PracticeScreen() {
   const router = useRouter();
@@ -37,6 +29,16 @@ export default function PracticeScreen() {
     }, []),
   );
   const weeklyGoal = useWeeklyGoal();
+  const routine = routineForDay(now);
+  const rudiments: Rudiment[] = routine.exercises.map((exercise) => ({
+    name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
+    minutes: exerciseMinutes(exercise),
+    rounds: exercise.rounds.length,
+    bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
+    video: rudimentVideos[exercise.pattern.rudimentId],
+  }));
+  const open = () =>
+    router.push({ pathname: "/routine", params: { id: routine.id } });
   const sessionsThisWeek = sessionsSince(history, periodStart("week", now));
 
   return (
@@ -53,8 +55,8 @@ export default function PracticeScreen() {
 
       <View style={styles.summary}>
         <Text style={styles.summaryText}>
-          {routineMinutes(todaysRoutine)} min • {rudiments.length} rudiments •
-          Lvl {routineLevel(todaysRoutine)}
+          {routineMinutes(routine)} min • {rudiments.length} rudiments • Lvl{" "}
+          {routineLevel(routine)}
         </Text>
         <WeekProgress done={sessionsThisWeek} goal={weeklyGoal} />
       </View>
@@ -66,14 +68,14 @@ export default function PracticeScreen() {
             rudiment={rudiment}
             position={index + 1}
             isLast={index === rudiments.length - 1}
-            onPress={() => router.push("/routine")}
+            onPress={open}
           />
         ))}
       </View>
 
       <Pressable
         accessibilityRole="button"
-        onPress={() => router.push("/routine")}
+        onPress={open}
         style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >
         <Text style={styles.startLabel}>Start Practice</Text>

@@ -30,7 +30,7 @@ import {
   newExercise,
   newRound,
   routineMinutes,
-  todaysRoutine,
+  isDailyRoutine,
 } from "@/rudiments/todays-routine";
 import type {
   RoutineExercise,
@@ -304,7 +304,7 @@ export default function RoutineEditorScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const source = id ? findRoutine(id) : undefined;
-  const isCopy = source?.id === todaysRoutine.id;
+  const isCopy = isDailyRoutine(source?.id);
   const [name, setName] = useState(source?.name ?? "");
   const [exercises, setExercises] = useState<RoutineExercise[]>(
     source?.exercises ?? [],

@@ -11,7 +11,8 @@ import {
   exerciseMinutes,
   routineLevel,
   routineMinutes,
-  todaysRoutine,
+  fallbackRoutine,
+  isDailyRoutine,
 } from "@/rudiments/todays-routine";
 import type { RoutineExercise } from "@/rudiments/types";
 import { colors } from "@/theme/colors";
@@ -68,8 +69,8 @@ function SetlistRow({
 export default function RoutineScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string }>();
-  const routine = useRoutine(params.id) ?? todaysRoutine;
-  const isToday = routine.id === todaysRoutine.id;
+  const routine = useRoutine(params.id) ?? fallbackRoutine;
+  const isToday = isDailyRoutine(routine.id);
   const totalMinutes = routineMinutes(routine);
   const openExercise = (exercise: RoutineExercise) =>
     router.push({

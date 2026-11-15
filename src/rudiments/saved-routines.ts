@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 
 import { createRoutineStore } from "./routine-store";
 import { load, save } from "./storage";
-import { presetExercise, todaysRoutine } from "./todays-routine";
+import { findDailyRoutine, presetExercise } from "./todays-routine";
 import type { Routine } from "./types";
 
 const starterRoutines: Routine[] = [
@@ -48,8 +48,8 @@ export function useRoutine(id: string | undefined) {
 }
 
 export function findRoutine(id: string | undefined) {
-  if (!id || id === todaysRoutine.id) {
-    return todaysRoutine;
-  }
-  return store.routines().find((routine) => routine.id === id);
+  return (
+    findDailyRoutine(id) ??
+    store.routines().find((routine) => routine.id === id)
+  );
 }
