@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { spacing } from "@/theme/layout";
 
 type SectionHeaderProps = {
   title: string;
@@ -44,11 +45,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    gap: 12,
+    gap: spacing.md,
   },
   label: {
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   heading: {
     alignItems: "baseline",

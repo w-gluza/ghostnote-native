@@ -30,7 +30,7 @@ import {
   setWeeklyGoal,
   useWeeklyGoal,
 } from "@/features/practice/stores/weekly-goal";
-import { layoutStyles } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 
 const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
   key: count,
@@ -129,7 +129,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   section: {
-    marginTop: 28,
+    marginTop: spacing.section,
   },
   goalRow: {
     paddingVertical: 0,
@@ -138,6 +138,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   problem: {
-    paddingBottom: 12,
+    paddingBottom: spacing.md,
   },
 });

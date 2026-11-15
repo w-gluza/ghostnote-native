@@ -6,6 +6,7 @@ import { AppText } from "@/components/AppText/AppText";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SettingsRow } from "@/components/SettingsRow/SettingsRow";
 import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/layout";
 
 type LinkRowProps = {
   symbol: SymbolViewProps["name"];
@@ -59,9 +60,9 @@ export function LinkRow({ symbol, label, detail, url, isLast }: LinkRowProps) {
 const styles = StyleSheet.create({
   text: {
     flex: 1,
-    gap: 4,
+    gap: spacing.xs,
   },
   problem: {
-    paddingBottom: 16,
+    paddingBottom: spacing.lg,
   },
 });

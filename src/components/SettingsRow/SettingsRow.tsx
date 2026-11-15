@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 import { colors } from "@/theme/colors";
-import { divider, layoutStyles } from "@/theme/layout";
+import { divider, layoutStyles, spacing } from "@/theme/layout";
 
 type SettingsRowProps = {
   symbol: SymbolViewProps["name"];
@@ -79,9 +79,9 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
+    gap: spacing.lg,
     minHeight: 56,
-    paddingVertical: 16,
+    paddingVertical: spacing.lg,
   },
   divided: {
     ...divider.bottom,
