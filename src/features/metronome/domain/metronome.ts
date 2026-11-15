@@ -52,6 +52,10 @@ export function meterLabel(meter: Meter) {
   return `${meter.beats}/${meter.noteValue}`;
 }
 
+export function meterFromLabel(label: string) {
+  return METERS.find((meter) => meterLabel(meter) === label);
+}
+
 export function sameMeter(a: Meter, b: Meter) {
   return a.beats === b.beats && a.noteValue === b.noteValue;
 }
@@ -141,6 +145,21 @@ export function buildClicks(settings: MetronomeSettings) {
     cycleBeats: toNumber(multiply(unit, fraction(settings.beats.length))),
     strokes,
   };
+}
+
+export function clickSound(click: Click | undefined) {
+  if (!click || click.kind === "silent") {
+    return undefined;
+  }
+  return {
+    sample: click.kind === "accent" ? ("accent" as const) : ("tap" as const),
+    level: click.kind === "soft" ? ("soft" as const) : ("full" as const),
+  };
+}
+
+export function playingBeat(clicks: Click[], activeIndex: number | null) {
+  const click = activeIndex === null ? undefined : clicks[activeIndex];
+  return click ? click.beatIndex + 1 : 0;
 }
 
 export function tempoOf(settings: MetronomeSettings) {

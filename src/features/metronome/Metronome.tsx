@@ -20,10 +20,13 @@ import { TempoDial } from "@/features/metronome/components/TempoDial/TempoDial";
 import {
   buildClicks,
   clampBpm,
+  clickSound,
   MAX_BPM,
+  meterFromLabel,
   meterLabel,
   METERS,
   MIN_BPM,
+  playingBeat,
   subdivisionName,
   subdivisionsFor,
   tempoOf,
@@ -79,15 +82,10 @@ export default function MetronomeScreen() {
     clock: sound?.now,
     restartOnPlay: true,
     onSchedule: (index, timeMs) => {
-      const click = loop.strokes[index];
-      if (!click || click.kind === "silent") {
-        return;
+      const click = clickSound(loop.strokes[index]);
+      if (click) {
+        sound?.play(click.sample, click.level, timeMs);
       }
-      sound?.play(
-        click.kind === "accent" ? "accent" : "tap",
-        click.kind === "soft" ? "soft" : "full",
-        timeMs,
-      );
     },
     onCancel: sound?.cancel,
   });
@@ -111,10 +109,6 @@ export default function MetronomeScreen() {
     return () => subscription.remove();
   }, []);
 
-  const activeClick =
-    playback.isPlaying && playback.activeIndex !== null
-      ? loop.strokes[playback.activeIndex]
-      : undefined;
   const subdivisionOptions = subdivisionsFor(settings.meter).map((option) => ({
     key: option.clicks,
     label: option.name,
@@ -135,9 +129,7 @@ export default function MetronomeScreen() {
             options={meterOptions}
             selected={meterLabel(settings.meter)}
             onChange={(label) => {
-              const meter = METERS.find(
-                (option) => meterLabel(option) === label,
-              );
+              const meter = meterFromLabel(label);
               if (meter) {
                 change((current) => withMeter(current, meter));
               }
@@ -223,7 +215,10 @@ export default function MetronomeScreen() {
           </View>
           <BeatPattern
             beats={settings.beats}
-            playingBeat={activeClick ? activeClick.beatIndex + 1 : 0}
+            playingBeat={playingBeat(
+              loop.strokes,
+              playback.isPlaying ? playback.activeIndex : null,
+            )}
             onPressBeat={(index) =>
               change((current) => withNextBeatKind(current, index))
             }

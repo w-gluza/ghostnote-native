@@ -6,9 +6,12 @@ import { msPerQuarterUnit } from "../../rudiments/domain/timing.ts";
 import {
   buildClicks,
   clampBpm,
+  clickSound,
   defaultSettings,
   isMetronomeSettings,
+  meterFromLabel,
   METERS,
+  playingBeat,
   pulseOf,
   subdivisionName,
   tempoOf,
@@ -133,4 +136,43 @@ test("stored settings are accepted only when every part is valid", () => {
   for (const stored of broken) {
     assert.equal(isMetronomeSettings(stored), false);
   }
+});
+
+test("a time signature label finds its meter and an unknown label finds none", () => {
+  assert.deepEqual(meterFromLabel("6/8"), sixEight);
+  assert.deepEqual(meterFromLabel("4/4"), defaultSettings.meter);
+  assert.equal(meterFromLabel("7/8"), undefined);
+});
+
+test("accents play the accent sample, beats the tap and subdivisions a soft tap", () => {
+  assert.deepEqual(clickSound({ beat: 0, beatIndex: 0, kind: "accent" }), {
+    sample: "accent",
+    level: "full",
+  });
+  assert.deepEqual(clickSound({ beat: 1, beatIndex: 1, kind: "normal" }), {
+    sample: "tap",
+    level: "full",
+  });
+  assert.deepEqual(clickSound({ beat: 0.5, beatIndex: 0, kind: "soft" }), {
+    sample: "tap",
+    level: "soft",
+  });
+});
+
+test("silent and missing clicks play nothing", () => {
+  assert.equal(
+    clickSound({ beat: 1, beatIndex: 1, kind: "silent" }),
+    undefined,
+  );
+  assert.equal(clickSound(undefined), undefined);
+});
+
+test("the playing beat counts from one, follows subdivisions and is zero when nothing plays", () => {
+  const clicks = buildClicks({ ...defaultSettings, subdivision: 2 }).strokes;
+  assert.equal(playingBeat(clicks, 0), 1);
+  assert.equal(playingBeat(clicks, 1), 1);
+  assert.equal(playingBeat(clicks, 2), 2);
+  assert.equal(playingBeat(clicks, 7), 4);
+  assert.equal(playingBeat(clicks, null), 0);
+  assert.equal(playingBeat(clicks, 99), 0);
 });
