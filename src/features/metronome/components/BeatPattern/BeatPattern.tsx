@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import type { BeatKind } from "@/features/metronome/domain/metronome";
 import { colors } from "@/theme/colors";
-import { layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 type BeatPatternProps = {
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   beat: {
     width: 40,
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     justifyContent: "center",
     gap: 4,
   },

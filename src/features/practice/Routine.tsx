@@ -30,6 +30,7 @@ import {
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
+import { nativeHeader } from "@/theme/navigation";
 import { divider, layout, layoutStyles } from "@/theme/layout";
 
 function SetlistRow({
@@ -111,12 +112,8 @@ export default function RoutineScreen() {
     <SafeAreaView edges={["bottom"]} style={layoutStyles.screen}>
       <Stack.Screen
         options={{
-          headerShown: true,
-          title: "",
+          ...nativeHeader,
           headerBackTitle: isPractice ? "Practice" : "Routines",
-          headerShadowVisible: false,
-          headerTintColor: colors.text.primary,
-          headerStyle: { backgroundColor: colors.background },
           headerRight: () => (
             <Button
               variant="text"
@@ -243,7 +240,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   use: {
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

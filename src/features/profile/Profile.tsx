@@ -56,12 +56,15 @@ export default function ProfileScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={layoutStyles.contentPadded}
     >
-      <View style={styles.bar}>
-        <PageTitle>Profile</PageTitle>
-        <Button variant="text" tone="accent" onPress={() => router.back()}>
-          Done
-        </Button>
-      </View>
+      <PageTitle
+        trailing={
+          <Button variant="text" tone="accent" onPress={() => router.back()}>
+            Done
+          </Button>
+        }
+      >
+        Profile
+      </PageTitle>
 
       <View style={styles.section}>
         <SectionHeader title="YOUR PRACTICE" />
@@ -125,11 +128,6 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   section: {
     marginTop: 28,
   },

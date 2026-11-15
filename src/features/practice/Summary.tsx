@@ -102,15 +102,18 @@ export default function SummaryScreen() {
         contentContainerStyle={layoutStyles.contentPadded}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.heading}>
-          <PageTitle>Practice complete</PageTitle>
-          <SymbolView
-            name="checkmark.circle"
-            size={28}
-            weight="light"
-            tintColor={colors.accent}
-          />
-        </View>
+        <PageTitle
+          trailing={
+            <SymbolView
+              name="checkmark.circle"
+              size={28}
+              weight="light"
+              tintColor={colors.accent}
+            />
+          }
+        >
+          Practice complete
+        </PageTitle>
         <AppText variant="bodySmall" tone="secondary" style={styles.subtitle}>
           {session?.routineName ?? routine.name}
         </AppText>
@@ -153,12 +156,6 @@ export default function SummaryScreen() {
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
-  },
-  heading: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
   },
   subtitle: {
     marginTop: 8,

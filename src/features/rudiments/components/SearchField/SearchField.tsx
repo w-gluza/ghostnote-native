@@ -3,6 +3,7 @@ import { StyleSheet, TextInput, View } from "react-native";
 
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
+import { layout } from "@/theme/layout";
 import { textVariants } from "@/theme/typography";
 
 type SearchFieldProps = {
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   },
   field: {
     flex: 1,
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     paddingHorizontal: 12,
     borderRadius: 12,
     flexDirection: "row",
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     ...textVariants.body,
     color: colors.text.primary,
   },

@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   target: {
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     justifyContent: "center",
   },
   chip: {
