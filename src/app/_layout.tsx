@@ -1,5 +1,6 @@
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 
+import { startPracticeTracking } from "@/features/practice/hooks/practice-session";
 import { LaunchPad } from "@/features/rudiments/components/LaunchPad/LaunchPad";
 import { colors } from "@/theme/colors";
 
@@ -14,6 +15,8 @@ const theme = {
     border: colors.border,
   },
 };
+
+startPracticeTracking();
 
 export default function RootLayout() {
   return (

@@ -11,9 +11,15 @@ const store = createSessionStore({ load, save });
 const finishNow = (routineId: string) =>
   store.finishSession(routineId, Date.now());
 
-resumeRoutineDeletion(finishNow);
+let checkpoints: ReturnType<typeof setInterval> | undefined;
 
-setInterval(() => store.checkpoint(Date.now()), CHECKPOINT_MS);
+export function startPracticeTracking() {
+  if (checkpoints !== undefined) {
+    return;
+  }
+  resumeRoutineDeletion(finishNow);
+  checkpoints = setInterval(() => store.checkpoint(Date.now()), CHECKPOINT_MS);
+}
 
 export const {
   activeSession,

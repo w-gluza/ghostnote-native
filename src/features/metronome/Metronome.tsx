@@ -1,6 +1,6 @@
 import { useIsFocused } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   AppState,
   Pressable,
@@ -20,8 +20,6 @@ import { TempoDial } from "@/features/metronome/components/TempoDial/TempoDial";
 import {
   buildClicks,
   clampBpm,
-  defaultSettings,
-  isMetronomeSettings,
   MAX_BPM,
   meterLabel,
   METERS,
@@ -31,15 +29,16 @@ import {
   tempoOf,
   withMeter,
   withNextBeatKind,
-  type MetronomeSettings,
 } from "@/features/metronome/domain/metronome";
-import { load, save } from "@/storage/storage";
+import {
+  changeMetronomeSettings as change,
+  useMetronomeSettings,
+} from "@/features/metronome/hooks/metronome-settings";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const SETTINGS_KEY = "metronome";
 const SCREEN_PADDING = 24;
 const STEP_BUTTON_SIZE = 36;
 const DIAL_GAP = 4;
@@ -51,28 +50,16 @@ const meterOptions = METERS.map((meter) => ({
   label: meterLabel(meter),
 }));
 
-function storedSettings(): MetronomeSettings {
-  const stored = load(SETTINGS_KEY);
-  return isMetronomeSettings(stored) ? stored : defaultSettings;
-}
-
 export default function MetronomeScreen() {
   const { width } = useWindowDimensions();
   const dialSize = Math.min(
     width - 2 * (SCREEN_PADDING + STEP_BUTTON_SIZE + DIAL_GAP),
     MAX_DIAL_SIZE,
   );
-  const [settings, setSettings] = useState(storedSettings);
+  const settings = useMetronomeSettings();
   const sound = useClickSound();
   const loop = useMemo(() => buildClicks(settings), [settings]);
 
-  const change = (next: (current: MetronomeSettings) => MetronomeSettings) => {
-    setSettings((current) => {
-      const changed = next(current);
-      save(SETTINGS_KEY, changed);
-      return changed;
-    });
-  };
   const changeBpm = (bpm: number) =>
     change((current) => ({ ...current, bpm: clampBpm(bpm) }));
   const stepBpm = (step: number) =>
