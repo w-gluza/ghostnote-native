@@ -1,5 +1,5 @@
 export const links = {
-  privacy: "https://example.com/ios/privacy",
-  support: "https://example.com/ios/support",
+  privacy: "https://www.theghostnote.app/ios/privacy",
+  support: "https://www.theghostnote.app/ios/support",
   author: "https://www.wiola.dev/",
 };
