@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 
-import { AppText } from "@/components/AppText/AppText";
+import { Stat } from "@/components/Stat/Stat";
 import { TempoStepper } from "@/components/TempoStepper/TempoStepper";
 import {
   ACCENT_LIFT,
@@ -37,7 +37,6 @@ import type { Timeline } from "@/features/rudiments/domain/timeline";
 import type { Tempo } from "@/features/rudiments/domain/types";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import type { StrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
-import { typography } from "@/theme/typography";
 import { spacing } from "@/theme/layout";
 
 type RudimentPlayerProps = {
@@ -191,18 +190,12 @@ export function RudimentPlayer({
         onDecrease={() => changeBpm(bpm - BPM_STEP)}
         onIncrease={() => changeBpm(bpm + BPM_STEP)}
       >
-        <View
-          accessible
+        <Stat
+          value={bpm}
+          label="BPM"
           accessibilityLabel={`${bpm} beats per minute`}
           style={styles.readout}
-        >
-          <AppText variant="heading" tabular style={styles.bpm}>
-            {bpm}
-          </AppText>
-          <AppText variant="overline" tone="secondary">
-            BPM
-          </AppText>
-        </View>
+        />
       </TempoStepper>
 
       <PlayButton isPlaying={playback.isPlaying} onPress={togglePlayback} />
@@ -221,9 +214,5 @@ const styles = StyleSheet.create({
   },
   readout: {
     minWidth: 72,
-    alignItems: "center",
-  },
-  bpm: {
-    fontSize: typography.fontSize.title,
   },
 });

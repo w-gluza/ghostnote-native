@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { Stat } from "@/components/Stat/Stat";
 import { RowText } from "@/components/RowText/RowText";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
@@ -26,7 +27,6 @@ import type { CompletedExercise } from "@/features/practice/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
-import { typography } from "@/theme/typography";
 
 function SummaryRow({
   played,
@@ -61,19 +61,6 @@ function SummaryRow({
       />
       <AppText variant="bodySmall" tone="secondary" tabular>
         {rounds}
-      </AppText>
-    </View>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <View accessible style={styles.stat}>
-      <AppText variant="heading" tabular style={styles.statValue}>
-        {value}
-      </AppText>
-      <AppText variant="caption" tone="secondary">
-        {label}
       </AppText>
     </View>
   );
@@ -119,11 +106,23 @@ export default function SummaryScreen() {
         </AppText>
 
         <View style={styles.stats}>
-          <Stat value={timePlayed.value} label={timePlayed.label} />
+          <Stat
+            style={styles.stat}
+            value={timePlayed.value}
+            label={timePlayed.label}
+          />
           <View style={styles.statRule} />
-          <Stat value={`${played.length}`} label="exercises" />
+          <Stat
+            style={styles.stat}
+            value={`${played.length}`}
+            label="exercises"
+          />
           <View style={styles.statRule} />
-          <Stat value={`${sessionRoundCount(session)}`} label="rounds" />
+          <Stat
+            style={styles.stat}
+            value={`${sessionRoundCount(session)}`}
+            label="rounds"
+          />
         </View>
 
         <SectionHeader title="WHAT YOU PLAYED" style={styles.sectionHeader} />
@@ -170,11 +169,6 @@ const styles = StyleSheet.create({
   },
   stat: {
     flex: 1,
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  statValue: {
-    fontSize: typography.fontSize.title,
   },
   statRule: {
     width: StyleSheet.hairlineWidth,
