@@ -1,7 +1,7 @@
 import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
-import { AppText } from "@/components/AppText/AppText";
+import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { textVariants } from "@/theme/typography";
 
@@ -44,15 +44,9 @@ export function SearchField({
           style={styles.input}
         />
       </View>
-      <Pressable
-        accessibilityRole="button"
-        onPress={onCancel}
-        style={({ pressed }) => [styles.target, pressed && styles.pressed]}
-      >
-        <AppText variant="body" tone="accent">
-          Cancel
-        </AppText>
-      </Pressable>
+      <Button variant="text" tone="accent" onPress={onCancel}>
+        Cancel
+      </Button>
     </View>
   );
 }
@@ -78,12 +72,5 @@ const styles = StyleSheet.create({
     minHeight: 44,
     ...textVariants.body,
     color: colors.text.primary,
-  },
-  target: {
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

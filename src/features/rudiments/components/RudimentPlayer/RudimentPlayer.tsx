@@ -1,4 +1,3 @@
-import { SymbolView } from "expo-symbols";
 import {
   useEffect,
   useEffectEvent,
@@ -10,7 +9,6 @@ import {
   Animated,
   AppState,
   Easing,
-  Pressable,
   StyleSheet,
   useAnimatedValue,
   useWindowDimensions,
@@ -18,6 +16,7 @@ import {
 } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { IconButton } from "@/components/IconButton/IconButton";
 import {
   ACCENT_LIFT,
   PadAnimation,
@@ -38,7 +37,6 @@ import type { Timeline } from "@/features/rudiments/domain/timeline";
 import type { Tempo } from "@/features/rudiments/domain/types";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import type { StrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
-import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
 type RudimentPlayerProps = {
@@ -187,20 +185,13 @@ export function RudimentPlayer({
       />
 
       <View style={styles.tempo}>
-        <Pressable
-          accessibilityRole="button"
+        <IconButton
+          icon="minus"
           accessibilityLabel="Decrease tempo"
+          variant="tonal"
           disabled={bpm <= MIN_BPM}
           onPress={() => changeBpm(bpm - BPM_STEP)}
-          style={({ pressed }) => [styles.step, pressed && styles.pressed]}
-        >
-          <SymbolView
-            name="minus"
-            size={20}
-            weight="medium"
-            tintColor={colors.text.primary}
-          />
-        </Pressable>
+        />
         <View
           accessible
           accessibilityLabel={`${bpm} beats per minute`}
@@ -213,20 +204,13 @@ export function RudimentPlayer({
             BPM
           </AppText>
         </View>
-        <Pressable
-          accessibilityRole="button"
+        <IconButton
+          icon="plus"
           accessibilityLabel="Increase tempo"
+          variant="tonal"
           disabled={bpm >= MAX_BPM}
           onPress={() => changeBpm(bpm + BPM_STEP)}
-          style={({ pressed }) => [styles.step, pressed && styles.pressed]}
-        >
-          <SymbolView
-            name="plus"
-            size={20}
-            weight="medium"
-            tintColor={colors.text.primary}
-          />
-        </Pressable>
+        />
       </View>
 
       <PlayButton isPlaying={playback.isPlaying} onPress={togglePlayback} />
@@ -248,22 +232,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 20,
   },
-  step: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.surface,
-  },
   readout: {
     minWidth: 72,
     alignItems: "center",
   },
   bpm: {
     fontSize: typography.fontSize.heading,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

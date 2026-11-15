@@ -121,9 +121,9 @@ export default function RoutineScreen() {
           headerTintColor: colors.text.primary,
           headerStyle: { backgroundColor: colors.background },
           headerRight: () => (
-            <Pressable
-              accessibilityRole="button"
-              hitSlop={12}
+            <Button
+              variant="text"
+              tone="accent"
               onPress={() =>
                 router.push({
                   pathname: "/routine-editor",
@@ -131,10 +131,8 @@ export default function RoutineScreen() {
                 })
               }
             >
-              <AppText variant="bodyStrong" tone="accent">
-                Edit
-              </AppText>
-            </Pressable>
+              Edit
+            </Button>
           ),
         }}
       />

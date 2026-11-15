@@ -2,9 +2,10 @@ import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { Button } from "@/components/Button/Button";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { LinkRow } from "@/features/profile/components/LinkRow/LinkRow";
@@ -56,16 +57,9 @@ export default function ProfileScreen() {
     >
       <View style={styles.bar}>
         <PageTitle>Profile</PageTitle>
-        <Pressable
-          accessibilityRole="button"
-          hitSlop={12}
-          onPress={() => router.back()}
-          style={({ pressed }) => pressed && styles.pressed}
-        >
-          <AppText variant="bodyStrong" tone="accent">
-            Done
-          </AppText>
-        </Pressable>
+        <Button variant="text" tone="accent" onPress={() => router.back()}>
+          Done
+        </Button>
       </View>
 
       <View style={styles.section}>
@@ -171,8 +165,5 @@ const styles = StyleSheet.create({
   },
   problem: {
     paddingVertical: 12,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

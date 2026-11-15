@@ -3,6 +3,7 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { IconButton } from "@/components/IconButton/IconButton";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { useSavedRoutines } from "@/features/routines/stores/saved-routines";
 import { isRecommended } from "@/features/routines/domain/starter-routines";
@@ -93,19 +94,13 @@ export default function RoutinesScreen() {
       >
         <View style={styles.heading}>
           <PageTitle>Saved Routines</PageTitle>
-          <Pressable
-            accessibilityRole="button"
+          <IconButton
+            icon="plus"
             accessibilityLabel="Create new routine"
+            variant="tonal"
+            size={18}
             onPress={create}
-            style={({ pressed }) => [styles.add, pressed && styles.pressed]}
-          >
-            <SymbolView
-              name="plus"
-              size={18}
-              weight="medium"
-              tintColor={colors.text.primary}
-            />
-          </Pressable>
+          />
         </View>
         <AppText variant="overline" tone="secondary" style={styles.count}>
           YOUR ROUTINES · {savedRoutines.length}
@@ -151,14 +146,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     gap: 12,
-  },
-  add: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.surface,
   },
   count: {
     marginTop: 12,

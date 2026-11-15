@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { IconButton } from "@/components/IconButton/IconButton";
 import { colors } from "@/theme/colors";
 
 type ScreenHeaderProps = {
@@ -15,43 +15,23 @@ export function ScreenHeader({ onBack }: ScreenHeaderProps) {
   return (
     <View style={styles.header}>
       {onBack ? (
-        <Pressable
-          accessibilityRole="button"
+        <IconButton
+          icon="chevron.left"
           accessibilityLabel="Back"
+          style={styles.back}
           onPress={onBack}
-          style={({ pressed }) => [
-            styles.target,
-            styles.back,
-            pressed && styles.pressed,
-          ]}
-        >
-          <SymbolView
-            name="chevron.left"
-            size={20}
-            weight="medium"
-            tintColor={colors.text.primary}
-          />
-        </Pressable>
+        />
       ) : null}
       <AppText variant="headline">ghostnote</AppText>
       <View style={styles.rule} />
-      <Pressable
-        accessibilityRole="button"
+      <IconButton
+        icon="person"
         accessibilityLabel="Profile"
+        size={24}
+        weight="light"
+        style={styles.profile}
         onPress={() => router.push("/profile")}
-        style={({ pressed }) => [
-          styles.target,
-          styles.profile,
-          pressed && styles.pressed,
-        ]}
-      >
-        <SymbolView
-          name="person"
-          size={24}
-          weight="light"
-          tintColor={colors.text.primary}
-        />
-      </Pressable>
+      />
     </View>
   );
 }
@@ -63,11 +43,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
   },
-  target: {
-    minWidth: 44,
-    minHeight: 44,
-    justifyContent: "center",
-  },
   back: {
     marginRight: -24,
     alignItems: "flex-start",
@@ -75,9 +50,6 @@ const styles = StyleSheet.create({
   profile: {
     marginLeft: -20,
     alignItems: "flex-end",
-  },
-  pressed: {
-    opacity: 0.7,
   },
   rule: {
     flex: 1,

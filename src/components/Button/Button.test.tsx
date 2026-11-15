@@ -61,3 +61,19 @@ test.each(["fill", "tonal", "text"] as const)(
     });
   },
 );
+
+test("passes an accessibility state on, so a toggle can say it is expanded", async () => {
+  await render(
+    <Button
+      variant="text"
+      tone="accent"
+      icon="plus"
+      accessibilityState={{ expanded: true }}
+      onPress={() => {}}
+    >
+      Add rudiment
+    </Button>,
+  );
+
+  expect(screen.getByRole("button", { name: "Add rudiment" })).toBeExpanded();
+});

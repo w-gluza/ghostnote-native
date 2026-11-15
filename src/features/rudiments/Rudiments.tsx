@@ -1,9 +1,9 @@
 import { useRouter } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { IconButton } from "@/components/IconButton/IconButton";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { FilterChips } from "@/features/rudiments/components/FilterChips/FilterChips";
 import {
@@ -109,23 +109,15 @@ export default function RudimentsScreen() {
               <PageTitle size="large" style={styles.title}>
                 Rudiments
               </PageTitle>
-              <Pressable
-                accessibilityRole="button"
+              <IconButton
+                icon="magnifyingglass"
                 accessibilityLabel="Search rudiments"
-                hitSlop={12}
+                tone="muted"
+                size={24}
+                weight="light"
+                style={styles.search}
                 onPress={() => setIsSearching(true)}
-                style={({ pressed }) => [
-                  styles.search,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <SymbolView
-                  name="magnifyingglass"
-                  size={24}
-                  weight="light"
-                  tintColor={colors.text.secondary}
-                />
-              </Pressable>
+              />
             </View>
           )}
           <FilterChips
@@ -165,9 +157,8 @@ const styles = StyleSheet.create({
   },
   search: {
     paddingBottom: 10,
-  },
-  pressed: {
-    opacity: 0.7,
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
   },
   empty: {
     paddingVertical: 24,

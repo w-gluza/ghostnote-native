@@ -2,6 +2,7 @@ import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import {
   Pressable,
   StyleSheet,
+  type AccessibilityState,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
@@ -10,7 +11,7 @@ import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
 
 export type ButtonVariant = "fill" | "tonal" | "text";
-export type ButtonTone = "default" | "muted";
+export type ButtonTone = "default" | "muted" | "accent";
 
 type ButtonProps = {
   children: string;
@@ -19,12 +20,17 @@ type ButtonProps = {
   icon?: SymbolViewProps["name"];
   disabled?: boolean;
   accessibilityLabel?: string;
+  accessibilityState?: AccessibilityState;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
 };
 
 const TEXT_HIT_SLOP = 8;
-const ICON_SIZE = 20;
+const toneColors = {
+  default: colors.text.primary,
+  muted: colors.text.secondary,
+  accent: colors.accent,
+};
 
 export function Button({
   children,
@@ -33,20 +39,18 @@ export function Button({
   icon,
   disabled = false,
   accessibilityLabel,
+  accessibilityState,
   style,
   onPress,
 }: ButtonProps) {
   const labelColor =
-    variant === "fill"
-      ? colors.text.onAccent
-      : tone === "muted"
-        ? colors.text.secondary
-        : colors.text.primary;
+    variant === "fill" ? colors.text.onAccent : toneColors[tone];
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
+      accessibilityState={accessibilityState}
       disabled={disabled}
       hitSlop={variant === "text" ? TEXT_HIT_SLOP : undefined}
       onPress={onPress}
@@ -61,7 +65,7 @@ export function Button({
       {icon ? (
         <SymbolView
           name={icon}
-          size={ICON_SIZE}
+          size={variant === "fill" ? 20 : 14}
           weight="medium"
           tintColor={labelColor}
         />

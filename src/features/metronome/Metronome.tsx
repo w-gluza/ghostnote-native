@@ -3,7 +3,6 @@ import { SymbolView } from "expo-symbols";
 import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 import {
   AppState,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { IconButton } from "@/components/IconButton/IconButton";
 import { BeatPattern } from "@/features/metronome/components/BeatPattern/BeatPattern";
 import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
 import { PlayButton } from "@/components/PlayButton/PlayButton";
@@ -163,27 +163,18 @@ export default function MetronomeScreen() {
 
         <View style={styles.stage}>
           <View style={styles.dialRow}>
-            <Pressable
-              accessibilityRole="button"
+            <IconButton
+              icon="minus"
               accessibilityLabel="Decrease tempo"
+              size={28}
+              weight="light"
               disabled={settings.bpm <= MIN_BPM}
               hitSlop={8}
+              style={[styles.step, styles.stepStart]}
               onPress={() => stepBpm(-1)}
               onLongPress={() => startRepeat(-1)}
               onPressOut={stopRepeat}
-              style={({ pressed }) => [
-                styles.step,
-                styles.stepStart,
-                pressed && styles.pressed,
-              ]}
-            >
-              <SymbolView
-                name="minus"
-                size={28}
-                weight="light"
-                tintColor={colors.text.primary}
-              />
-            </Pressable>
+            />
             <TempoDial
               bpm={settings.bpm}
               min={MIN_BPM}
@@ -191,27 +182,18 @@ export default function MetronomeScreen() {
               size={dialSize}
               onChange={changeBpm}
             />
-            <Pressable
-              accessibilityRole="button"
+            <IconButton
+              icon="plus"
               accessibilityLabel="Increase tempo"
+              size={28}
+              weight="light"
               disabled={settings.bpm >= MAX_BPM}
               hitSlop={8}
+              style={[styles.step, styles.stepEnd]}
               onPress={() => stepBpm(1)}
               onLongPress={() => startRepeat(1)}
               onPressOut={stopRepeat}
-              style={({ pressed }) => [
-                styles.step,
-                styles.stepEnd,
-                pressed && styles.pressed,
-              ]}
-            >
-              <SymbolView
-                name="plus"
-                size={28}
-                weight="light"
-                tintColor={colors.text.primary}
-              />
-            </Pressable>
+            />
           </View>
           <BeatPattern
             beats={settings.beats}
@@ -246,9 +228,6 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingHorizontal: SCREEN_PADDING,
   },
-  pressed: {
-    opacity: 0.7,
-  },
   rhythm: {
     marginTop: 24,
     minHeight: 52,
@@ -282,10 +261,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   step: {
+    minWidth: STEP_BUTTON_SIZE,
+    minHeight: STEP_BUTTON_SIZE,
     width: STEP_BUTTON_SIZE,
     height: STEP_BUTTON_SIZE,
-    alignItems: "center",
-    justifyContent: "center",
   },
   stepStart: {
     alignItems: "flex-start",

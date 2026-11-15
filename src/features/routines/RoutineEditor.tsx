@@ -11,6 +11,8 @@ import {
 } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { IconButton } from "@/components/IconButton/IconButton";
+import { Button } from "@/components/Button/Button";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
@@ -129,31 +131,17 @@ function ExerciseEditor({
   return (
     <View style={styles.screen}>
       <View style={styles.bar}>
-        <Pressable
-          accessibilityRole="button"
+        <Button
+          variant="text"
+          icon="chevron.left"
           accessibilityLabel="Back to Edit Routine"
-          hitSlop={12}
           onPress={onClose}
-          style={({ pressed }) => [styles.back, pressed && styles.pressed]}
         >
-          <SymbolView
-            name="chevron.left"
-            size={16}
-            weight="medium"
-            tintColor={colors.text.primary}
-          />
-          <AppText variant="bodySmall">Edit Routine</AppText>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          hitSlop={12}
-          onPress={onClose}
-          style={({ pressed }) => pressed && styles.pressed}
-        >
-          <AppText variant="bodyStrong" tone="accent">
-            Done
-          </AppText>
-        </Pressable>
+          Edit Routine
+        </Button>
+        <Button variant="text" tone="accent" onPress={onClose}>
+          Done
+        </Button>
       </View>
 
       <ScrollView
@@ -247,44 +235,29 @@ function ExerciseEditor({
               />
             </View>
             {exercise.rounds.length > 1 ? (
-              <Pressable
-                accessibilityRole="button"
+              <IconButton
+                icon="minus.circle"
                 accessibilityLabel={`Remove round ${index + 1}`}
+                tone="muted"
+                weight="regular"
                 hitSlop={8}
+                style={styles.removeColumn}
                 onPress={() => removeRound(round.id)}
-                style={({ pressed }) => [
-                  styles.removeColumn,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <SymbolView
-                  name="minus.circle"
-                  size={20}
-                  weight="regular"
-                  tintColor={colors.text.secondary}
-                />
-              </Pressable>
+              />
             ) : null}
           </View>
         ))}
 
         {exercise.rounds.length < MAX_ROUNDS ? (
-          <Pressable
-            accessibilityRole="button"
-            hitSlop={12}
+          <Button
+            variant="text"
+            tone="accent"
+            icon="plus"
+            style={styles.add}
             onPress={addRound}
-            style={({ pressed }) => [styles.add, pressed && styles.pressed]}
           >
-            <SymbolView
-              name="plus"
-              size={14}
-              weight="medium"
-              tintColor={colors.accent}
-            />
-            <AppText variant="bodyStrong" tone="accent">
-              Add round
-            </AppText>
-          </Pressable>
+            Add round
+          </Button>
         ) : null}
 
         <View style={styles.total}>
@@ -296,16 +269,14 @@ function ExerciseEditor({
           </AppText>
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          hitSlop={12}
+        <Button
+          variant="text"
+          tone="muted"
+          style={styles.remove}
           onPress={onRemove}
-          style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
         >
-          <AppText variant="bodySmall" tone="secondary">
-            Remove from routine
-          </AppText>
-        </Pressable>
+          Remove from routine
+        </Button>
       </ScrollView>
     </View>
   );
@@ -400,30 +371,12 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
   return (
     <View style={styles.screen}>
       <View style={styles.bar}>
-        <Pressable
-          accessibilityRole="button"
-          hitSlop={12}
-          onPress={() => router.back()}
-          style={({ pressed }) => pressed && styles.pressed}
-        >
-          <AppText variant="body" tone="secondary">
-            Cancel
-          </AppText>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!canSave}
-          hitSlop={12}
-          onPress={save}
-          style={({ pressed }) => [
-            !canSave && styles.off,
-            pressed && styles.pressed,
-          ]}
-        >
-          <AppText variant="bodyStrong" tone="accent">
-            Save
-          </AppText>
-        </Pressable>
+        <Button variant="text" tone="muted" onPress={() => router.back()}>
+          Cancel
+        </Button>
+        <Button variant="text" tone="accent" disabled={!canSave} onPress={save}>
+          Save
+        </Button>
       </View>
 
       <ScrollView
@@ -504,23 +457,16 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         })}
 
         {availableRudiments.length > 0 ? (
-          <Pressable
-            accessibilityRole="button"
+          <Button
+            variant="text"
+            tone="accent"
+            icon="plus"
             accessibilityState={{ expanded: isAdding }}
-            hitSlop={12}
+            style={styles.add}
             onPress={() => setIsAdding((adding) => !adding)}
-            style={({ pressed }) => [styles.add, pressed && styles.pressed]}
           >
-            <SymbolView
-              name="plus"
-              size={14}
-              weight="medium"
-              tintColor={colors.accent}
-            />
-            <AppText variant="bodyStrong" tone="accent">
-              Add rudiment
-            </AppText>
-          </Pressable>
+            Add rudiment
+          </Button>
         ) : null}
 
         {isAdding
@@ -544,16 +490,14 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           : null}
 
         {canDelete ? (
-          <Pressable
-            accessibilityRole="button"
-            hitSlop={12}
+          <Button
+            variant="text"
+            tone="muted"
+            style={styles.remove}
             onPress={confirmDelete}
-            style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
           >
-            <AppText variant="bodySmall" tone="secondary">
-              Delete routine
-            </AppText>
-          </Pressable>
+            Delete routine
+          </Button>
         ) : null}
         {deleteFailed ? (
           <AppText
@@ -575,19 +519,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   bar: {
-    paddingTop: 20,
+    paddingTop: 8,
     paddingHorizontal: 24,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  back: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
   content: {
-    paddingTop: 20,
+    paddingTop: 8,
     paddingHorizontal: 24,
     paddingBottom: 40,
   },
@@ -634,11 +573,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   add: {
-    marginTop: 24,
+    marginTop: 11,
     alignSelf: "center",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
   },
   choice: {
     marginTop: 12,
@@ -662,7 +598,7 @@ const styles = StyleSheet.create({
   },
   removeColumn: {
     width: 24,
-    alignItems: "center",
+    minWidth: 24,
   },
   roundRow: {
     marginTop: 12,
@@ -694,7 +630,7 @@ const styles = StyleSheet.create({
     fontVariant: ["tabular-nums"],
   },
   total: {
-    marginTop: 32,
+    marginTop: 19,
     paddingTop: 24,
     flexDirection: "row",
     alignItems: "center",
@@ -703,11 +639,8 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   remove: {
-    marginTop: 32,
+    marginTop: 19,
     alignSelf: "center",
-  },
-  off: {
-    opacity: 0.4,
   },
   pressed: {
     opacity: 0.7,
