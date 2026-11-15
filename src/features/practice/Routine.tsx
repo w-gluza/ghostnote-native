@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { findRudiment, stickingOf } from "@/features/rudiments/domain/library";
@@ -191,13 +192,9 @@ export default function RoutineScreen() {
             : "Start Practice"}
       </Button>
       {selectFailed ? (
-        <AppText
-          variant="bodySmall"
-          accessibilityRole="alert"
-          style={styles.selectFailed}
-        >
+        <InlineMessage style={styles.selectFailed}>
           This routine could not be set for practice. Try again.
-        </AppText>
+        </InlineMessage>
       ) : null}
       {isPractice ? (
         <View accessible style={styles.use}>

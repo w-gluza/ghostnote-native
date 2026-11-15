@@ -5,6 +5,8 @@ import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
+import { SettingsRow } from "@/components/SettingsRow/SettingsRow";
 import { Button } from "@/components/Button/Button";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
@@ -64,13 +66,17 @@ export default function ProfileScreen() {
 
       <View style={styles.section}>
         <SectionHeader title="YOUR PRACTICE" />
-        <View style={styles.goalRow}>
-          <SymbolView
-            name="calendar"
-            size={24}
-            weight="light"
-            tintColor={colors.text.secondary}
-          />
+        <SettingsRow
+          symbol="calendar"
+          style={styles.goalRow}
+          footer={
+            goalSaveFailed ? (
+              <InlineMessage style={styles.problem}>
+                Your weekly goal could not be saved. Choose it again to retry.
+              </InlineMessage>
+            ) : null
+          }
+        >
           <AppText variant="body" tone="secondary" style={styles.goalLabel}>
             Weekly goal
           </AppText>
@@ -91,16 +97,7 @@ export default function ProfileScreen() {
               tintColor={colors.text.secondary}
             />
           </OptionMenu>
-        </View>
-        {goalSaveFailed ? (
-          <AppText
-            variant="bodySmall"
-            accessibilityRole="alert"
-            style={styles.problem}
-          >
-            Your weekly goal could not be saved. Choose it again to retry.
-          </AppText>
-        ) : null}
+        </SettingsRow>
         <StatRow
           symbol="clock"
           label="Played this week"
@@ -153,17 +150,12 @@ const styles = StyleSheet.create({
     marginTop: 28,
   },
   goalRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    minHeight: 56,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    paddingVertical: 0,
   },
   goalLabel: {
     flex: 1,
   },
   problem: {
-    paddingVertical: 12,
+    paddingBottom: 12,
   },
 });

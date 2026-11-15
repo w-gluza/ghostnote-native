@@ -11,6 +11,7 @@ import {
 } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { Button } from "@/components/Button/Button";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
@@ -386,14 +387,10 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
       >
         <PageTitle>{source ? "Edit Routine" : "New Routine"}</PageTitle>
         {saveFailed ? (
-          <AppText
-            variant="bodySmall"
-            accessibilityRole="alert"
-            style={styles.saveFailed}
-          >
+          <InlineMessage style={styles.saveFailed}>
             This routine could not be saved. Your changes are still here - try
             again.
-          </AppText>
+          </InlineMessage>
         ) : null}
 
         <TextInput
@@ -500,13 +497,9 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           </Button>
         ) : null}
         {deleteFailed ? (
-          <AppText
-            variant="bodySmall"
-            accessibilityRole="alert"
-            style={styles.deleteFailed}
-          >
+          <InlineMessage style={styles.deleteFailed}>
             This routine could not be deleted. Try again.
-          </AppText>
+          </InlineMessage>
         ) : null}
       </ScrollView>
     </View>

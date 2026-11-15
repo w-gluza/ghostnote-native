@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import {
@@ -136,14 +137,10 @@ export default function SummaryScreen() {
       </ScrollView>
 
       {saveFailed ? (
-        <AppText
-          variant="bodySmall"
-          accessibilityRole="alert"
-          style={styles.saveFailed}
-        >
+        <InlineMessage style={styles.saveFailed}>
           This session could not be saved. Your practice is still here - try
           again.
-        </AppText>
+        </InlineMessage>
       ) : null}
       <Button style={styles.finish} onPress={finish}>
         Finish
