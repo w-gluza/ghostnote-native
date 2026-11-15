@@ -2,6 +2,7 @@ import { Stack, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { RowText } from "@/components/RowText/RowText";
 import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
@@ -37,22 +38,11 @@ function RoutineRow({
       isLast={isLast}
       onPress={onPress}
     >
-      <View style={styles.rowText}>
-        {recommended ? (
-          <AppText
-            variant="overline"
-            tone="secondary"
-            style={styles.recommended}
-          >
-            RECOMMENDED
-          </AppText>
-        ) : null}
-        <AppText variant="heading">{routine.name}</AppText>
-        <AppText variant="bodySmall" tone="secondary">
-          {minutes} min · {routine.exercises.length} rudiments · Lvl{" "}
-          {routineLevel(routine)}
-        </AppText>
-      </View>
+      <RowText
+        label={recommended ? "RECOMMENDED" : undefined}
+        title={routine.name}
+        detail={`${minutes} min · ${routine.exercises.length} rudiments · Lvl ${routineLevel(routine)}`}
+      />
     </NumberedRow>
   );
 }
@@ -122,12 +112,6 @@ const styles = StyleSheet.create({
   count: {
     marginTop: spacing.md,
     marginBottom: spacing.sm,
-  },
-  rowText: {
-    gap: spacing.sm,
-  },
-  recommended: {
-    marginBottom: -4,
   },
   empty: {
     marginTop: spacing.xxl,

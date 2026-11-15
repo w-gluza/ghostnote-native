@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { RowText } from "@/components/RowText/RowText";
 import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
@@ -55,7 +56,6 @@ function SetlistRow({
     <NumberedRow
       position={position}
       accessibilityLabel={`${rudiment.name}, ${exerciseMinutes(exercise)} minutes, ${done} of ${exercise.rounds.length} rounds done, sticking ${sticking}`}
-      density="compact"
       indicator={isComplete ? "checkmark" : "chevron"}
       trailing={
         <View style={styles.rowStatus}>
@@ -73,14 +73,11 @@ function SetlistRow({
       }
       onPress={onPress}
     >
-      <View style={styles.rowText}>
-        <AppText variant="headline" tone={isComplete ? "secondary" : "primary"}>
-          {rudiment.name}
-        </AppText>
-        <AppText variant="overline" tone="secondary" style={styles.sticking}>
-          {sticking}
-        </AppText>
-      </View>
+      <RowText
+        title={rudiment.name}
+        titleTone={isComplete ? "secondary" : "primary"}
+        detail={sticking}
+      />
     </NumberedRow>
   );
 }
@@ -225,12 +222,6 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     marginTop: spacing.section,
-  },
-  rowText: {
-    gap: spacing.sm,
-  },
-  sticking: {
-    letterSpacing: 1,
   },
   rowStatus: {
     alignItems: "flex-end",

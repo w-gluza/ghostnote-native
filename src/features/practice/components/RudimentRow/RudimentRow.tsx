@@ -2,6 +2,7 @@ import type { VideoSource } from "expo-video";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { RowText } from "@/components/RowText/RowText";
 import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
 import { layoutStyles, spacing } from "@/theme/layout";
@@ -51,10 +52,10 @@ export function RudimentRow({
             pressed && layoutStyles.pressed,
           ]}
         >
-          <AppText variant="headline">{rudiment.name}</AppText>
-          <AppText variant="bodySmall" tone="secondary" style={styles.meta}>
-            {rudiment.minutes} min • {rudiment.rounds} rounds
-          </AppText>
+          <RowText
+            title={rudiment.name}
+            detail={`${rudiment.minutes} min · ${rudiment.rounds} rounds`}
+          />
           <AppText variant="heading" style={styles.bpm}>
             {rudiment.bpm}
           </AppText>
@@ -100,9 +101,6 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-  },
-  meta: {
-    marginTop: spacing.xs,
   },
   bpm: {
     marginTop: spacing.sm,

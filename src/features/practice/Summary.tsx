@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { RowText } from "@/components/RowText/RowText";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
@@ -53,12 +54,11 @@ function SummaryRow({
         weight="medium"
         tintColor={colors.accent}
       />
-      <View style={styles.rowText}>
-        <AppText variant="headline">{played.rudimentName}</AppText>
-        <AppText variant="caption" tone="secondary">
-          {detail}
-        </AppText>
-      </View>
+      <RowText
+        title={played.rudimentName}
+        detail={detail}
+        style={styles.rowText}
+      />
       <AppText variant="bodySmall" tone="secondary" tabular>
         {rounds}
       </AppText>
@@ -185,15 +185,14 @@ const styles = StyleSheet.create({
     marginTop: spacing.section,
   },
   row: {
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.xl,
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: spacing.md,
     ...divider.bottom,
   },
   rowText: {
     flex: 1,
-    gap: spacing.sm,
   },
   saveFailed: {
     marginHorizontal: layout.screenInset,

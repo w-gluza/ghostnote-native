@@ -68,7 +68,7 @@ export default function PracticeScreen() {
 
       <View style={styles.summary}>
         <AppText variant="bodySmall">
-          {routineMinutes(routine)} min • {rudiments.length} rudiments • Lvl{" "}
+          {routineMinutes(routine)} min · {rudiments.length} rudiments · Lvl{" "}
           {routineLevel(routine)}
         </AppText>
         <WeekProgress done={sessionsThisWeek} goal={weeklyGoal} />

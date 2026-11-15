@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { RowText } from "@/components/RowText/RowText";
 import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { Button } from "@/components/Button/Button";
@@ -180,14 +181,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
               accessibilityLabel={`${rudiment.name}, ${detail}`}
               onPress={() => setOpenId(exercise.id)}
             >
-              <View style={styles.rowText}>
-                <AppText variant="bodyStrong" numberOfLines={1}>
-                  {rudiment.name}
-                </AppText>
-                <AppText variant="bodySmall" tone="secondary" tabular>
-                  {detail}
-                </AppText>
-              </View>
+              <RowText title={rudiment.name} titleLines={1} detail={detail} />
             </NumberedRow>
           );
         })}
@@ -261,9 +255,6 @@ const styles = StyleSheet.create({
     ...textVariants.body,
     color: colors.text.primary,
     backgroundColor: colors.surface,
-  },
-  rowText: {
-    gap: spacing.sm,
   },
   choice: {
     marginTop: spacing.md,

@@ -3,6 +3,7 @@ import type { VideoSource } from "expo-video";
 import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { RowText } from "@/components/RowText/RowText";
 import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
 import { layoutStyles, spacing } from "@/theme/layout";
@@ -20,7 +21,7 @@ export type RudimentSummary = {
   video?: VideoSource;
 };
 
-const CELL_WIDTH = 18;
+const CELL_WIDTH = 14;
 
 type RudimentListItemProps = {
   rudiment: RudimentSummary;
@@ -52,7 +53,11 @@ function Sticking({ phrases }: { phrases: StickingStroke[][] }) {
                   {stroke.grace.join("")}
                 </AppText>
               ) : null}
-              <AppText variant="bodyStrong" style={styles.stroke}>
+              <AppText
+                variant="bodySmall"
+                tone="secondary"
+                style={styles.stroke}
+              >
                 {stroke.hand}
               </AppText>
             </View>
@@ -72,15 +77,12 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
       style={({ pressed }) => [styles.row, pressed && layoutStyles.pressed]}
     >
       <RudimentThumbnail video={rudiment.video} label={rudiment.name} />
-      <View style={styles.details}>
-        <AppText variant="headline" style={styles.name}>
-          {rudiment.name}
-        </AppText>
-        <AppText variant="bodySmall" tone="secondary" style={styles.meta}>
-          {rudiment.category} · Lvl {rudiment.level}
-        </AppText>
-        <Sticking phrases={rudiment.phrases} />
-      </View>
+      <RowText
+        label={`${rudiment.category} · Lvl ${rudiment.level}`.toUpperCase()}
+        title={rudiment.name}
+        detail={<Sticking phrases={rudiment.phrases} />}
+        style={styles.details}
+      />
       <SymbolView
         name="chevron.right"
         size={16}
@@ -100,16 +102,8 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-    gap: spacing.xs,
-  },
-  name: {
-    lineHeight: 22,
-  },
-  meta: {
-    lineHeight: 20,
   },
   sticking: {
-    marginTop: spacing.xs,
     flexDirection: "row",
     flexWrap: "wrap",
     columnGap: spacing.md,
@@ -129,6 +123,6 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   stroke: {
-    lineHeight: 22,
+    lineHeight: 20,
   },
 });
