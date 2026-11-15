@@ -16,7 +16,7 @@ import {
 } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
-import { IconButton } from "@/components/IconButton/IconButton";
+import { TempoStepper } from "@/components/TempoStepper/TempoStepper";
 import {
   ACCENT_LIFT,
   PadAnimation,
@@ -185,14 +185,12 @@ export function RudimentPlayer({
         activeIndex={playback.isPlaying ? playback.activeIndex : null}
       />
 
-      <View style={styles.tempo}>
-        <IconButton
-          icon="minus"
-          accessibilityLabel="Decrease tempo"
-          variant="tonal"
-          disabled={bpm <= MIN_BPM}
-          onPress={() => changeBpm(bpm - BPM_STEP)}
-        />
+      <TempoStepper
+        canDecrease={bpm > MIN_BPM}
+        canIncrease={bpm < MAX_BPM}
+        onDecrease={() => changeBpm(bpm - BPM_STEP)}
+        onIncrease={() => changeBpm(bpm + BPM_STEP)}
+      >
         <View
           accessible
           accessibilityLabel={`${bpm} beats per minute`}
@@ -205,14 +203,7 @@ export function RudimentPlayer({
             BPM
           </AppText>
         </View>
-        <IconButton
-          icon="plus"
-          accessibilityLabel="Increase tempo"
-          variant="tonal"
-          disabled={bpm >= MAX_BPM}
-          onPress={() => changeBpm(bpm + BPM_STEP)}
-        />
-      </View>
+      </TempoStepper>
 
       <PlayButton isPlaying={playback.isPlaying} onPress={togglePlayback} />
       {children}
@@ -227,11 +218,6 @@ const styles = StyleSheet.create({
   },
   playerCompact: {
     gap: spacing.lg,
-  },
-  tempo: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xl,
   },
   readout: {
     minWidth: 72,

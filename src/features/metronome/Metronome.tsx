@@ -15,7 +15,10 @@ import {
   RhythmBar,
   RhythmBarSeparator,
 } from "@/components/RhythmBar/RhythmBar";
-import { IconButton } from "@/components/IconButton/IconButton";
+import {
+  PLAIN_STEP_SIZE,
+  TempoStepper,
+} from "@/components/TempoStepper/TempoStepper";
 import { BeatPattern } from "@/features/metronome/components/BeatPattern/BeatPattern";
 import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
 import { PlayButton } from "@/components/PlayButton/PlayButton";
@@ -45,7 +48,6 @@ import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-pla
 import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 
-const STEP_BUTTON_SIZE = 36;
 const DIAL_GAP = 4;
 const MAX_DIAL_SIZE = 300;
 const REPEAT_MS = 80;
@@ -58,7 +60,7 @@ const meterOptions = METERS.map((meter) => ({
 export default function MetronomeScreen() {
   const { width } = useWindowDimensions();
   const dialSize = Math.min(
-    width - 2 * (layout.screenInset + STEP_BUTTON_SIZE + DIAL_GAP),
+    width - 2 * (layout.screenInset + PLAIN_STEP_SIZE + DIAL_GAP),
     MAX_DIAL_SIZE,
   );
   const settings = useMetronomeSettings();
@@ -158,19 +160,16 @@ export default function MetronomeScreen() {
         </RhythmBar>
 
         <View style={styles.stage}>
-          <View style={styles.dialRow}>
-            <IconButton
-              icon="minus"
-              accessibilityLabel="Decrease tempo"
-              size={28}
-              weight="light"
-              disabled={settings.bpm <= MIN_BPM}
-              hitSlop={8}
-              style={[styles.step, styles.stepStart]}
-              onPress={() => stepBpm(-1)}
-              onLongPress={() => startRepeat(-1)}
-              onPressOut={stopRepeat}
-            />
+          <TempoStepper
+            variant="plain"
+            canDecrease={settings.bpm > MIN_BPM}
+            canIncrease={settings.bpm < MAX_BPM}
+            onDecrease={() => stepBpm(-1)}
+            onIncrease={() => stepBpm(1)}
+            onHoldDecrease={() => startRepeat(-1)}
+            onHoldIncrease={() => startRepeat(1)}
+            onHoldEnd={stopRepeat}
+          >
             <TempoDial
               bpm={settings.bpm}
               min={MIN_BPM}
@@ -178,19 +177,7 @@ export default function MetronomeScreen() {
               size={dialSize}
               onChange={changeBpm}
             />
-            <IconButton
-              icon="plus"
-              accessibilityLabel="Increase tempo"
-              size={28}
-              weight="light"
-              disabled={settings.bpm >= MAX_BPM}
-              hitSlop={8}
-              style={[styles.step, styles.stepEnd]}
-              onPress={() => stepBpm(1)}
-              onLongPress={() => startRepeat(1)}
-              onPressOut={stopRepeat}
-            />
-          </View>
+          </TempoStepper>
           <BeatPattern
             beats={settings.beats}
             playingBeat={playingBeat(
@@ -230,23 +217,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     gap: spacing.xs,
-  },
-  dialRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  step: {
-    minWidth: STEP_BUTTON_SIZE,
-    minHeight: STEP_BUTTON_SIZE,
-    width: STEP_BUTTON_SIZE,
-    height: STEP_BUTTON_SIZE,
-  },
-  stepStart: {
-    alignItems: "flex-start",
-  },
-  stepEnd: {
-    alignItems: "flex-end",
   },
   transport: {
     marginBottom: spacing.xl,
