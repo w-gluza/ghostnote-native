@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
   RudimentRow,
@@ -25,6 +25,7 @@ import {
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
+import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -83,24 +84,17 @@ export default function PracticeScreen() {
         ))}
       </View>
 
-      <Pressable
-        accessibilityRole="button"
-        onPress={open}
-        style={({ pressed }) => [styles.start, pressed && styles.pressed]}
-      >
-        <Text style={styles.startLabel}>
-          {hasUnfinishedPractice ? "Resume Practice" : "Start Practice"}
-        </Text>
-      </Pressable>
+      <Button style={styles.start} onPress={open}>
+        {hasUnfinishedPractice ? "Resume Practice" : "Start Practice"}
+      </Button>
 
-      <Pressable
-        accessibilityRole="button"
-        hitSlop={12}
+      <Button
+        variant="text"
+        style={styles.saved}
         onPress={() => router.push("/routines")}
-        style={({ pressed }) => [styles.saved, pressed && styles.pressed]}
       >
-        <Text style={styles.savedLabel}>Saved Routines</Text>
-      </Pressable>
+        Saved Routines
+      </Button>
     </ScrollView>
   );
 }
@@ -148,28 +142,9 @@ const styles = StyleSheet.create({
   start: {
     marginTop: 24,
     alignSelf: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 999,
-    backgroundColor: colors.accent,
-  },
-  startLabel: {
-    color: colors.text.onAccent,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
   },
   saved: {
     marginTop: 3,
-    minHeight: 44,
-    justifyContent: "center",
     alignSelf: "center",
-  },
-  savedLabel: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

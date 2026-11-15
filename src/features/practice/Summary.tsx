@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -18,6 +18,7 @@ import {
 import { playedStat } from "@/features/practice/domain/insights";
 import { quickWarmUp } from "@/features/routines/domain/starter-routines";
 import type { CompletedExercise } from "@/features/practice/domain/types";
+import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -133,13 +134,9 @@ export default function SummaryScreen() {
           again.
         </Text>
       ) : null}
-      <Pressable
-        accessibilityRole="button"
-        onPress={finish}
-        style={({ pressed }) => [styles.finish, pressed && styles.pressed]}
-      >
-        <Text style={styles.finishLabel}>Finish</Text>
-      </Pressable>
+      <Button style={styles.finish} onPress={finish}>
+        Finish
+      </Button>
     </SafeAreaView>
   );
 }
@@ -252,18 +249,5 @@ const styles = StyleSheet.create({
   finish: {
     marginHorizontal: 24,
     marginBottom: 8,
-    minHeight: 56,
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.accent,
-  },
-  finishLabel: {
-    color: colors.text.onAccent,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

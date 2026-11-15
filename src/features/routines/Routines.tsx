@@ -9,6 +9,7 @@ import {
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
 import type { Routine } from "@/features/routines/domain/types";
+import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -118,16 +119,7 @@ export default function RoutinesScreen() {
               No saved routines yet. Build one from the rudiments you want to
               practise.
             </Text>
-            <Pressable
-              accessibilityRole="button"
-              onPress={create}
-              style={({ pressed }) => [
-                styles.create,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.createLabel}>Create routine</Text>
-            </Pressable>
+            <Button onPress={create}>Create routine</Button>
           </View>
         ) : null}
       </ScrollView>
@@ -222,17 +214,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.body,
     lineHeight: 24,
     textAlign: "center",
-  },
-  create: {
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 999,
-    backgroundColor: colors.accent,
-  },
-  createLabel: {
-    color: colors.text.onAccent,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
   },
   pressed: {
     opacity: 0.7,

@@ -23,6 +23,7 @@ import {
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
 import type { RoutineExercise } from "@/features/routines/domain/types";
+import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -164,8 +165,9 @@ export default function RoutineScreen() {
         ))}
       </ScrollView>
 
-      <Pressable
-        accessibilityRole="button"
+      <Button
+        icon={isComplete ? "checkmark.circle" : "play.circle"}
+        style={styles.start}
         onPress={() =>
           isComplete
             ? router.push({
@@ -174,22 +176,13 @@ export default function RoutineScreen() {
               })
             : next && openExercise(next)
         }
-        style={({ pressed }) => [styles.start, pressed && styles.pressed]}
       >
-        <SymbolView
-          name={isComplete ? "checkmark.circle" : "play.circle"}
-          size={20}
-          weight="medium"
-          tintColor={colors.text.onAccent}
-        />
-        <Text style={styles.startLabel}>
-          {isComplete
-            ? "View Summary"
-            : isStarted
-              ? "Resume Practice"
-              : "Start Practice"}
-        </Text>
-      </Pressable>
+        {isComplete
+          ? "View Summary"
+          : isStarted
+            ? "Resume Practice"
+            : "Start Practice"}
+      </Button>
       {selectFailed ? (
         <Text accessibilityRole="alert" style={styles.selectFailed}>
           This routine could not be set for practice. Try again.
@@ -206,14 +199,13 @@ export default function RoutineScreen() {
           <Text style={styles.usedLabel}>Used for practice</Text>
         </View>
       ) : (
-        <Pressable
-          accessibilityRole="button"
-          hitSlop={8}
+        <Button
+          variant="text"
+          style={styles.choose}
           onPress={chooseForPractice}
-          style={({ pressed }) => [styles.use, pressed && styles.pressed]}
         >
-          <Text style={styles.useLabel}>Use for practice</Text>
-        </Pressable>
+          Use for practice
+        </Button>
       )}
     </SafeAreaView>
   );
@@ -318,6 +310,9 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.label,
     fontVariant: ["tabular-nums"],
   },
+  choose: {
+    alignSelf: "center",
+  },
   use: {
     minHeight: 44,
     flexDirection: "row",
@@ -325,11 +320,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
     gap: 6,
-  },
-  useLabel: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
   },
   usedLabel: {
     color: colors.text.secondary,
@@ -347,18 +337,6 @@ const styles = StyleSheet.create({
   start: {
     marginHorizontal: 24,
     marginBottom: 3,
-    minHeight: 56,
-    borderRadius: 999,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: colors.accent,
-  },
-  startLabel: {
-    color: colors.text.onAccent,
-    fontFamily: typography.fontFamily.semibold,
-    fontSize: typography.fontSize.body,
   },
   pressed: {
     opacity: 0.7,

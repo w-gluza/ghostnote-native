@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,6 +19,7 @@ import {
   scaleToStep,
 } from "@/features/rudiments/domain/timeline";
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
+import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -158,30 +159,19 @@ export default function RudimentScreen() {
             description={`${done} of ${roundGoal} rounds done`}
           />
           {done > 0 ? (
-            <Pressable
-              accessibilityRole="button"
+            <Button
+              variant="text"
+              tone="muted"
               accessibilityLabel="Undo last round"
-              hitSlop={12}
+              style={styles.undo}
               onPress={undo}
-              style={({ pressed }) => [styles.undo, pressed && styles.pressed]}
             >
-              <Text style={styles.undoLabel}>Undo</Text>
-            </Pressable>
+              Undo
+            </Button>
           ) : null}
-          <Pressable
-            accessibilityRole="button"
-            disabled={isComplete}
-            onPress={finishRound}
-            style={({ pressed }) => [
-              styles.roundDone,
-              isComplete && styles.roundDoneOff,
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={styles.roundDoneLabel}>
-              {isComplete ? "All rounds done" : "Round done"}
-            </Text>
-          </Pressable>
+          <Button variant="tonal" disabled={isComplete} onPress={finishRound}>
+            {isComplete ? "All rounds done" : "Round done"}
+          </Button>
         </View>
       ) : null}
     </SafeAreaView>
@@ -238,29 +228,6 @@ const styles = StyleSheet.create({
   },
   undo: {
     marginRight: "auto",
-  },
-  undoLabel: {
-    color: colors.text.secondary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-  },
-  roundDone: {
-    minHeight: 44,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    borderRadius: 22,
-    backgroundColor: colors.surface,
-  },
-  roundDoneOff: {
-    opacity: 0.5,
-  },
-  roundDoneLabel: {
-    color: colors.text.primary,
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.label,
-  },
-  pressed: {
-    opacity: 0.7,
   },
   separator: {
     width: StyleSheet.hairlineWidth,
