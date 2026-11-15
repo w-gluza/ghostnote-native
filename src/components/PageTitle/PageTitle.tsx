@@ -1,5 +1,5 @@
-import type { ComponentProps } from "react";
-import { StyleSheet } from "react-native";
+import type { ComponentProps, ReactNode } from "react";
+import { StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 
@@ -8,20 +8,33 @@ type PageTitleProps = Omit<
   "variant" | "tone" | "tabular" | "accessibilityRole"
 > & {
   size?: "default" | "large";
+  trailing?: ReactNode;
 };
 
 export function PageTitle({
   size = "default",
+  trailing,
   style,
   ...props
 }: PageTitleProps) {
-  return (
+  const title = (
     <AppText
       {...props}
       variant={size === "large" ? "display" : "title"}
       accessibilityRole="header"
-      style={[styles[size], style]}
+      style={[styles[size], trailing !== undefined && styles.shrink, style]}
     />
+  );
+
+  if (trailing === undefined) {
+    return title;
+  }
+
+  return (
+    <View style={styles.row}>
+      {title}
+      {trailing}
+    </View>
   );
 }
 
@@ -31,5 +44,14 @@ const styles = StyleSheet.create({
   },
   large: {
     paddingTop: 10,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  shrink: {
+    flexShrink: 1,
   },
 });

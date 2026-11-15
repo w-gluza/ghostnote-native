@@ -9,7 +9,7 @@ import {
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 
 export type ButtonVariant = "fill" | "tonal" | "text";
 export type ButtonTone = "default" | "muted" | "accent";
@@ -96,14 +96,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   tonal: {
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 22,
+    borderRadius: layout.minTouchSize / 2,
     backgroundColor: colors.surface,
   },
   text: {
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     paddingVertical: 8,
   },
   label: {

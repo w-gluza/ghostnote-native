@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react-native";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import { textVariants } from "@/theme/typography";
 
@@ -39,5 +39,16 @@ test("keeps the caller's spacing and text props", async () => {
   expect(styleOf("Single Paradiddle")).toMatchObject({
     paddingTop: 6,
     marginBottom: 12,
+  });
+});
+
+test("shows a trailing action beside the title, which can shrink to make room", async () => {
+  await render(
+    <PageTitle trailing={<Text>Done</Text>}>Saved Routines</PageTitle>,
+  );
+
+  expect(screen.getByText("Done")).toBeOnTheScreen();
+  expect(screen.getByRole("header", { name: "Saved Routines" })).toHaveStyle({
+    flexShrink: 1,
   });
 });

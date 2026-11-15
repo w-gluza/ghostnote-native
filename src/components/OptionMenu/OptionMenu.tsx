@@ -13,7 +13,7 @@ import {
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { divider, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles } from "@/theme/layout";
 
 export type MenuOption<Key extends string | number> = {
   key: Key;
@@ -151,7 +151,7 @@ function spokenLabel(option: MenuOption<string | number>) {
 
 const styles = StyleSheet.create({
   trigger: {
-    minHeight: 44,
+    minHeight: layout.minTouchSize,
     flexShrink: 1,
     flexDirection: "row",
     alignItems: "center",

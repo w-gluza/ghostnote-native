@@ -4,6 +4,7 @@ import { colors } from "@/theme/colors";
 
 export const layout = {
   screenInset: 24,
+  minTouchSize: 44,
 
   radius: {
     panel: 16,

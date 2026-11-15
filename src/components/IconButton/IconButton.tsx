@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import { colors } from "@/theme/colors";
-import { layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 
 export type IconButtonVariant = "plain" | "tonal";
 export type IconButtonTone = "default" | "muted";
@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   plain: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: layout.minTouchSize,
+    minHeight: layout.minTouchSize,
   },
   tonal: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: layout.minTouchSize,
+    height: layout.minTouchSize,
+    borderRadius: layout.minTouchSize / 2,
     backgroundColor: colors.surface,
   },
 });
