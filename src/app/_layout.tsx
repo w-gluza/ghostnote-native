@@ -1,6 +1,6 @@
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 
-import { LaunchPad } from "@/components/LaunchPad/LaunchPad";
+import { LaunchPad } from "@/features/rudiments/components/LaunchPad/LaunchPad";
 import { colors } from "@/theme/colors";
 
 const theme = {
