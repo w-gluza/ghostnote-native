@@ -22,12 +22,29 @@ export const divider = {
   },
 } as const;
 
+const content = {
+  paddingHorizontal: layout.screenInset,
+  paddingBottom: 24,
+} as const;
+
 export const layoutStyles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.background,
   },
+  content,
+  contentBelowHeader: {
+    ...content,
+    paddingTop: 8,
+  },
+  contentPadded: {
+    ...content,
+    paddingTop: 24,
+  },
   pressed: {
     opacity: 0.7,
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });
