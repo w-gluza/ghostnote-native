@@ -12,7 +12,6 @@ type NumberedRowProps = {
   accessibilityLabel: string;
   children: ReactNode;
   trailing?: ReactNode;
-  density?: "default" | "compact";
   indicator?: "chevron" | "checkmark";
   isLast?: boolean;
   onPress: () => void;
@@ -23,13 +22,10 @@ export function NumberedRow({
   accessibilityLabel,
   children,
   trailing,
-  density = "default",
   indicator = "chevron",
   isLast = false,
   onPress,
 }: NumberedRowProps) {
-  const isCompact = density === "compact";
-
   return (
     <Pressable
       accessibilityRole="button"
@@ -37,17 +33,11 @@ export function NumberedRow({
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        styles[density],
         !isLast && styles.divided,
         pressed && layoutStyles.pressed,
       ]}
     >
-      <AppText
-        variant="body"
-        tone="violet"
-        tabular
-        style={isCompact ? styles.compactPosition : styles.position}
-      >
+      <AppText variant="body" tone="violet" tabular style={styles.position}>
         {String(position).padStart(2, "0")}
       </AppText>
       <View style={styles.content}>{children}</View>
@@ -66,17 +56,10 @@ export function NumberedRow({
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: "row",
-  },
-  default: {
     paddingVertical: spacing.xl,
+    flexDirection: "row",
     alignItems: "center",
     gap: spacing.lg,
-  },
-  compact: {
-    paddingVertical: spacing.lg,
-    alignItems: "flex-start",
-    gap: spacing.md,
   },
   divided: {
     ...divider.bottom,
@@ -84,9 +67,6 @@ const styles = StyleSheet.create({
   position: {
     width: 28,
     fontSize: typography.fontSize.heading,
-  },
-  compactPosition: {
-    width: 24,
   },
   content: {
     flex: 1,
