@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { colors } from "@/theme/colors";
+import { divider, layoutStyles } from "@/theme/layout";
 
 type SettingsRowProps = {
   symbol: SymbolViewProps["name"];
@@ -55,7 +56,7 @@ export function SettingsRow({
           style={({ pressed }) => [
             styles.row,
             style,
-            pressed && styles.pressed,
+            pressed && layoutStyles.pressed,
           ]}
         >
           {content}
@@ -83,10 +84,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   divided: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  pressed: {
-    opacity: 0.7,
+    ...divider.bottom,
   },
 });

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import type { BeatKind } from "@/features/metronome/domain/metronome";
 import { colors } from "@/theme/colors";
+import { layoutStyles } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 type BeatPatternProps = {
@@ -25,7 +26,10 @@ export function BeatPattern({
           accessibilityLabel={`Beat ${index + 1}, ${kind}`}
           accessibilityHint="Changes between normal, accent and skipped"
           onPress={() => onPressBeat(index)}
-          style={({ pressed }) => [styles.beat, pressed && styles.pressed]}
+          style={({ pressed }) => [
+            styles.beat,
+            pressed && layoutStyles.pressed,
+          ]}
         >
           <AppText variant="label" tone="accent" style={styles.accentMark}>
             {kind === "accent" ? ">" : " "}
@@ -61,9 +65,6 @@ const styles = StyleSheet.create({
     minHeight: 44,
     justifyContent: "center",
     gap: 4,
-  },
-  pressed: {
-    opacity: 0.7,
   },
   accentMark: {
     textAlign: "center",

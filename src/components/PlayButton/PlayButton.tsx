@@ -2,6 +2,7 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet } from "react-native";
 
 import { colors } from "@/theme/colors";
+import { layoutStyles } from "@/theme/layout";
 
 type PlayButtonProps = {
   isPlaying: boolean;
@@ -14,7 +15,7 @@ export function PlayButton({ isPlaying, onPress }: PlayButtonProps) {
       accessibilityRole="button"
       accessibilityLabel={isPlaying ? "Pause" : "Play"}
       onPress={onPress}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, pressed && layoutStyles.pressed]}
     >
       <SymbolView
         name={isPlaying ? "pause.fill" : "play.fill"}
@@ -33,8 +34,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.accent,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

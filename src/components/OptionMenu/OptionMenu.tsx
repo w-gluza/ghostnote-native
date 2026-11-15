@@ -13,6 +13,7 @@ import {
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
+import { divider, layoutStyles } from "@/theme/layout";
 
 export type MenuOption<Key extends string | number> = {
   key: Key;
@@ -76,7 +77,7 @@ export function OptionMenu<Key extends string | number>({
         style={({ pressed }) => [
           styles.trigger,
           style,
-          pressed && styles.pressed,
+          pressed && layoutStyles.pressed,
         ]}
       >
         {children}
@@ -118,7 +119,7 @@ export function OptionMenu<Key extends string | number>({
                   style={({ pressed }) => [
                     styles.item,
                     index > 0 && styles.itemDivider,
-                    pressed && styles.pressed,
+                    pressed && layoutStyles.pressed,
                   ]}
                 >
                   <View style={styles.check}>
@@ -173,14 +174,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   itemDivider: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
+    ...divider.top,
   },
   check: {
     width: 16,
     alignItems: "center",
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

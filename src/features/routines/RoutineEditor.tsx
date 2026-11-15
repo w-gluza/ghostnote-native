@@ -49,7 +49,7 @@ import type {
 } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles } from "@/theme/layout";
 import { textVariants } from "@/theme/typography";
 
 function RoundField({
@@ -461,7 +461,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
                 onPress={() => add(rudiment)}
                 style={({ pressed }) => [
                   styles.choice,
-                  pressed && styles.pressed,
+                  pressed && layoutStyles.pressed,
                 ]}
               >
                 <AppText variant="bodyStrong">{rudiment.name}</AppText>
@@ -597,14 +597,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
+    ...divider.top,
   },
   remove: {
     marginTop: 19,
     alignSelf: "center",
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

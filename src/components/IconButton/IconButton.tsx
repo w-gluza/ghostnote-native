@@ -8,6 +8,7 @@ import {
 } from "react-native";
 
 import { colors } from "@/theme/colors";
+import { layoutStyles } from "@/theme/layout";
 
 export type IconButtonVariant = "plain" | "tonal";
 export type IconButtonTone = "default" | "muted";
@@ -54,7 +55,7 @@ export function IconButton({
         styles.button,
         styles[variant],
         disabled && styles.disabled,
-        pressed && styles.pressed,
+        pressed && layoutStyles.pressed,
         style,
       ]}
     >
@@ -87,8 +88,5 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

@@ -41,7 +41,7 @@ import {
   useUnfinishedPractice,
 } from "@/features/practice/stores/practice-session";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles } from "@/theme/layout";
 
 const DAYS = [
   { day: "Monday", label: "M" },
@@ -207,8 +207,7 @@ const styles = StyleSheet.create({
   },
   divided: {
     paddingTop: 28,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
+    ...divider.top,
   },
   sectionHeaderSpaced: {
     marginBottom: 20,
@@ -227,8 +226,5 @@ const styles = StyleSheet.create({
   achievements: {
     marginTop: 20,
     gap: 24,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

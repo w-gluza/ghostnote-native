@@ -24,7 +24,7 @@ import { quickWarmUp } from "@/features/routines/domain/starter-routines";
 import type { CompletedExercise } from "@/features/practice/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 function SummaryRow({
@@ -197,8 +197,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    ...divider.bottom,
   },
   rowText: {
     flex: 1,

@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
+import { layoutStyles } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 export type StickingStroke = { hand: string; grace: string[] };
@@ -68,7 +69,7 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
       accessibilityRole="button"
       onPress={onPress}
       accessibilityLabel={`${rudiment.name}, ${rudiment.category}, level ${rudiment.level}, sticking ${rudiment.sticking}`}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.row, pressed && layoutStyles.pressed]}
     >
       <RudimentThumbnail video={rudiment.video} label={rudiment.name} />
       <View style={styles.details}>
@@ -96,9 +97,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     paddingVertical: 12,
-  },
-  pressed: {
-    opacity: 0.7,
   },
   details: {
     flex: 1,

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
 import { colors } from "@/theme/colors";
+import { layoutStyles } from "@/theme/layout";
 
 type RudimentVideoProps = {
   source: VideoSource;
@@ -35,7 +36,7 @@ export function RudimentVideo({ source, label }: RudimentVideoProps) {
       accessibilityRole="button"
       accessibilityLabel={`Play ${label} video`}
       onPress={open}
-      style={({ pressed }) => [styles.frame, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.frame, pressed && layoutStyles.pressed]}
     >
       <VideoView
         ref={view}
@@ -57,8 +58,5 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     alignItems: "center",
     justifyContent: "center",
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

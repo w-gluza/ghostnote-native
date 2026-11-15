@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
+import { divider, layoutStyles } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 type NumberedRowProps = {
@@ -38,7 +39,7 @@ export function NumberedRow({
         styles.row,
         styles[density],
         !isLast && styles.divided,
-        pressed && styles.pressed,
+        pressed && layoutStyles.pressed,
       ]}
     >
       <AppText
@@ -78,8 +79,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   divided: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    ...divider.bottom,
   },
   position: {
     width: 28,
@@ -90,8 +90,5 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-  },
-  pressed: {
-    opacity: 0.7,
   },
 });

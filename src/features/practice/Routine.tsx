@@ -30,7 +30,7 @@ import {
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles } from "@/theme/layout";
 
 function SetlistRow({
   done,
@@ -228,8 +228,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    ...divider.bottom,
   },
   sectionHeader: {
     marginTop: 24,

@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
+import { layoutStyles } from "@/theme/layout";
 
 export type Rudiment = {
   name: string;
@@ -45,7 +46,10 @@ export function RudimentRow({
           accessibilityLabel={`${position}. ${rudiment.name}, ${rudiment.minutes} minutes, ${rudiment.rounds} rounds, ${rudiment.bpm} beats per minute`}
           disabled={!onPress}
           onPress={onPress}
-          style={({ pressed }) => [styles.details, pressed && styles.pressed]}
+          style={({ pressed }) => [
+            styles.details,
+            pressed && layoutStyles.pressed,
+          ]}
         >
           <AppText variant="headline">{rudiment.name}</AppText>
           <AppText variant="bodySmall" tone="secondary" style={styles.meta}>
@@ -69,9 +73,6 @@ export function RudimentRow({
 }
 
 const styles = StyleSheet.create({
-  pressed: {
-    opacity: 0.7,
-  },
   row: {
     flexDirection: "row",
     gap: 12,

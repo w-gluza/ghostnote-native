@@ -2,7 +2,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, layoutStyles } from "@/theme/layout";
 
 type FilterChipsProps = {
   options: string[];
@@ -27,7 +27,10 @@ export function FilterChips({ options, selected, onSelect }: FilterChipsProps) {
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
             onPress={() => onSelect(option)}
-            style={({ pressed }) => [styles.target, pressed && styles.pressed]}
+            style={({ pressed }) => [
+              styles.target,
+              pressed && layoutStyles.pressed,
+            ]}
           >
             <View style={[styles.chip, isSelected && styles.chipSelected]}>
               <AppText
@@ -56,9 +59,6 @@ const styles = StyleSheet.create({
   target: {
     minHeight: 44,
     justifyContent: "center",
-  },
-  pressed: {
-    opacity: 0.7,
   },
   chip: {
     paddingVertical: 8,

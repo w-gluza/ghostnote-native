@@ -9,6 +9,7 @@ import {
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
+import { layoutStyles } from "@/theme/layout";
 
 export type ButtonVariant = "fill" | "tonal" | "text";
 export type ButtonTone = "default" | "muted" | "accent";
@@ -58,7 +59,7 @@ export function Button({
         styles.button,
         styles[variant],
         disabled && styles.disabled,
-        pressed && styles.pressed,
+        pressed && layoutStyles.pressed,
         style,
       ]}
     >
@@ -107,9 +108,6 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.7,
   },
   label: {
     flexShrink: 1,

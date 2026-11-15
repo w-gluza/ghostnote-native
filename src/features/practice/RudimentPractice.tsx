@@ -27,7 +27,7 @@ import {
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { divider, layout } from "@/theme/layout";
 
 const MIN_PAD_SCALE = 0.6;
 
@@ -213,8 +213,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 16,
     paddingBottom: 8,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
+    ...divider.top,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
