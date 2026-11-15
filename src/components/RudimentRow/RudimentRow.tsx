@@ -1,7 +1,7 @@
 import type { VideoSource } from "expo-video";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { RudimentVideo } from "@/components/rudiment-video";
+import { RudimentVideo } from "@/components/RudimentVideo/RudimentVideo";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 

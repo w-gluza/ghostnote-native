@@ -12,11 +12,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BeatPattern } from "@/components/beat-pattern";
-import { OptionMenu } from "@/components/option-menu";
-import { PlayButton } from "@/components/play-button";
-import { ScreenHeader } from "@/components/screen-header";
-import { TempoDial } from "@/components/tempo-dial";
+import { BeatPattern } from "@/components/BeatPattern/BeatPattern";
+import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
+import { PlayButton } from "@/components/PlayButton/PlayButton";
+import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
+import { TempoDial } from "@/components/TempoDial/TempoDial";
 import {
   buildClicks,
   clampBpm,

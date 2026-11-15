@@ -11,7 +11,7 @@ import {
   PadAnimation,
   type StickMotion,
   TAP_LIFT,
-} from "@/components/pad-animation";
+} from "@/components/PadAnimation/PadAnimation";
 import { colors } from "@/theme/colors";
 
 const HOLD_MS = 200;

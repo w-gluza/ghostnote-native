@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { NoteValuePicker } from "@/components/note-value-picker";
+import { NoteValuePicker } from "@/components/NoteValuePicker/NoteValuePicker";
 import { fraction, multiply } from "@/rudiments/fraction";
 import { newId } from "@/rudiments/ids";
 import {

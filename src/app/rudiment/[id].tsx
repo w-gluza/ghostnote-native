@@ -4,12 +4,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { NoteValuePicker } from "@/components/note-value-picker";
-import { STAGE_HEIGHT } from "@/components/pad-animation";
-import { RoundClock } from "@/components/round-clock";
-import { RudimentPlayer } from "@/components/rudiment-player";
-import { ScreenHeader } from "@/components/screen-header";
-import { WeekProgress } from "@/components/week-progress";
+import { NoteValuePicker } from "@/components/NoteValuePicker/NoteValuePicker";
+import { STAGE_HEIGHT } from "@/components/PadAnimation/PadAnimation";
+import { RoundClock } from "@/components/RoundClock/RoundClock";
+import { RudimentPlayer } from "@/components/RudimentPlayer/RudimentPlayer";
+import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
+import { WeekProgress } from "@/components/WeekProgress/WeekProgress";
 import { fraction, multiply, ONE } from "@/rudiments/fraction";
 import {
   defaultBpm,

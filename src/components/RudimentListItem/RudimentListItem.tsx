@@ -9,7 +9,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import { RudimentVideo } from "@/components/rudiment-video";
+import { RudimentVideo } from "@/components/RudimentVideo/RudimentVideo";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 

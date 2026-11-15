@@ -2,9 +2,12 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { RudimentRow, type Rudiment } from "@/components/rudiment-row";
-import { ScreenHeader } from "@/components/screen-header";
-import { WeekProgress } from "@/components/week-progress";
+import {
+  RudimentRow,
+  type Rudiment,
+} from "@/components/RudimentRow/RudimentRow";
+import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
+import { WeekProgress } from "@/components/WeekProgress/WeekProgress";
 import { periodStart, sessionsSince } from "@/rudiments/insights";
 import { findRudiment } from "@/rudiments/library";
 import { usePracticeRoutine } from "@/rudiments/practice-choice";

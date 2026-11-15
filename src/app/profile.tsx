@@ -4,9 +4,9 @@ import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { LinkRow } from "@/components/link-row";
-import { OptionMenu } from "@/components/option-menu";
-import { StatRow } from "@/components/stat-row";
+import { LinkRow } from "@/components/LinkRow/LinkRow";
+import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
+import { StatRow } from "@/components/StatRow/StatRow";
 import { links } from "@/links";
 import {
   minutesLabel,

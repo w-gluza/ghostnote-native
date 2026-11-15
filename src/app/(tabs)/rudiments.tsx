@@ -3,13 +3,13 @@ import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { FilterChips } from "@/components/filter-chips";
+import { FilterChips } from "@/components/FilterChips/FilterChips";
 import {
   RudimentListItem,
   type RudimentSummary,
-} from "@/components/rudiment-list-item";
-import { ScreenHeader } from "@/components/screen-header";
-import { SearchField } from "@/components/search-field";
+} from "@/components/RudimentListItem/RudimentListItem";
+import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
+import { SearchField } from "@/components/SearchField/SearchField";
 import {
   ALL_CATEGORIES,
   categoryOptions,

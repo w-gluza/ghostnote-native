@@ -3,15 +3,18 @@ import { SymbolView } from "expo-symbols";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { AchievementRow, type Achievement } from "@/components/achievement-row";
-import { OptionMenu } from "@/components/option-menu";
-import { ScreenHeader } from "@/components/screen-header";
-import { StatRow } from "@/components/stat-row";
+import {
+  AchievementRow,
+  type Achievement,
+} from "@/components/AchievementRow/AchievementRow";
+import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
+import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
+import { StatRow } from "@/components/StatRow/StatRow";
 import {
   TechniqueBalance,
   type TechniqueShare,
-} from "@/components/technique-balance";
-import { WeekChart, type DayPractice } from "@/components/week-chart";
+} from "@/components/TechniqueBalance/TechniqueBalance";
+import { WeekChart, type DayPractice } from "@/components/WeekChart/WeekChart";
 import {
   durationLabel,
   lastPractisedLabel,

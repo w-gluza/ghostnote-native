@@ -17,9 +17,9 @@ import {
   PadAnimation,
   TAP_LIFT,
   type StickMotion,
-} from "@/components/pad-animation";
-import { PlayButton } from "@/components/play-button";
-import { StickingPattern } from "@/components/sticking-pattern";
+} from "@/components/PadAnimation/PadAnimation";
+import { PlayButton } from "@/components/PlayButton/PlayButton";
+import { StickingPattern } from "@/components/StickingPattern/StickingPattern";
 import {
   beatsUntilSameHand,
   clampBpm,
