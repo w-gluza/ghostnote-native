@@ -21,7 +21,7 @@ function RoutineRow({
   onPress: () => void;
 }) {
   const minutes = routineMinutes(routine);
-  const recommended = isRecommended(routine.id);
+  const recommended = isRecommended(routine);
 
   return (
     <Pressable

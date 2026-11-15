@@ -31,6 +31,12 @@ export const starterRoutines: Routine[] = [
   },
 ];
 
-export function isRecommended(id: string) {
-  return starterRoutines.some((routine) => routine.id === id);
+export function isRecommended(routine: Routine) {
+  const starter = starterRoutines.find(
+    (candidate) => candidate.id === routine.id,
+  );
+  return (
+    starter !== undefined &&
+    JSON.stringify(routine.exercises) === JSON.stringify(starter.exercises)
+  );
 }
