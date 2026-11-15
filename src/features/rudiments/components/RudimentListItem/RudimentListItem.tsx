@@ -1,15 +1,9 @@
 import { SymbolView } from "expo-symbols";
 import type { VideoSource } from "expo-video";
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
-import { RudimentVideo } from "@/features/rudiments/components/RudimentVideo/RudimentVideo";
+import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
@@ -76,18 +70,7 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
       accessibilityLabel={`${rudiment.name}, ${rudiment.category}, level ${rudiment.level}, sticking ${rudiment.sticking}`}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
-      <View style={styles.thumbnail}>
-        {rudiment.video ? (
-          <RudimentVideo source={rudiment.video} label={rudiment.name} />
-        ) : (
-          <Image
-            accessible={false}
-            source={placeholder}
-            resizeMode="cover"
-            style={styles.photo}
-          />
-        )}
-      </View>
+      <RudimentThumbnail video={rudiment.video} label={rudiment.name} />
       <View style={styles.details}>
         <AppText variant="headline" style={styles.name}>
           {rudiment.name}
@@ -107,13 +90,7 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
   );
 }
 
-const placeholder = require("@/assets/images/rudiment-placeholder.jpg");
-
 const styles = StyleSheet.create({
-  photo: {
-    width: "100%",
-    height: "100%",
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -122,15 +99,6 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.7,
-  },
-  thumbnail: {
-    width: 72,
-    height: 72,
-    borderRadius: 12,
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.surface,
   },
   details: {
     flex: 1,

@@ -1,8 +1,8 @@
 import type { VideoSource } from "expo-video";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
-import { RudimentVideo } from "@/features/rudiments/components/RudimentVideo/RudimentVideo";
+import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
 
 export type Rudiment = {
@@ -58,30 +58,17 @@ export function RudimentRow({
             BPM
           </AppText>
         </Pressable>
-        <View style={styles.thumbnail}>
-          {rudiment.video ? (
-            <RudimentVideo source={rudiment.video} label={rudiment.name} />
-          ) : (
-            <Image
-              accessible={false}
-              source={placeholder}
-              resizeMode="cover"
-              style={styles.photo}
-            />
-          )}
-        </View>
+        <RudimentThumbnail
+          video={rudiment.video}
+          label={rudiment.name}
+          size="large"
+        />
       </View>
     </View>
   );
 }
 
-const placeholder = require("@/assets/images/rudiment-placeholder.jpg");
-
 const styles = StyleSheet.create({
-  photo: {
-    width: "100%",
-    height: "100%",
-  },
   pressed: {
     opacity: 0.7,
   },
@@ -118,14 +105,5 @@ const styles = StyleSheet.create({
   },
   bpm: {
     marginTop: 6,
-  },
-  thumbnail: {
-    width: 88,
-    height: 80,
-    borderRadius: 12,
-    overflow: "hidden",
-    backgroundColor: colors.background,
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
