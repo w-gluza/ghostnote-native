@@ -17,8 +17,8 @@ import {
   trackRound,
   undoRound,
   useActiveSession,
-} from "@/features/practice/hooks/practice-session";
-import { useRoutine } from "@/features/routines/hooks/saved-routines";
+} from "@/features/practice/stores/practice-session";
+import { useRoutine } from "@/features/routines/stores/saved-routines";
 import { ONE } from "@/features/rudiments/domain/fraction";
 import {
   defaultBpm,

@@ -4,7 +4,7 @@ import {
   createPracticeChoiceStore,
   practiceRoutine,
 } from "../domain/practice-choice-store";
-import { useSavedRoutines } from "../../routines/hooks/saved-routines";
+import { useSavedRoutines } from "../../routines/stores/saved-routines";
 import { quickWarmUp } from "../../routines/domain/starter-routines";
 import { load, save } from "../../../storage/storage";
 

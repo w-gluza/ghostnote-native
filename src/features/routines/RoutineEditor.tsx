@@ -23,7 +23,7 @@ import {
 import {
   findRoutine,
   saveRoutine,
-} from "@/features/routines/hooks/saved-routines";
+} from "@/features/routines/stores/saved-routines";
 import { evenStep, scaleToStep } from "@/features/rudiments/domain/timeline";
 import {
   formatDuration,

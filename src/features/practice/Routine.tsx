@@ -5,12 +5,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { findRudiment, stickingOf } from "@/features/rudiments/domain/library";
-import { useActiveSession } from "@/features/practice/hooks/practice-session";
+import { useActiveSession } from "@/features/practice/stores/practice-session";
 import {
   selectPracticeRoutine,
   usePracticeRoutine,
-} from "@/features/practice/hooks/practice-choice";
-import { useRoutine } from "@/features/routines/hooks/saved-routines";
+} from "@/features/practice/stores/practice-choice";
+import { useRoutine } from "@/features/routines/stores/saved-routines";
 import { quickWarmUp } from "@/features/routines/domain/starter-routines";
 import {
   isRoutineComplete,

@@ -36,7 +36,7 @@ import {
 import {
   changeMetronomeSettings as change,
   useMetronomeSettings,
-} from "@/features/metronome/hooks/metronome-settings";
+} from "@/features/metronome/stores/metronome-settings";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { colors } from "@/theme/colors";

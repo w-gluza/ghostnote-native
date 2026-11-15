@@ -7,8 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   finishSession,
   useActiveSession,
-} from "@/features/practice/hooks/practice-session";
-import { useRoutine } from "@/features/routines/hooks/saved-routines";
+} from "@/features/practice/stores/practice-session";
+import { useRoutine } from "@/features/routines/stores/saved-routines";
 import {
   completedRoundCount,
   playedTempoLabel,

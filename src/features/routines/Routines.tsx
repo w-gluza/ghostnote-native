@@ -2,7 +2,7 @@ import { Stack, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { useSavedRoutines } from "@/features/routines/hooks/saved-routines";
+import { useSavedRoutines } from "@/features/routines/stores/saved-routines";
 import { isRecommended } from "@/features/routines/domain/starter-routines";
 import {
   routineLevel,

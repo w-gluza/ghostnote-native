@@ -13,12 +13,12 @@ import {
   sessionsSince,
 } from "@/features/practice/domain/insights";
 import { findRudiment } from "@/features/rudiments/domain/library";
-import { usePracticeRoutine } from "@/features/practice/hooks/practice-choice";
+import { usePracticeRoutine } from "@/features/practice/stores/practice-choice";
 import {
   useActiveSession,
   usePracticeHistory,
-} from "@/features/practice/hooks/practice-session";
-import { useWeeklyGoal } from "@/features/practice/hooks/weekly-goal";
+} from "@/features/practice/stores/practice-session";
+import { useWeeklyGoal } from "@/features/practice/stores/weekly-goal";
 import {
   exerciseMinutes,
   routineLevel,

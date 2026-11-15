@@ -20,11 +20,11 @@ import {
   useFreePractice,
   usePracticeHistory,
   useUnfinishedPractice,
-} from "@/features/practice/hooks/practice-session";
+} from "@/features/practice/stores/practice-session";
 import {
   setWeeklyGoal,
   useWeeklyGoal,
-} from "@/features/practice/hooks/weekly-goal";
+} from "@/features/practice/stores/weekly-goal";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 

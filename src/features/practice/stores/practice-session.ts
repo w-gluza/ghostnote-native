@@ -3,7 +3,7 @@ import { useSyncExternalStore } from "react";
 import {
   deleteRoutine,
   resumeRoutineDeletion,
-} from "../../routines/hooks/saved-routines";
+} from "../../routines/stores/saved-routines";
 import { createSessionStore } from "../domain/session-store";
 import { load, save } from "../../../storage/storage";
 

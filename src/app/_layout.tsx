@@ -1,6 +1,6 @@
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 
-import { startPracticeTracking } from "@/features/practice/hooks/practice-session";
+import { startPracticeTracking } from "@/features/practice/stores/practice-session";
 import { LaunchPad } from "@/features/rudiments/components/LaunchPad/LaunchPad";
 import { colors } from "@/theme/colors";
 

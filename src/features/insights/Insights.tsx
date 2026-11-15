@@ -37,7 +37,7 @@ import {
   useFreePractice,
   usePracticeHistory,
   useUnfinishedPractice,
-} from "@/features/practice/hooks/practice-session";
+} from "@/features/practice/stores/practice-session";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 

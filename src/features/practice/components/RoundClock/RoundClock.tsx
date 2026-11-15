@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AccessibilityInfo, StyleSheet, Text } from "react-native";
 
-import { roundPlayedMs } from "@/features/practice/hooks/practice-session";
+import { roundPlayedMs } from "@/features/practice/stores/practice-session";
 import {
   clockLabel,
   isTargetReached,
