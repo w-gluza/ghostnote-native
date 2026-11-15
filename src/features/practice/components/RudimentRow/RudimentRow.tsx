@@ -36,7 +36,7 @@ export function RudimentRow({
         style={styles.timeline}
       >
         <View style={styles.line} />
-        <AppText variant="caption" tone="violet">
+        <AppText variant="bodySmall" tone="violet" tabular>
           {String(position).padStart(2, "0")}
         </AppText>
         <View style={styles.line} />
@@ -53,15 +53,10 @@ export function RudimentRow({
           ]}
         >
           <RowText
+            label={`${rudiment.minutes} MIN · ${rudiment.rounds} ROUNDS`}
             title={rudiment.name}
-            detail={`${rudiment.minutes} min · ${rudiment.rounds} rounds`}
+            detail={`${rudiment.bpm} BPM`}
           />
-          <AppText variant="heading" style={styles.bpm}>
-            {rudiment.bpm}
-          </AppText>
-          <AppText variant="overline" tone="secondary">
-            BPM
-          </AppText>
         </Pressable>
         <RudimentThumbnail
           video={rudiment.video}
@@ -101,8 +96,5 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-  },
-  bpm: {
-    marginTop: spacing.sm,
   },
 });
