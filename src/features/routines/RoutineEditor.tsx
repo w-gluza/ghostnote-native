@@ -11,6 +11,8 @@ import {
 } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
 import { fraction, multiply } from "@/features/rudiments/domain/fraction";
 import { newId } from "@/features/rudiments/domain/ids";
@@ -159,13 +161,7 @@ function ExerciseEditor({
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
-        <AppText
-          variant="title"
-          accessibilityRole="header"
-          style={styles.title}
-        >
-          {rudiment?.name}
-        </AppText>
+        <PageTitle>{rudiment?.name}</PageTitle>
         <View style={styles.subtitleRow}>
           <AppText variant="bodySmall" tone="secondary">
             {rudiment?.category} · Lvl {rudiment?.level}
@@ -184,18 +180,11 @@ function ExerciseEditor({
           ) : null}
         </View>
 
-        <View style={styles.sectionHeader}>
-          <AppText
-            variant="overline"
-            tone="secondary"
-            accessibilityRole="header"
-          >
-            ROUNDS
-          </AppText>
-          <AppText variant="caption" tone="secondary">
-            {minutes} min total
-          </AppText>
-        </View>
+        <SectionHeader
+          title="ROUNDS"
+          trailing={`${minutes} min total`}
+          style={styles.sectionHeader}
+        />
 
         <View style={styles.columns}>
           <AppText
@@ -442,13 +431,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
-        <AppText
-          variant="title"
-          accessibilityRole="header"
-          style={styles.title}
-        >
-          {source ? "Edit Routine" : "New Routine"}
-        </AppText>
+        <PageTitle>{source ? "Edit Routine" : "New Routine"}</PageTitle>
         {saveFailed ? (
           <AppText
             variant="bodySmall"
@@ -473,18 +456,11 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           style={styles.input}
         />
 
-        <View style={styles.sectionHeader}>
-          <AppText
-            variant="overline"
-            tone="secondary"
-            accessibilityRole="header"
-          >
-            EXERCISES
-          </AppText>
-          <AppText variant="caption" tone="secondary">
-            {routineMinutes({ exercises })} min
-          </AppText>
-        </View>
+        <SectionHeader
+          title="EXERCISES"
+          trailing={`${routineMinutes({ exercises })} min`}
+          style={styles.sectionHeader}
+        />
 
         {exercises.map((exercise, index) => {
           const rudiment = findRudiment(exercise.pattern.rudimentId);
@@ -622,9 +598,6 @@ const styles = StyleSheet.create({
   saveFailed: {
     marginTop: 12,
   },
-  title: {
-    paddingTop: 6,
-  },
   subtitleRow: {
     marginTop: 8,
     flexDirection: "row",
@@ -643,10 +616,6 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     marginTop: 28,
-    marginBottom: 4,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
   row: {
     paddingVertical: 24,

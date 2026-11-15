@@ -4,6 +4,8 @@ import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import {
   AchievementRow,
   type Achievement,
@@ -115,58 +117,45 @@ export default function InsightsScreen() {
     >
       <ScreenHeader />
 
-      <AppText
-        variant="display"
-        accessibilityRole="header"
-        style={styles.title}
-      >
+      <PageTitle size="large" style={styles.title}>
         Insights
-      </AppText>
+      </PageTitle>
 
       <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <AppText
-            variant="heading"
-            accessibilityRole="header"
-            style={styles.sectionTitle}
-          >
-            This week
-          </AppText>
-          <AppText variant="body" tone="secondary">
-            {weekMinutes} min
-          </AppText>
-        </View>
+        <SectionHeader
+          variant="heading"
+          title="This week"
+          trailing={`${weekMinutes} min`}
+        />
         <WeekChart days={week} todayIndex={todayIndex(now)} />
       </View>
 
       <View style={[styles.section, styles.divided]}>
-        <View style={[styles.sectionHeader, styles.sectionHeaderSpaced]}>
-          <AppText
-            variant="heading"
-            accessibilityRole="header"
-            style={styles.sectionTitle}
-          >
-            Technique balance
-          </AppText>
-          <OptionMenu
-            name="Period"
-            options={PERIODS}
-            selected={period}
-            onChange={setPeriod}
-            align="end"
-            style={styles.period}
-          >
-            <AppText variant="body" tone="secondary">
-              {PERIODS.find((option) => option.key === period)?.label}
-            </AppText>
-            <SymbolView
-              name="chevron.down"
-              size={12}
-              weight="medium"
-              tintColor={colors.text.secondary}
-            />
-          </OptionMenu>
-        </View>
+        <SectionHeader
+          variant="heading"
+          title="Technique balance"
+          style={styles.sectionHeaderSpaced}
+          trailing={
+            <OptionMenu
+              name="Period"
+              options={PERIODS}
+              selected={period}
+              onChange={setPeriod}
+              align="end"
+              style={styles.period}
+            >
+              <AppText variant="body" tone="secondary">
+                {PERIODS.find((option) => option.key === period)?.label}
+              </AppText>
+              <SymbolView
+                name="chevron.down"
+                size={12}
+                weight="medium"
+                tintColor={colors.text.secondary}
+              />
+            </OptionMenu>
+          }
+        />
         {hasBalance ? (
           <TechniqueBalance techniques={techniques} />
         ) : (
@@ -177,13 +166,7 @@ export default function InsightsScreen() {
       </View>
 
       <View style={[styles.section, styles.divided]}>
-        <AppText
-          variant="heading"
-          accessibilityRole="header"
-          style={styles.sectionTitle}
-        >
-          Your activity
-        </AppText>
+        <SectionHeader variant="heading" title="Your activity" />
         <View style={styles.stats}>
           <StatRow
             symbol="clock"
@@ -205,13 +188,7 @@ export default function InsightsScreen() {
       </View>
 
       <View style={[styles.section, styles.divided]}>
-        <AppText
-          variant="heading"
-          accessibilityRole="header"
-          style={styles.sectionTitle}
-        >
-          Achievements
-        </AppText>
+        <SectionHeader variant="heading" title="Achievements" />
         <View style={styles.achievements}>
           {achievements.map((achievement) => (
             <AchievementRow key={achievement.title} achievement={achievement} />
@@ -234,7 +211,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 30,
-    paddingTop: 10,
   },
   section: {
     marginTop: 28,
@@ -244,18 +220,8 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: 12,
-  },
   sectionHeaderSpaced: {
     marginBottom: 20,
-  },
-  sectionTitle: {
-    flexShrink: 1,
   },
   empty: {
     lineHeight: 20,

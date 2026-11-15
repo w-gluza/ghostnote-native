@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import {
   RudimentRow,
   type Rudiment,
@@ -60,13 +61,9 @@ export default function PracticeScreen() {
     >
       <ScreenHeader />
 
-      <AppText
-        variant="display"
-        accessibilityRole="header"
-        style={styles.title}
-      >
+      <PageTitle size="large" style={styles.title}>
         {"Your\nPractice"}
-      </AppText>
+      </PageTitle>
 
       <View style={styles.summary}>
         <AppText variant="bodySmall">
@@ -115,7 +112,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 30,
-    paddingTop: 10,
   },
   summary: {
     marginTop: 16,

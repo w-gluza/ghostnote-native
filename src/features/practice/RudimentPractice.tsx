@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
 import { STAGE_HEIGHT } from "@/features/rudiments/components/PadAnimation/PadAnimation";
 import { RoundClock } from "@/features/practice/components/RoundClock/RoundClock";
@@ -103,13 +104,7 @@ export default function RudimentScreen() {
       >
         {rudiment && timeline ? (
           <>
-            <AppText
-              variant="title"
-              accessibilityRole="header"
-              style={styles.title}
-            >
-              {rudiment.name}
-            </AppText>
+            <PageTitle style={styles.title}>{rudiment.name}</PageTitle>
             <View style={styles.settings}>
               <AppText
                 variant="heading"
@@ -204,7 +199,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   title: {
-    paddingTop: 6,
     marginBottom: 12,
   },
   settings: {

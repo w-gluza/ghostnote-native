@@ -5,6 +5,8 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { findRudiment, stickingOf } from "@/features/rudiments/domain/library";
 import { useActiveSession } from "@/features/practice/stores/practice-session";
 import {
@@ -141,13 +143,7 @@ export default function RoutineScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.content}
       >
-        <AppText
-          variant="title"
-          accessibilityRole="header"
-          style={styles.title}
-        >
-          {routine.name}
-        </AppText>
+        <PageTitle>{routine.name}</PageTitle>
         <View style={styles.summary}>
           <SymbolView
             name="clock"
@@ -161,18 +157,11 @@ export default function RoutineScreen() {
           </AppText>
         </View>
 
-        <View style={styles.sectionHeader}>
-          <AppText
-            variant="overline"
-            tone="secondary"
-            accessibilityRole="header"
-          >
-            YOUR SETLIST
-          </AppText>
-          <AppText variant="caption" tone="secondary">
-            {routine.exercises.length} exercises
-          </AppText>
-        </View>
+        <SectionHeader
+          title="YOUR SETLIST"
+          trailing={`${routine.exercises.length} exercises`}
+          style={styles.sectionHeader}
+        />
 
         {routine.exercises.map((exercise, index) => (
           <SetlistRow
@@ -246,9 +235,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
   },
-  title: {
-    paddingTop: 6,
-  },
   summary: {
     marginTop: 8,
     paddingBottom: 24,
@@ -260,10 +246,6 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     marginTop: 24,
-    marginBottom: 4,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
   row: {
     paddingVertical: 20,

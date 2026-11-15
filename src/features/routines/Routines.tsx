@@ -3,6 +3,7 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { useSavedRoutines } from "@/features/routines/stores/saved-routines";
 import { isRecommended } from "@/features/routines/domain/starter-routines";
 import {
@@ -91,13 +92,7 @@ export default function RoutinesScreen() {
         contentContainerStyle={styles.content}
       >
         <View style={styles.heading}>
-          <AppText
-            variant="title"
-            accessibilityRole="header"
-            style={styles.title}
-          >
-            Saved Routines
-          </AppText>
+          <PageTitle>Saved Routines</PageTitle>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Create new routine"
@@ -164,9 +159,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.surface,
-  },
-  title: {
-    paddingTop: 6,
   },
   count: {
     marginTop: 12,

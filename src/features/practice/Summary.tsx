@@ -5,6 +5,8 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import {
   finishSession,
   useActiveSession,
@@ -99,13 +101,7 @@ export default function SummaryScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.heading}>
-          <AppText
-            variant="title"
-            accessibilityRole="header"
-            style={styles.title}
-          >
-            Practice complete
-          </AppText>
+          <PageTitle>Practice complete</PageTitle>
           <SymbolView
             name="checkmark.circle"
             size={28}
@@ -125,14 +121,7 @@ export default function SummaryScreen() {
           <Stat value={`${sessionRoundCount(session)}`} label="rounds" />
         </View>
 
-        <AppText
-          variant="overline"
-          tone="secondary"
-          accessibilityRole="header"
-          style={styles.sectionTitle}
-        >
-          WHAT YOU PLAYED
-        </AppText>
+        <SectionHeader title="WHAT YOU PLAYED" style={styles.sectionHeader} />
         {played.map((exercise, index) => (
           <SummaryRow
             key={exercise.sourceExerciseId ?? index}
@@ -182,9 +171,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 12,
   },
-  title: {
-    paddingTop: 6,
-  },
   subtitle: {
     marginTop: 8,
   },
@@ -209,9 +195,8 @@ const styles = StyleSheet.create({
     height: 32,
     backgroundColor: colors.border,
   },
-  sectionTitle: {
+  sectionHeader: {
     marginTop: 32,
-    marginBottom: 4,
   },
   row: {
     paddingVertical: 20,

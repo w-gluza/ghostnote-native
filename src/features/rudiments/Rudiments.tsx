@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { FilterChips } from "@/features/rudiments/components/FilterChips/FilterChips";
 import {
   RudimentListItem,
@@ -105,13 +106,9 @@ export default function RudimentsScreen() {
             </View>
           ) : (
             <View style={styles.titleRow}>
-              <AppText
-                variant="display"
-                accessibilityRole="header"
-                style={styles.title}
-              >
+              <PageTitle size="large" style={styles.title}>
                 Rudiments
-              </AppText>
+              </PageTitle>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Search rudiments"
@@ -165,7 +162,6 @@ const styles = StyleSheet.create({
   },
   title: {
     flexShrink: 1,
-    paddingTop: 10,
   },
   search: {
     paddingBottom: 10,

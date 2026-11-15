@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { LinkRow } from "@/features/profile/components/LinkRow/LinkRow";
 import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
 import { StatRow } from "@/components/StatRow/StatRow";
@@ -53,13 +55,7 @@ export default function ProfileScreen() {
       contentContainerStyle={styles.content}
     >
       <View style={styles.bar}>
-        <AppText
-          variant="title"
-          accessibilityRole="header"
-          style={styles.title}
-        >
-          Profile
-        </AppText>
+        <PageTitle>Profile</PageTitle>
         <Pressable
           accessibilityRole="button"
           hitSlop={12}
@@ -73,14 +69,7 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <AppText
-          variant="overline"
-          tone="secondary"
-          accessibilityRole="header"
-          style={styles.sectionTitle}
-        >
-          YOUR PRACTICE
-        </AppText>
+        <SectionHeader title="YOUR PRACTICE" />
         <View style={styles.goalRow}>
           <SymbolView
             name="calendar"
@@ -127,14 +116,7 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.section}>
-        <AppText
-          variant="overline"
-          tone="secondary"
-          accessibilityRole="header"
-          style={styles.sectionTitle}
-        >
-          ABOUT
-        </AppText>
+        <SectionHeader title="ABOUT" />
         <LinkRow
           symbol="person"
           label="Made by Wiola Gluza"
@@ -173,14 +155,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  title: {
-    paddingTop: 6,
-  },
   section: {
     marginTop: 28,
-  },
-  sectionTitle: {
-    marginBottom: 4,
   },
   goalRow: {
     flexDirection: "row",
