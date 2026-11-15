@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   position: {
     width: 28,
-    fontSize: typography.fontSize.title,
+    fontSize: typography.fontSize.heading,
   },
   compactPosition: {
     width: 24,

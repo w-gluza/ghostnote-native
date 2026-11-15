@@ -237,6 +237,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bpm: {
-    fontSize: typography.fontSize.heading,
+    fontSize: typography.fontSize.title,
   },
 });

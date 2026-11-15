@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   statValue: {
-    fontSize: typography.fontSize.heading,
+    fontSize: typography.fontSize.title,
   },
   statRule: {
     width: StyleSheet.hairlineWidth,

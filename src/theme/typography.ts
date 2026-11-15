@@ -12,8 +12,8 @@ export const typography = {
   fontSize: {
     numeral: 72,
     display: 44,
-    heading: 28,
-    title: 20,
+    title: 28,
+    heading: 20,
     body: 16,
     label: 14,
     caption: 12,
@@ -29,12 +29,12 @@ export const textVariants = {
   },
   title: {
     fontFamily: typography.fontFamily.display,
-    fontSize: typography.fontSize.heading,
+    fontSize: typography.fontSize.title,
     lineHeight: 34,
   },
   heading: {
     fontFamily: typography.fontFamily.medium,
-    fontSize: typography.fontSize.title,
+    fontSize: typography.fontSize.heading,
   },
   headline: {
     fontFamily: typography.fontFamily.semibold,
