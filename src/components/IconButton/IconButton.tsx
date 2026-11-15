@@ -54,7 +54,7 @@ export function IconButton({
       style={({ pressed }) => [
         styles.button,
         styles[variant],
-        disabled && styles.disabled,
+        disabled && layoutStyles.disabled,
         pressed && layoutStyles.pressed,
         style,
       ]}
@@ -85,8 +85,5 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     backgroundColor: colors.surface,
-  },
-  disabled: {
-    opacity: 0.5,
   },
 });

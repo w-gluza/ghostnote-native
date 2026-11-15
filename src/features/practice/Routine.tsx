@@ -136,7 +136,7 @@ export default function RoutineScreen() {
 
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.content}
+        contentContainerStyle={layoutStyles.content}
       >
         <PageTitle>{routine.name}</PageTitle>
         <View style={styles.summary}>
@@ -218,10 +218,6 @@ export default function RoutineScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    paddingHorizontal: layout.screenInset,
-    paddingBottom: 24,
-  },
   summary: {
     marginTop: 8,
     paddingBottom: 24,

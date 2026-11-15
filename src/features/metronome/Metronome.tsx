@@ -4,13 +4,13 @@ import {
   AppState,
   ScrollView,
   StyleSheet,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
+import { NoteIcon } from "@/components/NoteIcon/NoteIcon";
 import {
   RhythmBar,
   RhythmBarSeparator,
@@ -43,9 +43,7 @@ import {
 } from "@/features/metronome/stores/metronome-settings";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
-import { colors } from "@/theme/colors";
 import { layout, layoutStyles } from "@/theme/layout";
-import { typography } from "@/theme/typography";
 
 const STEP_BUTTON_SIZE = 36;
 const DIAL_GAP = 4;
@@ -148,7 +146,7 @@ export default function MetronomeScreen() {
               change((current) => ({ ...current, subdivision }))
             }
           >
-            <Text style={styles.subdivisionIcon}>♫</Text>
+            <NoteIcon />
             <AppText
               variant="bodyStrong"
               numberOfLines={1}
@@ -224,10 +222,6 @@ const styles = StyleSheet.create({
   },
   rhythm: {
     marginTop: 24,
-  },
-  subdivisionIcon: {
-    color: colors.accent,
-    fontSize: typography.fontSize.body,
   },
   subdivisionLabel: {
     flexShrink: 1,

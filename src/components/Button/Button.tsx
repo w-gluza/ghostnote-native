@@ -58,7 +58,7 @@ export function Button({
       style={({ pressed }) => [
         styles.button,
         styles[variant],
-        disabled && styles.disabled,
+        disabled && layoutStyles.disabled,
         pressed && layoutStyles.pressed,
         style,
       ]}
@@ -105,9 +105,6 @@ const styles = StyleSheet.create({
   text: {
     minHeight: 44,
     paddingVertical: 8,
-  },
-  disabled: {
-    opacity: 0.5,
   },
   label: {
     flexShrink: 1,

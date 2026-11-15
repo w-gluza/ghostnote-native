@@ -26,8 +26,7 @@ import {
 } from "@/features/rudiments/domain/timeline";
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { Button } from "@/components/Button/Button";
-import { colors } from "@/theme/colors";
-import { divider, layout } from "@/theme/layout";
+import { divider, layout, layoutStyles } from "@/theme/layout";
 
 const MIN_PAD_SCALE = 0.6;
 
@@ -91,7 +90,10 @@ export default function RudimentScreen() {
   const timeline = pattern ? buildTimeline(pattern, rhythmicScale) : undefined;
 
   return (
-    <SafeAreaView edges={["top", "bottom"]} style={styles.screen}>
+    <SafeAreaView
+      edges={["top", "bottom"]}
+      style={[layoutStyles.screen, styles.screen]}
+    >
       <ScreenHeader onBack={router.back} />
       <ScrollView
         style={styles.scroll}
@@ -191,10 +193,8 @@ export default function RudimentScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
     paddingTop: 8,
     paddingHorizontal: layout.screenInset,
-    backgroundColor: colors.background,
   },
   scroll: {
     flex: 1,

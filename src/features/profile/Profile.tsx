@@ -30,7 +30,7 @@ import {
   setWeeklyGoal,
   useWeeklyGoal,
 } from "@/features/practice/stores/weekly-goal";
-import { layout, layoutStyles } from "@/theme/layout";
+import { layoutStyles } from "@/theme/layout";
 
 const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
   key: count,
@@ -54,7 +54,7 @@ export default function ProfileScreen() {
     <ScrollView
       style={layoutStyles.screen}
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={styles.content}
+      contentContainerStyle={layoutStyles.contentPadded}
     >
       <View style={styles.bar}>
         <PageTitle>Profile</PageTitle>
@@ -125,11 +125,6 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    paddingTop: 24,
-    paddingHorizontal: layout.screenInset,
-    paddingBottom: 24,
-  },
   bar: {
     flexDirection: "row",
     alignItems: "center",

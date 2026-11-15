@@ -49,7 +49,7 @@ export function FilterChips({ options, selected, onSelect }: FilterChipsProps) {
 
 const styles = StyleSheet.create({
   scroller: {
-    marginHorizontal: -24,
+    marginHorizontal: -layout.screenInset,
     flexGrow: 0,
   },
   content: {

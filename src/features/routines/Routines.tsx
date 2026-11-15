@@ -14,7 +14,7 @@ import {
 import type { Routine } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { layoutStyles } from "@/theme/layout";
 
 function RoutineRow({
   routine,
@@ -77,7 +77,7 @@ export default function RoutinesScreen() {
 
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.content}
+        contentContainerStyle={layoutStyles.content}
       >
         <View style={styles.heading}>
           <PageTitle>Saved Routines</PageTitle>
@@ -120,10 +120,6 @@ export default function RoutinesScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    paddingHorizontal: layout.screenInset,
-    paddingBottom: 24,
-  },
   heading: {
     flexDirection: "row",
     alignItems: "center",

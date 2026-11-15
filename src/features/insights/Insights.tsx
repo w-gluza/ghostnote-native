@@ -41,7 +41,7 @@ import {
   useUnfinishedPractice,
 } from "@/features/practice/stores/practice-session";
 import { colors } from "@/theme/colors";
-import { divider, layout, layoutStyles } from "@/theme/layout";
+import { divider, layoutStyles } from "@/theme/layout";
 
 const DAYS = [
   { day: "Monday", label: "M" },
@@ -113,7 +113,7 @@ export default function InsightsScreen() {
     <ScrollView
       style={layoutStyles.screen}
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={styles.content}
+      contentContainerStyle={layoutStyles.contentBelowHeader}
     >
       <ScreenHeader />
 
@@ -194,11 +194,6 @@ export default function InsightsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    paddingTop: 8,
-    paddingHorizontal: layout.screenInset,
-    paddingBottom: 24,
-  },
   title: {
     marginTop: 30,
   },

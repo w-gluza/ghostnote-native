@@ -99,7 +99,7 @@ export default function SummaryScreen() {
     <SafeAreaView edges={["top", "bottom"]} style={layoutStyles.screen}>
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={layoutStyles.contentPadded}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.heading}>
@@ -153,11 +153,6 @@ export default function SummaryScreen() {
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,
-  },
-  content: {
-    paddingTop: 24,
-    paddingHorizontal: layout.screenInset,
-    paddingBottom: 24,
   },
   heading: {
     flexDirection: "row",

@@ -25,7 +25,7 @@ import {
 import { buildTimeline } from "@/features/rudiments/domain/timeline";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { layoutStyles } from "@/theme/layout";
 
 const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
@@ -88,7 +88,7 @@ export default function RudimentsScreen() {
         </AppText>
       }
       style={layoutStyles.screen}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={layoutStyles.contentBelowHeader}
       contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
@@ -133,11 +133,6 @@ export default function RudimentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    paddingTop: 8,
-    paddingHorizontal: layout.screenInset,
-    paddingBottom: 24,
-  },
   header: {
     gap: 20,
     paddingBottom: 12,

@@ -1,9 +1,8 @@
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { NoteIcon } from "@/components/NoteIcon/NoteIcon";
 import { OptionMenu } from "@/components/OptionMenu/OptionMenu";
-import { colors } from "@/theme/colors";
-import { typography } from "@/theme/typography";
 
 type NoteValuePickerProps = {
   subdivision: number;
@@ -34,7 +33,7 @@ export function NoteValuePicker({
       hitSlop={12}
       style={styles.picker}
     >
-      <Text style={styles.icon}>♫</Text>
+      <NoteIcon />
       <AppText variant="bodyStrong" tabular>
         {current?.label}
       </AppText>
@@ -46,9 +45,5 @@ const styles = StyleSheet.create({
   picker: {
     minHeight: 0,
     flexShrink: 0,
-  },
-  icon: {
-    color: colors.accent,
-    fontSize: typography.fontSize.body,
   },
 });
