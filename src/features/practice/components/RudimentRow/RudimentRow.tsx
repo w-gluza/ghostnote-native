@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
-import { layoutStyles } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 
 export type Rudiment = {
   name: string;
@@ -75,12 +75,12 @@ export function RudimentRow({
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    gap: 12,
+    gap: spacing.md,
   },
   timeline: {
     minWidth: 24,
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   line: {
     flex: 1,
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    paddingVertical: 14,
+    gap: spacing.md,
+    paddingVertical: spacing.md,
   },
   bodyDivider: {
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -102,9 +102,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   meta: {
-    marginTop: 2,
+    marginTop: spacing.xs,
   },
   bpm: {
-    marginTop: 6,
+    marginTop: spacing.sm,
   },
 });

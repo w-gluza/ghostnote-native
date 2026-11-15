@@ -25,7 +25,7 @@ import {
 import { buildTimeline } from "@/features/rudiments/domain/timeline";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
-import { layoutStyles } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 
 const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
@@ -134,15 +134,15 @@ export default function RudimentsScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    gap: 20,
-    paddingBottom: 12,
+    gap: spacing.xl,
+    paddingBottom: spacing.md,
   },
   titleRow: {
-    marginTop: 10,
+    marginTop: spacing.sm,
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
-    gap: 12,
+    gap: spacing.md,
   },
   title: {
     flexShrink: 1,
@@ -153,10 +153,10 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   empty: {
-    paddingVertical: 24,
+    paddingVertical: spacing.xl,
   },
   searchRow: {
-    marginTop: 10,
+    marginTop: spacing.sm,
     minHeight: 56,
     justifyContent: "flex-end",
   },

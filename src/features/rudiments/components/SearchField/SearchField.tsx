@@ -3,7 +3,7 @@ import { StyleSheet, TextInput, View } from "react-native";
 
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, spacing } from "@/theme/layout";
 import { textVariants } from "@/theme/typography";
 
 type SearchFieldProps = {
@@ -56,16 +56,16 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: spacing.lg,
   },
   field: {
     flex: 1,
     minHeight: layout.minTouchSize,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
     backgroundColor: colors.surface,
   },
   input: {

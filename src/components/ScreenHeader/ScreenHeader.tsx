@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/layout";
 
 type ScreenHeaderProps = {
   onBack?: () => void;
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
     marginVertical: -10,
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: spacing.lg,
   },
   back: {
     marginRight: -24,

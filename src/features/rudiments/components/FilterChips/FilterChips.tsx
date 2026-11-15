@@ -2,7 +2,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 type FilterChipsProps = {
   options: string[];
@@ -54,15 +54,15 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: layout.screenInset,
-    gap: 8,
+    gap: spacing.sm,
   },
   target: {
     minHeight: layout.minTouchSize,
     justifyContent: "center",
   },
   chip: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
     borderRadius: 999,
     backgroundColor: colors.surface,
   },

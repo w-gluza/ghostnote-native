@@ -2,6 +2,7 @@ import { StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/layout";
 
 type WeekProgressProps = {
   done: number;
@@ -37,11 +38,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: spacing.sm,
   },
   marks: {
     flexDirection: "row",
-    gap: 5,
+    gap: spacing.xs,
   },
   mark: {
     width: 3,

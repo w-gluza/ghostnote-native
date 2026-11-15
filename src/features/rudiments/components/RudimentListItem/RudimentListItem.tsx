@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
 import { colors } from "@/theme/colors";
-import { layoutStyles } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 export type StickingStroke = { hand: string; grace: string[] };
@@ -95,12 +95,12 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
-    paddingVertical: 12,
+    gap: spacing.lg,
+    paddingVertical: spacing.md,
   },
   details: {
     flex: 1,
-    gap: 3,
+    gap: spacing.xs,
   },
   name: {
     lineHeight: 22,
@@ -109,10 +109,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   sticking: {
-    marginTop: 3,
+    marginTop: spacing.xs,
     flexDirection: "row",
     flexWrap: "wrap",
-    columnGap: 10,
+    columnGap: spacing.md,
   },
   phrase: {
     maxWidth: "100%",

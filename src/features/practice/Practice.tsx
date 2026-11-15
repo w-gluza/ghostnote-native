@@ -29,7 +29,7 @@ import {
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { layoutStyles } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 
 export default function PracticeScreen() {
   const router = useRouter();
@@ -103,30 +103,30 @@ export default function PracticeScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    marginTop: 30,
+    marginTop: spacing.xxl,
   },
   summary: {
-    marginTop: 16,
+    marginTop: spacing.lg,
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    gap: spacing.md,
   },
   card: {
-    marginTop: 32,
-    paddingVertical: 8,
-    paddingLeft: 16,
-    paddingRight: 20,
+    marginTop: spacing.xxl,
+    paddingVertical: spacing.sm,
+    paddingLeft: spacing.lg,
+    paddingRight: spacing.lg,
     borderRadius: 28,
     backgroundColor: colors.surface,
   },
   start: {
-    marginTop: 24,
+    marginTop: spacing.xl,
     alignSelf: "center",
   },
   saved: {
-    marginTop: 3,
+    marginTop: spacing.xs,
     alignSelf: "center",
   },
 });
