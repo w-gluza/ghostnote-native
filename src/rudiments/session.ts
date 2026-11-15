@@ -147,6 +147,10 @@ export function closeSession(
   };
 }
 
+export function isTargetReached(playedMs: number, targetMs: number) {
+  return targetMs > 0 && playedMs >= targetMs;
+}
+
 export function clockLabel(ms: number) {
   const seconds = Math.max(0, Math.floor(ms / 1000));
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;

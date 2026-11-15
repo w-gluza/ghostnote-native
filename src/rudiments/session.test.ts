@@ -22,6 +22,7 @@ import {
   roundsDone,
   startSession,
   clockLabel,
+  isTargetReached,
   spokenClock,
 } from "./session.ts";
 import type {
@@ -306,4 +307,15 @@ test("the round clock reads as minutes and seconds", () => {
   assert.equal(spokenClock(42000), "42 seconds");
   assert.equal(spokenClock(120000), "2 minutes");
   assert.equal(spokenClock(61000), "1 minute 1 second");
+});
+
+test("the round target is reached at the planned time and stays reached after it", () => {
+  assert.equal(isTargetReached(139999, 140000), false);
+  assert.equal(isTargetReached(140000, 140000), true);
+  assert.equal(isTargetReached(200000, 140000), true);
+});
+
+test("a round without a planned time never reports its target as reached", () => {
+  assert.equal(isTargetReached(0, 0), false);
+  assert.equal(isTargetReached(5000, 0), false);
 });
