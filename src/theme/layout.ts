@@ -35,7 +35,7 @@ export const divider = {
 
 const content = {
   paddingHorizontal: layout.screenInset,
-  paddingBottom: 24,
+  paddingBottom: spacing.xl,
 } as const;
 
 export const layoutStyles = StyleSheet.create({
@@ -46,11 +46,11 @@ export const layoutStyles = StyleSheet.create({
   content,
   contentBelowHeader: {
     ...content,
-    paddingTop: 8,
+    paddingTop: spacing.sm,
   },
   contentPadded: {
     ...content,
-    paddingTop: 24,
+    paddingTop: spacing.xl,
   },
   pressed: {
     opacity: 0.7,

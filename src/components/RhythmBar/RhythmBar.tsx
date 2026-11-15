@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, spacing } from "@/theme/layout";
 
 type RhythmBarProps = {
   children: ReactNode;
@@ -20,11 +20,11 @@ export function RhythmBarSeparator() {
 const styles = StyleSheet.create({
   bar: {
     minHeight: 52,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.lg,
     borderRadius: layout.radius.panel,
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: spacing.md,
     backgroundColor: colors.surface,
   },
   separator: {

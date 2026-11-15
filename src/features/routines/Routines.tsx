@@ -14,7 +14,7 @@ import {
 import type { Routine } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { nativeHeader } from "@/theme/navigation";
-import { layoutStyles } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 
 function RoutineRow({
   routine,
@@ -120,19 +120,19 @@ export default function RoutinesScreen() {
 
 const styles = StyleSheet.create({
   count: {
-    marginTop: 12,
-    marginBottom: 8,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
   },
   rowText: {
-    gap: 10,
+    gap: spacing.sm,
   },
   recommended: {
     marginBottom: -4,
   },
   empty: {
-    marginTop: 32,
+    marginTop: spacing.xxl,
     alignItems: "center",
-    gap: 24,
+    gap: spacing.xl,
   },
   emptyText: {
     lineHeight: 24,

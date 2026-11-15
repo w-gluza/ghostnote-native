@@ -3,6 +3,7 @@ import { Animated, StyleSheet, View } from "react-native";
 import { AppText } from "@/components/AppText/AppText";
 import type { Hand } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/layout";
 
 export type StickMotion = {
   lift: Animated.Value;
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     left: STAGE_WIDTH / 2 + CONTACT_OFFSET - RIPPLE_SIZE / 2,
   },
   hands: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     flexDirection: "row",
     justifyContent: "space-between",
   },

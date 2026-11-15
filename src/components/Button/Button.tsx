@@ -9,7 +9,7 @@ import {
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 export type ButtonVariant = "fill" | "tonal" | "text";
 export type ButtonTone = "default" | "muted" | "accent";
@@ -86,25 +86,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   fill: {
     minHeight: 56,
-    paddingVertical: 12,
+    paddingVertical: spacing.md,
     paddingHorizontal: 48,
     borderRadius: 999,
     backgroundColor: colors.accent,
   },
   tonal: {
     minHeight: layout.minTouchSize,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xl,
     borderRadius: layout.minTouchSize / 2,
     backgroundColor: colors.surface,
   },
   text: {
     minHeight: layout.minTouchSize,
-    paddingVertical: 8,
+    paddingVertical: spacing.sm,
   },
   label: {
     flexShrink: 1,

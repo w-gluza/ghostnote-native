@@ -43,7 +43,7 @@ import {
 } from "@/features/metronome/stores/metronome-settings";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
-import { layout, layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 const STEP_BUTTON_SIZE = 36;
 const DIAL_GAP = 4;
@@ -217,11 +217,11 @@ export default function MetronomeScreen() {
 const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     paddingHorizontal: layout.screenInset,
   },
   rhythm: {
-    marginTop: 24,
+    marginTop: spacing.xl,
   },
   subdivisionLabel: {
     flexShrink: 1,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   stage: {
     flex: 1,
     justifyContent: "center",
-    gap: 4,
+    gap: spacing.xs,
   },
   dialRow: {
     flexDirection: "row",
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   transport: {
-    marginBottom: 28,
+    marginBottom: spacing.xl,
     alignItems: "center",
   },
 });

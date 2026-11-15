@@ -31,7 +31,7 @@ import type { RoutineExercise } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { nativeHeader } from "@/theme/navigation";
-import { divider, layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 
 function SetlistRow({
   done,
@@ -216,25 +216,25 @@ export default function RoutineScreen() {
 
 const styles = StyleSheet.create({
   summary: {
-    marginTop: 8,
-    paddingBottom: 24,
+    marginTop: spacing.sm,
+    paddingBottom: spacing.xl,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
     ...divider.bottom,
   },
   sectionHeader: {
-    marginTop: 24,
+    marginTop: spacing.section,
   },
   rowText: {
-    gap: 6,
+    gap: spacing.sm,
   },
   sticking: {
     letterSpacing: 1,
   },
   rowStatus: {
     alignItems: "flex-end",
-    gap: 6,
+    gap: spacing.sm,
   },
   choose: {
     alignSelf: "center",
@@ -245,15 +245,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
-    gap: 6,
+    gap: spacing.sm,
   },
   selectFailed: {
     marginHorizontal: layout.screenInset,
-    marginBottom: 4,
+    marginBottom: spacing.xs,
     textAlign: "center",
   },
   start: {
     marginHorizontal: layout.screenInset,
-    marginBottom: 3,
+    marginBottom: spacing.xs,
   },
 });

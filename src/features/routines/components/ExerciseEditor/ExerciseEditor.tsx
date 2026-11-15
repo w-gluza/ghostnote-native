@@ -29,7 +29,7 @@ import type {
   RoutineRound,
 } from "@/features/routines/domain/types";
 import { colors } from "@/theme/colors";
-import { divider, layoutStyles } from "@/theme/layout";
+import { divider, layoutStyles, spacing } from "@/theme/layout";
 import { editorStyles } from "@/features/routines/editorStyles";
 import { RoundField } from "@/features/routines/components/RoundField/RoundField";
 
@@ -226,17 +226,17 @@ export function ExerciseEditor({
 
 const styles = StyleSheet.create({
   subtitleRow: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    gap: spacing.md,
   },
   columns: {
-    marginTop: 20,
+    marginTop: spacing.lg,
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: spacing.md,
   },
   roundColumn: {
     width: 64,
@@ -249,10 +249,10 @@ const styles = StyleSheet.create({
     minWidth: 24,
   },
   roundRow: {
-    marginTop: 12,
+    marginTop: spacing.md,
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: spacing.md,
   },
   roundBadge: {
     width: 36,
@@ -263,8 +263,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   total: {
-    marginTop: 19,
-    paddingTop: 24,
+    marginTop: spacing.lg,
+    paddingTop: spacing.xl,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

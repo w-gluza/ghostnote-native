@@ -2,6 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { spacing } from "@/theme/layout";
 
 type PageTitleProps = Omit<
   ComponentProps<typeof AppText>,
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    gap: spacing.md,
   },
   shrink: {
     flexShrink: 1,

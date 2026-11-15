@@ -38,6 +38,7 @@ import type { Tempo } from "@/features/rudiments/domain/types";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import type { StrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { typography } from "@/theme/typography";
+import { spacing } from "@/theme/layout";
 
 type RudimentPlayerProps = {
   timeline: Timeline;
@@ -222,15 +223,15 @@ export function RudimentPlayer({
 const styles = StyleSheet.create({
   player: {
     alignItems: "center",
-    gap: 24,
+    gap: spacing.xl,
   },
   playerCompact: {
-    gap: 16,
+    gap: spacing.lg,
   },
   tempo: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 20,
+    gap: spacing.xl,
   },
   readout: {
     minWidth: 72,

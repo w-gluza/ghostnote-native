@@ -1,29 +1,29 @@
 import { StyleSheet } from "react-native";
 
-import { layout } from "@/theme/layout";
+import { layout, spacing } from "@/theme/layout";
 
 export const editorStyles = StyleSheet.create({
   bar: {
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     paddingHorizontal: layout.screenInset,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   content: {
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     paddingHorizontal: layout.screenInset,
-    paddingBottom: 40,
+    paddingBottom: spacing.xxl,
   },
   sectionHeader: {
-    marginTop: 28,
+    marginTop: spacing.section,
   },
   add: {
-    marginTop: 11,
+    marginTop: spacing.md,
     alignSelf: "center",
   },
   remove: {
-    marginTop: 19,
+    marginTop: spacing.lg,
     alignSelf: "center",
   },
 });

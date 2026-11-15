@@ -24,7 +24,7 @@ import { quickWarmUp } from "@/features/routines/domain/starter-routines";
 import type { CompletedExercise } from "@/features/practice/domain/types";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
-import { divider, layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 function SummaryRow({
@@ -158,11 +158,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   subtitle: {
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   stats: {
-    marginTop: 28,
-    paddingVertical: 20,
+    marginTop: spacing.xxl,
+    paddingVertical: spacing.lg,
     borderRadius: layout.radius.panel,
     flexDirection: "row",
     alignItems: "center",
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   stat: {
     flex: 1,
     alignItems: "center",
-    gap: 4,
+    gap: spacing.xs,
   },
   statValue: {
     fontSize: typography.fontSize.title,
@@ -182,26 +182,26 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
   },
   sectionHeader: {
-    marginTop: 32,
+    marginTop: spacing.section,
   },
   row: {
-    paddingVertical: 20,
+    paddingVertical: spacing.lg,
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 12,
+    gap: spacing.md,
     ...divider.bottom,
   },
   rowText: {
     flex: 1,
-    gap: 6,
+    gap: spacing.sm,
   },
   saveFailed: {
     marginHorizontal: layout.screenInset,
-    marginBottom: 12,
+    marginBottom: spacing.md,
     textAlign: "center",
   },
   finish: {
     marginHorizontal: layout.screenInset,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
 });

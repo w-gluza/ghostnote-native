@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { divider, layoutStyles } from "@/theme/layout";
+import { divider, layoutStyles, spacing } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 type NumberedRowProps = {
@@ -69,14 +69,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   default: {
-    paddingVertical: 24,
+    paddingVertical: spacing.xl,
     alignItems: "center",
-    gap: 16,
+    gap: spacing.lg,
   },
   compact: {
-    paddingVertical: 20,
+    paddingVertical: spacing.lg,
     alignItems: "flex-start",
-    gap: 12,
+    gap: spacing.md,
   },
   divided: {
     ...divider.bottom,

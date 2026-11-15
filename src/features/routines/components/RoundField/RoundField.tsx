@@ -2,7 +2,7 @@ import { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
 import { colors } from "@/theme/colors";
-import { layout } from "@/theme/layout";
+import { layout, spacing } from "@/theme/layout";
 import { textVariants } from "@/theme/typography";
 export function RoundField({
   label,
@@ -47,13 +47,13 @@ export function RoundField({
 
 const styles = StyleSheet.create({
   field: {
-    padding: 8,
+    padding: spacing.sm,
     borderRadius: layout.radius.panel,
     backgroundColor: colors.surface,
   },
   fieldInput: {
     height: 40,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,

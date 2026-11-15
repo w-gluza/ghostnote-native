@@ -26,7 +26,7 @@ import {
 } from "@/features/rudiments/domain/timeline";
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { Button } from "@/components/Button/Button";
-import { divider, layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 
 const MIN_PAD_SCALE = 0.6;
 
@@ -193,31 +193,31 @@ export default function RudimentScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    paddingTop: 8,
+    paddingTop: spacing.sm,
     paddingHorizontal: layout.screenInset,
   },
   scroll: {
     flex: 1,
-    marginTop: 16,
+    marginTop: spacing.lg,
   },
   content: {
-    paddingBottom: 8,
+    paddingBottom: spacing.sm,
   },
   title: {
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   settings: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   rounds: {
-    marginTop: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    marginTop: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
     ...divider.top,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    gap: spacing.md,
   },
   undo: {
     marginRight: "auto",

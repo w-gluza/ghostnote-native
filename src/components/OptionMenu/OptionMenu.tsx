@@ -13,7 +13,7 @@ import {
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
-import { divider, layout, layoutStyles } from "@/theme/layout";
+import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 
 export type MenuOption<Key extends string | number> = {
   key: Key;
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   menu: {
     position: "absolute",
@@ -168,10 +168,10 @@ const styles = StyleSheet.create({
   },
   item: {
     minHeight: 48,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.lg,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   itemDivider: {
     ...divider.top,

@@ -6,6 +6,7 @@ import type {
 } from "@/features/rudiments/domain/timeline";
 import { AppText } from "@/components/AppText/AppText";
 import { typography } from "@/theme/typography";
+import { spacing } from "@/theme/layout";
 
 type StickingPatternProps = {
   timeline: Timeline;
@@ -70,8 +71,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    columnGap: 16,
-    rowGap: 8,
+    columnGap: spacing.lg,
+    rowGap: spacing.sm,
   },
   group: {
     flexDirection: "row",

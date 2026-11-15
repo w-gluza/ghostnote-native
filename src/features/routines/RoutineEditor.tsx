@@ -32,7 +32,7 @@ import {
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles } from "@/theme/layout";
+import { layout, layoutStyles, spacing } from "@/theme/layout";
 import { textVariants } from "@/theme/typography";
 import { editorStyles } from "@/features/routines/editorStyles";
 import { ExerciseEditor } from "@/features/routines/components/ExerciseEditor/ExerciseEditor";
@@ -247,30 +247,30 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
 
 const styles = StyleSheet.create({
   deleteFailed: {
-    marginTop: 12,
+    marginTop: spacing.md,
     textAlign: "center",
   },
   saveFailed: {
-    marginTop: 12,
+    marginTop: spacing.md,
   },
   input: {
-    marginTop: 16,
+    marginTop: spacing.lg,
     height: 52,
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.lg,
     borderRadius: layout.radius.panel,
     ...textVariants.body,
     color: colors.text.primary,
     backgroundColor: colors.surface,
   },
   rowText: {
-    gap: 8,
+    gap: spacing.sm,
   },
   choice: {
-    marginTop: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    marginTop: spacing.md,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
     borderRadius: layout.radius.panel,
-    gap: 4,
+    gap: spacing.xs,
     backgroundColor: colors.surface,
   },
 });
