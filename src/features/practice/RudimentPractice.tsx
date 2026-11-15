@@ -107,14 +107,14 @@ export default function RudimentScreen() {
             <PageTitle style={styles.title}>{rudiment.name}</PageTitle>
             <View style={styles.settings}>
               <AppText
-                variant="heading"
+                variant="bodyStrong"
                 accessibilityLabel="Time signature, 4 4"
               >
                 4/4
               </AppText>
               <View style={styles.separator} />
               <AppText
-                variant="bodySmall"
+                variant="body"
                 tone="secondary"
                 numberOfLines={1}
                 style={styles.detail}

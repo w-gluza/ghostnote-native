@@ -163,7 +163,7 @@ function ExerciseEditor({
       >
         <PageTitle>{rudiment?.name}</PageTitle>
         <View style={styles.subtitleRow}>
-          <AppText variant="bodySmall" tone="secondary">
+          <AppText variant="body" tone="secondary">
             {rudiment?.category} · Lvl {rudiment?.level}
           </AppText>
           {pattern && strokeStep ? (

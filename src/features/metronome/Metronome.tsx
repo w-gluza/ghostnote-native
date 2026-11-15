@@ -133,7 +133,7 @@ export default function MetronomeScreen() {
               }
             }}
           >
-            <AppText variant="heading">{meterLabel(settings.meter)}</AppText>
+            <AppText variant="bodyStrong">{meterLabel(settings.meter)}</AppText>
           </OptionMenu>
           <View style={styles.rhythmSeparator} />
           <OptionMenu
@@ -146,7 +146,7 @@ export default function MetronomeScreen() {
           >
             <Text style={styles.subdivisionIcon}>♫</Text>
             <AppText
-              variant="body"
+              variant="bodyStrong"
               numberOfLines={1}
               style={styles.subdivisionLabel}
             >
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   subdivisionIcon: {
     color: colors.accent,
-    fontSize: typography.fontSize.title,
+    fontSize: typography.fontSize.body,
   },
   rhythmSeparator: {
     width: StyleSheet.hairlineWidth,

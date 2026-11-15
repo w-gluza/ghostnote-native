@@ -83,3 +83,26 @@ test("pressing outside closes the menu without choosing", async () => {
   expect(onChange).not.toHaveBeenCalled();
   expect(screen.queryByRole("menu")).toBeNull();
 });
+
+test("an option can be spoken differently from how it is written", async () => {
+  await render(
+    <OptionMenu
+      name="Note value"
+      options={[
+        { key: 1, label: "1/4", accessibilityLabel: "Quarter notes" },
+        { key: 2, label: "1/8", accessibilityLabel: "Eighth notes" },
+      ]}
+      selected={2}
+      onChange={jest.fn()}
+    >
+      <Text>1/8</Text>
+    </OptionMenu>,
+  );
+
+  await userEvent
+    .setup()
+    .press(screen.getByRole("button", { name: "Note value, Eighth notes" }));
+
+  expect(screen.getByRole("menuitem", { name: "Quarter notes" })).toBeTruthy();
+  expect(screen.getByText("1/4")).toBeTruthy();
+});

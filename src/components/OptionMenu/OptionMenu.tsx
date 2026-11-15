@@ -6,6 +6,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   View,
+  type PressableProps,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
@@ -16,6 +17,7 @@ import { colors } from "@/theme/colors";
 export type MenuOption<Key extends string | number> = {
   key: Key;
   label: string;
+  accessibilityLabel?: string;
 };
 
 type OptionMenuProps<Key extends string | number> = {
@@ -24,6 +26,7 @@ type OptionMenuProps<Key extends string | number> = {
   selected: Key;
   onChange: (key: Key) => void;
   align?: "start" | "end";
+  hitSlop?: PressableProps["hitSlop"];
   style?: StyleProp<ViewStyle>;
   children: ReactNode;
 };
@@ -38,6 +41,7 @@ export function OptionMenu<Key extends string | number>({
   selected,
   onChange,
   align = "start",
+  hitSlop,
   style,
   children,
 }: OptionMenuProps<Key>) {
@@ -63,8 +67,9 @@ export function OptionMenu<Key extends string | number>({
       <Pressable
         ref={trigger}
         accessibilityRole="button"
-        accessibilityLabel={`${name}, ${current?.label ?? "not set"}`}
+        accessibilityLabel={`${name}, ${current ? spokenLabel(current) : "not set"}`}
         accessibilityState={{ expanded: anchor !== null }}
+        hitSlop={hitSlop}
         onPress={open}
         style={({ pressed }) => [
           styles.trigger,
@@ -94,7 +99,7 @@ export function OptionMenu<Key extends string | number>({
                 <Pressable
                   key={option.key}
                   accessibilityRole="menuitem"
-                  accessibilityLabel={option.label}
+                  accessibilityLabel={spokenLabel(option)}
                   accessibilityState={{ selected: isSelected }}
                   onPress={() => {
                     onChange(option.key);
@@ -127,6 +132,10 @@ export function OptionMenu<Key extends string | number>({
       </Modal>
     </>
   );
+}
+
+function spokenLabel(option: MenuOption<string | number>) {
+  return option.accessibilityLabel ?? option.label;
 }
 
 const styles = StyleSheet.create({
