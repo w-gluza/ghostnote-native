@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import {
@@ -153,9 +154,9 @@ export default function InsightsScreen() {
         {hasBalance ? (
           <TechniqueBalance techniques={techniques} />
         ) : (
-          <AppText variant="bodySmall" tone="secondary" style={styles.empty}>
+          <EmptyState>
             Play a round in a routine to see how your practice is split.
-          </AppText>
+          </EmptyState>
         )}
       </View>
 
@@ -206,9 +207,6 @@ const styles = StyleSheet.create({
   },
   sectionHeaderSpaced: {
     marginBottom: spacing.lg,
-  },
-  empty: {
-    lineHeight: 20,
   },
   period: {
     marginVertical: -10,

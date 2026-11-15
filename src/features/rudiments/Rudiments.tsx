@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 
-import { AppText } from "@/components/AppText/AppText";
+import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { FilterChips } from "@/features/rudiments/components/FilterChips/FilterChips";
@@ -81,11 +81,11 @@ export default function RudimentsScreen() {
       }}
       ItemSeparatorComponent={Separator}
       ListEmptyComponent={
-        <AppText variant="body" tone="secondary" style={styles.empty}>
+        <EmptyState>
           {category === ALL_CATEGORIES
             ? `No rudiments match "${query.trim()}".`
             : `No ${category.toLowerCase()} match "${query.trim()}".`}
-        </AppText>
+        </EmptyState>
       }
       style={layoutStyles.screen}
       contentContainerStyle={layoutStyles.contentBelowHeader}
@@ -151,9 +151,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     alignItems: "flex-end",
     justifyContent: "flex-end",
-  },
-  empty: {
-    paddingVertical: spacing.xl,
   },
   searchRow: {
     marginTop: spacing.sm,

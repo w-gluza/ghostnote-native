@@ -2,6 +2,7 @@ import { Stack, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { RowText } from "@/components/RowText/RowText";
 import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { IconButton } from "@/components/IconButton/IconButton";
@@ -95,13 +96,10 @@ export default function RoutinesScreen() {
         ))}
 
         {savedRoutines.length === 0 ? (
-          <View style={styles.empty}>
-            <AppText variant="body" tone="secondary" style={styles.emptyText}>
-              No saved routines yet. Build one from the rudiments you want to
-              practise.
-            </AppText>
-            <Button onPress={create}>Create routine</Button>
-          </View>
+          <EmptyState action={<Button onPress={create}>Create routine</Button>}>
+            No saved routines yet. Build one from the rudiments you want to
+            practise.
+          </EmptyState>
         ) : null}
       </ScrollView>
     </View>
@@ -112,14 +110,5 @@ const styles = StyleSheet.create({
   count: {
     marginTop: spacing.md,
     marginBottom: spacing.sm,
-  },
-  empty: {
-    marginTop: spacing.xxl,
-    alignItems: "center",
-    gap: spacing.xl,
-  },
-  emptyText: {
-    lineHeight: 24,
-    textAlign: "center",
   },
 });

@@ -85,7 +85,7 @@ export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
       />
       <SymbolView
         name="chevron.right"
-        size={16}
+        size={13}
         weight="medium"
         tintColor={colors.text.secondary}
       />
