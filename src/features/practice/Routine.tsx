@@ -196,7 +196,7 @@ export default function RoutineScreen() {
             tintColor={colors.text.secondary}
           />
           <AppText variant="label" tone="secondary">
-            Used for practice
+            Used for Practice
           </AppText>
         </View>
       ) : (
@@ -205,7 +205,7 @@ export default function RoutineScreen() {
           style={styles.choose}
           onPress={chooseForPractice}
         >
-          Use for practice
+          Use for Practice
         </Button>
       )}
     </SafeAreaView>

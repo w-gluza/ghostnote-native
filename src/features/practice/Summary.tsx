@@ -103,7 +103,7 @@ export default function SummaryScreen() {
             />
           }
         >
-          Practice complete
+          Practice Complete
         </PageTitle>
         <AppText variant="bodySmall" tone="secondary" style={styles.subtitle}>
           {session?.routineName ?? routine.name}

@@ -220,7 +220,7 @@ export function ExerciseEditor({
             style={editorStyles.add}
             onPress={addRound}
           >
-            Add round
+            Add Round
           </Button>
         ) : null}
 
@@ -239,7 +239,7 @@ export function ExerciseEditor({
           style={editorStyles.remove}
           onPress={onRemove}
         >
-          Remove from routine
+          Remove from Routine
         </Button>
       </ScrollView>
     </View>

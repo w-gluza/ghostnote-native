@@ -220,7 +220,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
             style={editorStyles.add}
             onPress={() => setIsAdding((adding) => !adding)}
           >
-            Add rudiment
+            Add Rudiment
           </Button>
         ) : null}
 
@@ -251,7 +251,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
             style={editorStyles.remove}
             onPress={confirmDelete}
           >
-            Delete routine
+            Delete Routine
           </Button>
         ) : null}
         {deleteFailed ? (
