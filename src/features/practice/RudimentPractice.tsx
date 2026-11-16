@@ -20,6 +20,7 @@ import { STAGE_HEIGHT } from "@/features/rudiments/components/PadAnimation/PadAn
 import { RoundClock } from "@/features/practice/components/RoundClock/RoundClock";
 import { RudimentPlayer } from "@/features/rudiments/components/RudimentPlayer/RudimentPlayer";
 import { IconButton } from "@/components/IconButton/IconButton";
+import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
 import { fraction, multiply } from "@/features/rudiments/domain/fraction";
 import { findRudiment } from "@/features/rudiments/domain/library";
@@ -31,7 +32,10 @@ import {
   evenStep,
   scaleToStep,
 } from "@/features/rudiments/domain/timeline";
-import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
+import {
+  SOUND_FAILED_MESSAGE,
+  useStrokeSound,
+} from "@/features/rudiments/hooks/use-stroke-sound";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
@@ -54,7 +58,7 @@ export default function RudimentScreen() {
   const rudiment = findRudiment(id);
   const router = useRouter();
   const { width: windowWidth } = useWindowDimensions();
-  const sound = useStrokeSound();
+  const { sound, hasFailed: hasSoundFailed } = useStrokeSound();
   const {
     routine: activeRoutine,
     exercise,
@@ -122,7 +126,6 @@ export default function RudimentScreen() {
         options={{
           ...nativeHeader,
           headerBackTitle: activeRoutine?.name ?? "Rudiments",
-          headerBackButtonDisplayMode: "minimal",
           headerTitle: () => (
             <View
               style={[
@@ -193,6 +196,11 @@ export default function RudimentScreen() {
                 />
               ) : null}
             </RhythmBar>
+            {hasSoundFailed ? (
+              <InlineMessage style={styles.soundFailed}>
+                {SOUND_FAILED_MESSAGE}
+              </InlineMessage>
+            ) : null}
             <RudimentPlayer
               key={`${rudiment.id}-${round?.id ?? ""}`}
               timeline={timeline}
@@ -240,7 +248,7 @@ export default function RudimentScreen() {
             </Button>
           ) : null}
           <Button variant="tonal" disabled={isComplete} onPress={finishRound}>
-            {isComplete ? "All rounds done" : "Round done"}
+            {isComplete ? "All Rounds Done" : "Round Done"}
           </Button>
         </View>
       ) : null}
@@ -254,6 +262,10 @@ const styles = StyleSheet.create({
   },
   scroll: {
     flex: 1,
+  },
+  soundFailed: {
+    marginBottom: spacing.lg,
+    textAlign: "center",
   },
   wordmark: {
     flexDirection: "row",
