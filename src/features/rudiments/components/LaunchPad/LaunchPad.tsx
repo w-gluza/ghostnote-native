@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import {
   AccessibilityInfo,
   Animated,
   Easing,
+  Pressable,
   StyleSheet,
   useAnimatedValue,
 } from "react-native";
@@ -14,12 +15,14 @@ import {
 } from "@/features/rudiments/components/PadAnimation/PadAnimation";
 import { colors } from "@/theme/colors";
 
-const HOLD_MS = 200;
+const HOLD_MS = 100;
 const STROKE_GAP_MS = 190;
 const APPROACH_MS = 90;
 const RETURN_MS = 170;
 const RIPPLE_MS = 320;
 const FADE_MS = 250;
+const SECOND_HIT_MS = HOLD_MS + STROKE_GAP_MS + APPROACH_MS;
+const LEAVE_AFTER_HIT_MS = 100;
 
 function hit(motion: StickMotion) {
   return Animated.sequence([
@@ -53,6 +56,7 @@ function hit(motion: StickMotion) {
 
 export function LaunchPad() {
   const [isDone, setIsDone] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const opacity = useAnimatedValue(1);
   const leftLift = useAnimatedValue(TAP_LIFT);
   const leftRipple = useAnimatedValue(1);
@@ -61,41 +65,49 @@ export function LaunchPad() {
   const left: StickMotion = { lift: leftLift, ripple: leftRipple };
   const right: StickMotion = { lift: rightLift, ripple: rightRipple };
 
-  useEffect(() => {
-    let animation: Animated.CompositeAnimation | undefined;
-    let isCancelled = false;
-    const fade = Animated.timing(opacity, {
+  const leave = () => {
+    if (isLeaving) {
+      return;
+    }
+    setIsLeaving(true);
+    Animated.timing(opacity, {
       toValue: 0,
       duration: FADE_MS,
       useNativeDriver: true,
-    });
+    }).start(() => setIsDone(true));
+  };
+  const leaveWhenShown = useEffectEvent(leave);
+
+  useEffect(() => {
+    let strokes: Animated.CompositeAnimation | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let isCancelled = false;
 
     AccessibilityInfo.isReduceMotionEnabled().then((reducesMotion) => {
       if (isCancelled) {
         return;
       }
-      const leftMotion = { lift: leftLift, ripple: leftRipple };
-      const rightMotion = { lift: rightLift, ripple: rightRipple };
-      animation = reducesMotion
-        ? Animated.sequence([Animated.delay(HOLD_MS), fade])
-        : Animated.sequence([
-            Animated.delay(HOLD_MS),
-            Animated.stagger(STROKE_GAP_MS, [
-              hit(rightMotion),
-              hit(leftMotion),
-              hit(rightMotion),
-              hit(leftMotion),
-            ]),
-            fade,
-          ]);
-      animation.start(() => setIsDone(true));
+      if (reducesMotion) {
+        timer = setTimeout(leaveWhenShown, HOLD_MS);
+        return;
+      }
+      strokes = Animated.sequence([
+        Animated.delay(HOLD_MS),
+        Animated.stagger(STROKE_GAP_MS, [
+          hit({ lift: rightLift, ripple: rightRipple }),
+          hit({ lift: leftLift, ripple: leftRipple }),
+        ]),
+      ]);
+      strokes.start();
+      timer = setTimeout(leaveWhenShown, SECOND_HIT_MS + LEAVE_AFTER_HIT_MS);
     });
 
     return () => {
       isCancelled = true;
-      animation?.stop();
+      strokes?.stop();
+      clearTimeout(timer);
     };
-  }, [opacity, leftLift, leftRipple, rightLift, rightRipple]);
+  }, [leftLift, leftRipple, rightLift, rightRipple]);
 
   if (isDone) {
     return null;
@@ -105,15 +117,18 @@ export function LaunchPad() {
     <Animated.View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
+      pointerEvents={isLeaving ? "none" : "auto"}
       style={[styles.cover, { opacity }]}
     >
-      <PadAnimation
-        left={left}
-        right={right}
-        activeHand={null}
-        label=""
-        showsHands={false}
-      />
+      <Pressable onPress={leave} style={styles.skip}>
+        <PadAnimation
+          left={left}
+          right={right}
+          activeHand={null}
+          label=""
+          showsHands={false}
+        />
+      </Pressable>
     </Animated.View>
   );
 }
@@ -121,8 +136,11 @@ export function LaunchPad() {
 const styles = StyleSheet.create({
   cover: {
     ...StyleSheet.absoluteFill,
+    backgroundColor: colors.background,
+  },
+  skip: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.background,
   },
 });
