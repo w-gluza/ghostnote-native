@@ -60,21 +60,30 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
     { name: source?.name ?? "", exercises: source?.exercises ?? [] },
     { name, exercises },
   );
-  const allowLeaving = usePreventRemove(hasUnsavedChanges, ({ repeat }) => {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: ["Discard Changes", "Keep Editing"],
-        destructiveButtonIndex: 0,
-        cancelButtonIndex: 1,
-        userInterfaceStyle: "dark",
-      },
-      (chosen) => {
-        if (chosen === 0) {
-          repeat();
-        }
-      },
-    );
-  });
+  const [isLeaving, setIsLeaving] = useState(false);
+  const stopGuarding = usePreventRemove(
+    hasUnsavedChanges && !isLeaving,
+    ({ repeat }) => {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Discard Changes", "Keep Editing"],
+          destructiveButtonIndex: 0,
+          cancelButtonIndex: 1,
+          userInterfaceStyle: "dark",
+        },
+        (chosen) => {
+          if (chosen === 0) {
+            setIsLeaving(true);
+            repeat();
+          }
+        },
+      );
+    },
+  );
+  const allowLeaving = () => {
+    setIsLeaving(true);
+    stopGuarding();
+  };
   const open = exercises.find((exercise) => exercise.id === openId);
 
   const add = (rudiment: Rudiment) => {
