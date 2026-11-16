@@ -1,6 +1,14 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
+
+import { useState } from "react";
 
 import { AppText } from "@/components/AppText/AppText";
+import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { Button } from "@/components/Button/Button";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
@@ -13,9 +21,12 @@ import {
   resolvePattern,
 } from "@/features/rudiments/domain/library";
 import { evenStep, scaleToStep } from "@/features/rudiments/domain/timeline";
+import { MAX_BPM, MIN_BPM } from "@/features/rudiments/domain/timing";
 import {
   formatDuration,
+  MAX_ROUND_SECONDS,
   MAX_ROUNDS,
+  MIN_ROUND_SECONDS,
   parseDuration,
   parseTempo,
 } from "@/features/routines/domain/routine-form";
@@ -44,17 +55,22 @@ export function ExerciseEditor({
   onRemove: () => void;
   onClose: () => void;
 }) {
+  const { fontScale } = useWindowDimensions();
+  const roundColumn = { width: ROUND_COLUMN_WIDTH * fontScale };
   const rudiment = findRudiment(exercise.pattern.rudimentId);
   const pattern = resolvePattern(exercise.pattern);
   const step = pattern ? evenStep(pattern) : undefined;
   const strokeStep = step ? multiply(step, exercise.rhythmicScale) : undefined;
   const minutes = exerciseMinutes(exercise);
-  const changeRound = (id: string, change: Partial<RoutineRound>) =>
+  const [wasRejected, setWasRejected] = useState(false);
+  const changeRound = (id: string, change: Partial<RoutineRound>) => {
+    setWasRejected(false);
     onChange({
       rounds: exercise.rounds.map((round) =>
         round.id === id ? { ...round, ...change } : round,
       ),
     });
+  };
   const addRound = () => {
     const last = exercise.rounds[exercise.rounds.length - 1];
     onChange({
@@ -81,15 +97,13 @@ export function ExerciseEditor({
         >
           Edit Routine
         </Button>
-        <Button variant="text" tone="accent" onPress={onClose}>
-          Done
-        </Button>
       </View>
 
       <ScrollView
         contentContainerStyle={editorStyles.content}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets
       >
         <PageTitle>{rudiment?.name}</PageTitle>
         <View style={styles.subtitleRow}>
@@ -117,11 +131,7 @@ export function ExerciseEditor({
         />
 
         <View style={styles.columns}>
-          <AppText
-            variant="overline"
-            tone="secondary"
-            style={styles.roundColumn}
-          >
+          <AppText variant="overline" tone="secondary" style={roundColumn}>
             ROUND
           </AppText>
           <AppText
@@ -129,14 +139,17 @@ export function ExerciseEditor({
             tone="secondary"
             style={styles.fieldColumn}
           >
-            TEMPO
+            TEMPO{"\n"}
+            {MIN_BPM}-{MAX_BPM} BPM
           </AppText>
           <AppText
             variant="overline"
             tone="secondary"
             style={styles.fieldColumn}
           >
-            DURATION
+            DURATION{"\n"}
+            {formatDuration(MIN_ROUND_SECONDS)}-
+            {formatDuration(MAX_ROUND_SECONDS)} MIN:SEC
           </AppText>
           {exercise.rounds.length > 1 ? (
             <View style={styles.removeColumn} />
@@ -145,7 +158,7 @@ export function ExerciseEditor({
 
         {exercise.rounds.map((round, index) => (
           <View key={round.id} style={styles.roundRow}>
-            <View style={styles.roundColumn}>
+            <View style={roundColumn}>
               <View style={styles.roundBadge}>
                 <AppText variant="label" tone="violet" tabular>
                   {index + 1}
@@ -159,6 +172,7 @@ export function ExerciseEditor({
                 format={String}
                 parse={parseTempo}
                 keyboardType="number-pad"
+                onReject={() => setWasRejected(true)}
                 onChange={(bpm) =>
                   changeRound(round.id, { tempo: { ...round.tempo, bpm } })
                 }
@@ -171,6 +185,7 @@ export function ExerciseEditor({
                 format={formatDuration}
                 parse={parseDuration}
                 keyboardType="numbers-and-punctuation"
+                onReject={() => setWasRejected(true)}
                 onChange={(durationSeconds) =>
                   changeRound(round.id, { durationSeconds })
                 }
@@ -182,13 +197,20 @@ export function ExerciseEditor({
                 accessibilityLabel={`Remove round ${index + 1}`}
                 tone="muted"
                 weight="regular"
-                hitSlop={8}
+                hitSlop={10}
                 style={styles.removeColumn}
                 onPress={() => removeRound(round.id)}
               />
             ) : null}
           </View>
         ))}
+
+        {wasRejected ? (
+          <InlineMessage style={styles.rejected}>
+            That value is outside the range shown above, so the previous one was
+            kept.
+          </InlineMessage>
+        ) : null}
 
         {exercise.rounds.length < MAX_ROUNDS ? (
           <Button
@@ -224,6 +246,8 @@ export function ExerciseEditor({
   );
 }
 
+const ROUND_COLUMN_WIDTH = 64;
+
 const styles = StyleSheet.create({
   subtitleRow: {
     marginTop: spacing.sm,
@@ -235,11 +259,8 @@ const styles = StyleSheet.create({
   columns: {
     marginTop: spacing.lg,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: spacing.md,
-  },
-  roundColumn: {
-    width: 64,
   },
   fieldColumn: {
     flex: 1,
@@ -261,6 +282,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.surface,
+  },
+  rejected: {
+    marginTop: spacing.md,
   },
   total: {
     marginTop: spacing.lg,

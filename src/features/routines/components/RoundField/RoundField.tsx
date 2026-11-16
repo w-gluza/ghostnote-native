@@ -11,6 +11,7 @@ export function RoundField({
   parse,
   keyboardType,
   onChange,
+  onReject,
 }: {
   label: string;
   value: number;
@@ -18,6 +19,7 @@ export function RoundField({
   parse: (text: string) => number | undefined;
   keyboardType: "number-pad" | "numbers-and-punctuation";
   onChange: (value: number) => void;
+  onReject: () => void;
 }) {
   const [draft, setDraft] = useState(format(value));
 
@@ -33,7 +35,12 @@ export function RoundField({
             onChange(parsed);
           }
         }}
-        onEndEditing={() => setDraft(format(value))}
+        onEndEditing={() => {
+          if (parse(draft) === undefined) {
+            onReject();
+          }
+          setDraft(format(value));
+        }}
         keyboardType={keyboardType}
         selectTextOnFocus
         maxLength={5}
@@ -50,7 +57,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   fieldInput: {
-    height: 40,
+    minHeight: 40,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: 10,
     borderWidth: 1,

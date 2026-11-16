@@ -1,6 +1,6 @@
 import { SymbolView } from "expo-symbols";
 import type { ReactNode } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { colors } from "@/theme/colors";
@@ -26,6 +26,8 @@ export function NumberedRow({
   isLast = false,
   onPress,
 }: NumberedRowProps) {
+  const { fontScale } = useWindowDimensions();
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -37,7 +39,12 @@ export function NumberedRow({
         pressed && layoutStyles.pressed,
       ]}
     >
-      <AppText variant="body" tone="violet" tabular style={styles.position}>
+      <AppText
+        variant="body"
+        tone="violet"
+        tabular
+        style={[styles.position, { minWidth: POSITION_WIDTH * fontScale }]}
+      >
         {String(position).padStart(2, "0")}
       </AppText>
       <View style={styles.content}>{children}</View>
@@ -54,6 +61,8 @@ export function NumberedRow({
   );
 }
 
+const POSITION_WIDTH = 28;
+
 const styles = StyleSheet.create({
   row: {
     paddingVertical: spacing.xl,
@@ -65,7 +74,6 @@ const styles = StyleSheet.create({
     ...divider.bottom,
   },
   position: {
-    width: 28,
     fontSize: typography.fontSize.heading,
   },
   content: {
