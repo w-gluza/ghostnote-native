@@ -2,6 +2,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
+import { AppText } from "@/components/AppText/AppText";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { RudimentRow } from "@/features/practice/components/RudimentRow/RudimentRow";
@@ -94,9 +95,17 @@ export default function PracticeScreen() {
         </PageTitle>
       </View>
 
+      <AppText variant="overline" tone="secondary" style={styles.routineLabel}>
+        CURRENT ROUTINE
+      </AppText>
       <SectionHeader
-        title={routine.name.toUpperCase()}
-        trailing={`${routineMinutes(routine)} min · Lvl ${routineLevel(routine)}`}
+        variant="heading"
+        title={routine.name}
+        trailing={
+          <AppText variant="bodySmall" tone="secondary" tabular>
+            {routineMinutes(routine)} min · Lvl {routineLevel(routine)}
+          </AppText>
+        }
         style={styles.routine}
       />
 
@@ -131,14 +140,16 @@ const styles = StyleSheet.create({
   title: {
     marginTop: spacing.lg,
   },
+  routineLabel: {
+    marginTop: spacing.xl,
+  },
   routine: {
-    marginTop: spacing.xxl,
+    marginTop: spacing.sm,
   },
   card: {
-    marginTop: spacing.sm,
+    marginTop: spacing.lg,
     paddingVertical: spacing.sm,
-    paddingLeft: spacing.lg,
-    paddingRight: spacing.lg,
+    paddingHorizontal: spacing.lg,
     borderRadius: 28,
     backgroundColor: colors.surface,
   },
