@@ -123,7 +123,9 @@ export function withNextBeatKind(
   };
 }
 
-export function buildClicks(settings: MetronomeSettings) {
+export function buildClicks(
+  settings: Pick<MetronomeSettings, "meter" | "subdivision" | "beats">,
+) {
   const unit = beatUnit(settings.meter);
   const strokes: Click[] = settings.beats.flatMap((beatKind, beatIndex) => {
     const kind: ClickKind = beatKind === "skipped" ? "silent" : beatKind;

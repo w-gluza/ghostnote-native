@@ -69,7 +69,11 @@ export default function MetronomeScreen() {
   );
   const settings = useMetronomeSettings();
   const { sound, hasFailed: hasSoundFailed } = useClickSound();
-  const loop = useMemo(() => buildClicks(settings), [settings]);
+  const { meter, subdivision, beats } = settings;
+  const loop = useMemo(
+    () => buildClicks({ meter, subdivision, beats }),
+    [meter, subdivision, beats],
+  );
 
   const changeBpm = (bpm: number) =>
     change((current) => ({ ...current, bpm: clampBpm(bpm) }));
