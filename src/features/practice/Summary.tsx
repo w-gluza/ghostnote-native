@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -11,8 +11,8 @@ import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import {
+  activeSession,
   finishSession,
-  useActiveSession,
 } from "@/features/practice/stores/practice-session";
 import { useRoutine } from "@/features/routines/stores/saved-routines";
 import {
@@ -70,12 +70,16 @@ export default function SummaryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ routine?: string }>();
   const routine = useRoutine(params.routine) ?? quickWarmUp;
-  const session = useActiveSession(routine.id);
+  const routineId = routine.id;
+  const [session] = useState(() => activeSession(routineId));
   const played = session?.exercises ?? [];
   const timePlayed = playedStat(sessionActiveMs(session));
   const [saveFailed, setSaveFailed] = useState(false);
+  useEffect(() => {
+    finishSession(routineId, Date.now());
+  }, [routineId]);
   const finish = () => {
-    if (!finishSession(routine.id, Date.now())) {
+    if (!finishSession(routineId, Date.now())) {
       setSaveFailed(true);
       return;
     }

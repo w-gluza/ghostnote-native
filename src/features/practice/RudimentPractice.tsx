@@ -19,6 +19,8 @@ import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekPr
 import { fraction, multiply } from "@/features/rudiments/domain/fraction";
 import { findRudiment } from "@/features/rudiments/domain/library";
 import { useRoundPractice } from "@/features/practice/hooks/use-round-practice";
+import { nextExercise } from "@/features/practice/domain/session";
+import { activeSession } from "@/features/practice/stores/practice-session";
 import {
   buildTimeline,
   evenStep,
@@ -66,8 +68,20 @@ export default function RudimentScreen() {
         pathname: "/summary",
         params: { routine: activeRoutine.id },
       });
-    } else if (outcome === "exercise-complete") {
-      router.back();
+    } else if (outcome === "exercise-complete" && activeRoutine) {
+      const next = nextExercise(activeSession(activeRoutine.id), activeRoutine);
+      if (next) {
+        router.replace({
+          pathname: "/rudiment/[id]",
+          params: {
+            id: next.pattern.rudimentId,
+            routine: activeRoutine.id,
+            exercise: next.id,
+          },
+        });
+      } else {
+        router.back();
+      }
     }
   };
   const [viewportHeight, setViewportHeight] = useState(0);

@@ -11,6 +11,10 @@ import {
   periodStart,
   sessionsSince,
 } from "@/features/practice/domain/insights";
+import {
+  isRoutineComplete,
+  nextExercise,
+} from "@/features/practice/domain/session";
 import { findRudiment } from "@/features/rudiments/domain/library";
 import { usePracticeRoutine } from "@/features/practice/stores/practice-choice";
 import {
@@ -40,7 +44,8 @@ export default function PracticeScreen() {
   );
   const weeklyGoal = useWeeklyGoal();
   const routine = usePracticeRoutine();
-  const hasUnfinishedPractice = useActiveSession(routine.id) !== undefined;
+  const session = useActiveSession(routine.id);
+  const hasUnfinishedPractice = session !== undefined;
   const rudiments = routine.exercises.map((exercise) => ({
     id: exercise.id,
     name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
@@ -51,6 +56,20 @@ export default function PracticeScreen() {
   }));
   const open = () =>
     router.push({ pathname: "/routine", params: { id: routine.id } });
+  const start = () => {
+    open();
+    const next = nextExercise(session, routine);
+    if (next && !isRoutineComplete(session, routine)) {
+      router.push({
+        pathname: "/rudiment/[id]",
+        params: {
+          id: next.pattern.rudimentId,
+          routine: routine.id,
+          exercise: next.id,
+        },
+      });
+    }
+  };
   const sessionsThisWeek = sessionsSince(history, periodStart("week", now));
 
   return (
@@ -83,7 +102,7 @@ export default function PracticeScreen() {
         ))}
       </View>
 
-      <Button style={styles.start} onPress={open}>
+      <Button style={styles.start} onPress={start}>
         {hasUnfinishedPractice ? "Resume Practice" : "Start Practice"}
       </Button>
 
