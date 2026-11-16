@@ -3,7 +3,7 @@ export const colors = {
   surface: "#26272B",
   surfaceRaised: "#36373D",
   accent: "#E77A4C",
-  violet: "#9570E8",
+  violet: "#A58BEA",
   slate: "#6F82AD",
 
   text: {
