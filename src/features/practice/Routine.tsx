@@ -141,7 +141,11 @@ export default function RoutineScreen() {
             weight="regular"
             tintColor={colors.text.secondary}
           />
-          <AppText variant="bodySmall" tone="secondary">
+          <AppText
+            variant="bodySmall"
+            tone="secondary"
+            accessibilityLabel={`${totalMinutes} minutes, ${exercisesLabel(routine.exercises.length)}, level ${routineLevel(routine)}`}
+          >
             {totalMinutes} min · {exercisesLabel(routine.exercises.length)} ·
             Lvl {routineLevel(routine)}
           </AppText>

@@ -107,7 +107,11 @@ export function ExerciseEditor({
       >
         <PageTitle>{rudiment?.name}</PageTitle>
         <View style={styles.subtitleRow}>
-          <AppText variant="body" tone="secondary">
+          <AppText
+            variant="body"
+            tone="secondary"
+            accessibilityLabel={`${rudiment?.category}, level ${rudiment?.level}`}
+          >
             {rudiment?.category} · Lvl {rudiment?.level}
           </AppText>
           {pattern && strokeStep ? (

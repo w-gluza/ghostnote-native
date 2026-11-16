@@ -102,7 +102,12 @@ export default function PracticeScreen() {
         variant="heading"
         title={routine.name}
         trailing={
-          <AppText variant="bodySmall" tone="secondary" tabular>
+          <AppText
+            variant="bodySmall"
+            tone="secondary"
+            tabular
+            accessibilityLabel={`${routineMinutes(routine)} minutes, level ${routineLevel(routine)}`}
+          >
             {routineMinutes(routine)} min · Lvl {routineLevel(routine)}
           </AppText>
         }

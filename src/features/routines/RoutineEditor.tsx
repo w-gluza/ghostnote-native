@@ -1,4 +1,5 @@
 import { useLocalSearchParams, usePreventRemove, useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
   ActionSheetIOS,
@@ -35,7 +36,7 @@ import { hasRoutineChanged } from "@/features/routines/domain/routine-form";
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
-import { layout, layoutStyles, spacing } from "@/theme/layout";
+import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 import { editorStyles } from "@/features/routines/editorStyles";
 import { ExerciseEditor } from "@/features/routines/components/ExerciseEditor/ExerciseEditor";
 
@@ -229,17 +230,24 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
               <Pressable
                 key={rudiment.id}
                 accessibilityRole="button"
-                accessibilityLabel={`Add ${rudiment.name}`}
+                accessibilityLabel={`Add ${rudiment.name}, ${rudiment.category}, level ${rudiment.level}`}
                 onPress={() => add(rudiment)}
                 style={({ pressed }) => [
                   styles.choice,
                   pressed && layoutStyles.pressed,
                 ]}
               >
-                <AppText variant="bodyStrong">{rudiment.name}</AppText>
-                <AppText variant="bodySmall" tone="secondary" tabular>
-                  {rudiment.category} · Lvl {rudiment.level}
-                </AppText>
+                <RowText
+                  label={`${rudiment.category} · Lvl ${rudiment.level}`.toUpperCase()}
+                  title={rudiment.name}
+                  style={styles.choiceText}
+                />
+                <SymbolView
+                  name="plus"
+                  size={13}
+                  weight="medium"
+                  tintColor={colors.accent}
+                />
               </Pressable>
             ))
           : null}
@@ -284,11 +292,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   choice: {
-    marginTop: spacing.md,
     paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    borderRadius: layout.radius.panel,
-    gap: spacing.xs,
-    backgroundColor: colors.surface,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.lg,
+    ...divider.bottom,
+  },
+  choiceText: {
+    flex: 1,
   },
 });

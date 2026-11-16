@@ -174,6 +174,7 @@ export default function RudimentScreen() {
             <RhythmBar style={styles.settings}>
               <AppText
                 variant="bodyStrong"
+                tone="secondary"
                 accessibilityLabel="Time signature, 4 4"
               >
                 4/4
@@ -183,6 +184,7 @@ export default function RudimentScreen() {
                 variant="body"
                 tone="secondary"
                 numberOfLines={1}
+                accessibilityLabel={`${rudiment.category}, level ${rudiment.level}`}
                 style={styles.detail}
               >
                 {rudiment.category} · Lvl {rudiment.level}
