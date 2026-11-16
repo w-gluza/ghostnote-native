@@ -1,4 +1,5 @@
 import { Stack, useRouter } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
@@ -7,6 +8,7 @@ import { RowText } from "@/components/RowText/RowText";
 import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { useSavedRoutines } from "@/features/routines/stores/saved-routines";
 import { usePracticeRoutine } from "@/features/practice/stores/practice-choice";
 import { isRecommended } from "@/features/routines/domain/starter-routines";
@@ -17,8 +19,9 @@ import {
 } from "@/features/routines/domain/routine-builder";
 import type { Routine } from "@/features/routines/domain/types";
 import { Button } from "@/components/Button/Button";
+import { colors } from "@/theme/colors";
 import { nativeHeader } from "@/theme/navigation";
-import { layoutStyles, spacing } from "@/theme/layout";
+import { divider, layoutStyles, spacing } from "@/theme/layout";
 
 function RoutineRow({
   routine,
@@ -68,6 +71,13 @@ export default function RoutinesScreen() {
         options={{
           ...nativeHeader,
           headerBackTitle: "Practice",
+          headerRight: () => (
+            <IconButton
+              icon="plus"
+              accessibilityLabel="Create new routine"
+              onPress={create}
+            />
+          ),
         }}
       />
 
@@ -75,22 +85,28 @@ export default function RoutinesScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={layoutStyles.content}
       >
-        <PageTitle
+        <PageTitle>Saved Routines</PageTitle>
+        <View style={styles.summary}>
+          <SymbolView
+            name="checkmark"
+            size={14}
+            weight="medium"
+            tintColor={colors.text.secondary}
+          />
+          <AppText variant="bodySmall" tone="secondary">
+            {practiceRoutine.name} · Used for Practice
+          </AppText>
+        </View>
+
+        <SectionHeader
+          title="YOUR ROUTINES"
           trailing={
-            <IconButton
-              icon="plus"
-              accessibilityLabel="Create new routine"
-              variant="tonal"
-              size={18}
-              onPress={create}
-            />
+            savedRoutines.length === 1
+              ? "1 routine"
+              : `${savedRoutines.length} routines`
           }
-        >
-          Saved Routines
-        </PageTitle>
-        <AppText variant="overline" tone="secondary" style={styles.count}>
-          YOUR ROUTINES · {savedRoutines.length}
-        </AppText>
+          style={styles.sectionHeader}
+        />
 
         {savedRoutines.map((routine, index) => (
           <RoutineRow
@@ -117,8 +133,15 @@ export default function RoutinesScreen() {
 }
 
 const styles = StyleSheet.create({
-  count: {
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
+  summary: {
+    marginTop: spacing.sm,
+    paddingBottom: spacing.xl,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    ...divider.bottom,
+  },
+  sectionHeader: {
+    marginTop: spacing.section,
   },
 });
