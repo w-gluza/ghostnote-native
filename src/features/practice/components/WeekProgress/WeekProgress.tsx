@@ -32,7 +32,7 @@ export function WeekProgress({
         </View>
       ) : null}
       <AppText variant="bodySmall" tone="secondary">
-        {done}/{goal} {unit}
+        {`${done}/${goal} ${unit}`.trim()}
       </AppText>
     </View>
   );

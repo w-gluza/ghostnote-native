@@ -2,8 +2,8 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import { AppText } from "@/components/AppText/AppText";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { RudimentRow } from "@/features/practice/components/RudimentRow/RudimentRow";
 import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
 import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
@@ -24,7 +24,6 @@ import {
 import { useWeeklyGoal } from "@/features/practice/stores/weekly-goal";
 import {
   exerciseMinutes,
-  exercisesLabel,
   routineLevel,
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
@@ -80,15 +79,26 @@ export default function PracticeScreen() {
     >
       <ScreenHeader />
 
-      <PageTitle style={styles.title}>Your Practice</PageTitle>
-
-      <View style={styles.summary}>
-        <AppText variant="bodySmall">
-          {routine.name} · {routineMinutes(routine)} min ·{" "}
-          {exercisesLabel(rudiments.length)} · Lvl {routineLevel(routine)}
-        </AppText>
-        <WeekProgress done={sessionsThisWeek} goal={weeklyGoal} />
+      <View style={styles.title}>
+        <PageTitle
+          trailing={
+            <WeekProgress
+              done={sessionsThisWeek}
+              goal={weeklyGoal}
+              unit=""
+              description={`${sessionsThisWeek} of ${weeklyGoal} sessions this week`}
+            />
+          }
+        >
+          Your Practice
+        </PageTitle>
       </View>
+
+      <SectionHeader
+        title={routine.name.toUpperCase()}
+        trailing={`${routineMinutes(routine)} min · Lvl ${routineLevel(routine)}`}
+        style={styles.routine}
+      />
 
       <View style={styles.card}>
         {rudiments.map((rudiment, index) => (
@@ -121,16 +131,11 @@ const styles = StyleSheet.create({
   title: {
     marginTop: spacing.lg,
   },
-  summary: {
-    marginTop: spacing.lg,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: spacing.md,
+  routine: {
+    marginTop: spacing.xxl,
   },
   card: {
-    marginTop: spacing.xxl,
+    marginTop: spacing.sm,
     paddingVertical: spacing.sm,
     paddingLeft: spacing.lg,
     paddingRight: spacing.lg,
