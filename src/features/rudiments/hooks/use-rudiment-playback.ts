@@ -41,6 +41,11 @@ export function useRudimentPlayback({
   onStroke,
 }: PlaybackOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const wantsToPlay = useRef(false);
+  const setPlaying = (playing: boolean) => {
+    wantsToPlay.current = playing;
+    setIsPlaying(playing);
+  };
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const nextOrdinal = useRef(0);
   const playedTimeline = useRef(timeline);
@@ -110,9 +115,14 @@ export function useRudimentPlayback({
           gapBeforeOrdinal(timeline, ordinal) * anchor.unitMs,
         );
         later(heardIn - lead, () => {
-          approach(index, Math.min(lead, heardIn));
+          if (wantsToPlay.current) {
+            approach(index, Math.min(lead, heardIn));
+          }
         });
         later(heardIn, () => {
+          if (!wantsToPlay.current) {
+            return;
+          }
           nextOrdinal.current = ordinal + 1;
           setActiveIndex(index);
           stroke(index);
@@ -146,8 +156,8 @@ export function useRudimentPlayback({
   return {
     isPlaying,
     activeIndex,
-    play: () => setIsPlaying(true),
-    pause: () => setIsPlaying(false),
-    toggle: () => setIsPlaying((playing) => !playing),
+    play: () => setPlaying(true),
+    pause: () => setPlaying(false),
+    toggle: () => setPlaying(!wantsToPlay.current),
   };
 }
