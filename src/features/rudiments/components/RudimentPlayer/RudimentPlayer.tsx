@@ -1,3 +1,4 @@
+import { useIsFocused } from "expo-router";
 import {
   useEffect,
   useEffectEvent,
@@ -154,6 +155,12 @@ export function RudimentPlayer({
       playback.pause();
     }
   });
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (!isFocused) {
+      leaveForeground();
+    }
+  }, [isFocused]);
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (state) => {
       if (state !== "active") {

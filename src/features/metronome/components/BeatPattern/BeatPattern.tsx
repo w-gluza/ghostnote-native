@@ -6,6 +6,8 @@ import { colors } from "@/theme/colors";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
+const BEAT_HIT_SLOP = { left: 2, right: 2 };
+
 type BeatPatternProps = {
   beats: BeatKind[];
   playingBeat: number;
@@ -25,6 +27,7 @@ export function BeatPattern({
           accessibilityRole="button"
           accessibilityLabel={`Beat ${index + 1}, ${kind}`}
           accessibilityHint="Changes between normal, accent and skipped"
+          hitSlop={BEAT_HIT_SLOP}
           onPress={() => onPressBeat(index)}
           style={({ pressed }) => [
             styles.beat,
