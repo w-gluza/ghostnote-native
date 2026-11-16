@@ -1,6 +1,13 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, usePreventRemove, useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  ActionSheetIOS,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
 import { TextField } from "@/components/TextField/TextField";
 import { AppText } from "@/components/AppText/AppText";
@@ -24,6 +31,7 @@ import {
   newExercise,
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
+import { hasRoutineChanged } from "@/features/routines/domain/routine-form";
 import type { RoutineExercise } from "@/features/routines/domain/types";
 import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
@@ -47,6 +55,25 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
   const [isAdding, setIsAdding] = useState(false);
 
   const canSave = name.trim().length > 0 && exercises.length > 0;
+  const hasUnsavedChanges = hasRoutineChanged(
+    { name: source?.name ?? "", exercises: source?.exercises ?? [] },
+    { name, exercises },
+  );
+  const allowLeaving = usePreventRemove(hasUnsavedChanges, ({ repeat }) => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Discard Changes", "Keep Editing"],
+        destructiveButtonIndex: 0,
+        cancelButtonIndex: 1,
+        userInterfaceStyle: "dark",
+      },
+      (chosen) => {
+        if (chosen === 0) {
+          repeat();
+        }
+      },
+    );
+  });
   const open = exercises.find((exercise) => exercise.id === openId);
 
   const add = (rudiment: Rudiment) => {
@@ -61,6 +88,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
       exercises,
     });
     if (isSaved) {
+      allowLeaving();
       router.back();
     } else {
       setSaveFailed(true);
@@ -84,6 +112,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           onPress: () => {
             const isDeleted = onDelete(source.id);
             if (isDeleted) {
+              allowLeaving();
               router.dismissTo("/routines");
             } else {
               setDeleteFailed(true);
@@ -132,8 +161,14 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         contentContainerStyle={editorStyles.content}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets
       >
         <PageTitle>{source ? "Edit Routine" : "New Routine"}</PageTitle>
+        {canSave ? null : (
+          <AppText variant="bodySmall" tone="secondary" style={styles.hint}>
+            Add a name and at least one rudiment to save.
+          </AppText>
+        )}
         {saveFailed ? (
           <InlineMessage style={styles.saveFailed}>
             This routine could not be saved. Your changes are still here - try
@@ -234,12 +269,16 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     textAlign: "center",
   },
+  hint: {
+    marginTop: spacing.sm,
+  },
   saveFailed: {
     marginTop: spacing.md,
   },
   input: {
     marginTop: spacing.lg,
-    height: 52,
+    minHeight: 52,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: layout.radius.panel,
     backgroundColor: colors.surface,

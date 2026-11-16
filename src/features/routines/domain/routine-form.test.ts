@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { formatDuration, parseDuration, parseTempo } from "./routine-form.ts";
+import {
+  formatDuration,
+  hasRoutineChanged,
+  parseDuration,
+  parseTempo,
+} from "./routine-form.ts";
 
 test("a round duration reads as minutes and two-digit seconds", () => {
   assert.equal(formatDuration(120), "2:00");
@@ -50,4 +55,23 @@ test("a typed tempo is a whole number from 40 to 200", () => {
   assert.equal(parseTempo("90.5"), undefined);
   assert.equal(parseTempo(""), undefined);
   assert.equal(parseTempo("fast"), undefined);
+});
+
+test("a routine counts as changed only when its name or exercises differ", () => {
+  const exercises = [{ id: "a", rounds: [{ id: "r", durationSeconds: 60 }] }];
+  const saved = { name: "Warm-up", exercises };
+
+  assert.equal(
+    hasRoutineChanged(saved, { name: "Warm-up ", exercises: [...exercises] }),
+    false,
+  );
+  assert.equal(hasRoutineChanged(saved, { name: "Warm", exercises }), true);
+  assert.equal(
+    hasRoutineChanged(saved, {
+      name: "Warm-up",
+      exercises: [{ id: "a", rounds: [{ id: "r", durationSeconds: 90 }] }],
+    }),
+    true,
+  );
+  assert.equal(hasRoutineChanged({ name: "", exercises: [] }, saved), true);
 });

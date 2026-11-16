@@ -23,3 +23,12 @@ export function parseTempo(text: string) {
   const bpm = Number(text.trim());
   return Number.isInteger(bpm) && bpm === clampBpm(bpm) ? bpm : undefined;
 }
+
+type RoutineDraft = { name: string; exercises: readonly unknown[] };
+
+export function hasRoutineChanged(saved: RoutineDraft, draft: RoutineDraft) {
+  return (
+    saved.name !== draft.name.trim() ||
+    JSON.stringify(saved.exercises) !== JSON.stringify(draft.exercises)
+  );
+}
