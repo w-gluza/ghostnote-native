@@ -12,6 +12,9 @@ const accentSource = require("@/assets/sounds/click-accent.wav");
 
 const SOFT_GAIN = 0.4;
 
+export const SOUND_FAILED_MESSAGE =
+  "The click sound could not be loaded, so playback is silent. Close and reopen the app to try again.";
+
 type Pending = { source: AudioBufferSourceNode; timeMs: number };
 
 export type ClickSound = {
@@ -32,6 +35,7 @@ export type StrokeSound = {
 
 export function useClickSound() {
   const [sound, setSound] = useState<ClickSound>();
+  const [hasFailed, setHasFailed] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -74,7 +78,11 @@ export function useClickSound() {
           },
         });
       })
-      .catch(() => {});
+      .catch(() => {
+        if (isActive) {
+          setHasFailed(true);
+        }
+      });
 
     return () => {
       isActive = false;
@@ -82,13 +90,13 @@ export function useClickSound() {
     };
   }, []);
 
-  return sound;
+  return { sound, hasFailed };
 }
 
 export function useStrokeSound() {
-  const click = useClickSound();
+  const { sound: click, hasFailed } = useClickSound();
 
-  return useMemo<StrokeSound | undefined>(
+  const sound = useMemo<StrokeSound | undefined>(
     () =>
       click
         ? {
@@ -100,4 +108,6 @@ export function useStrokeSound() {
         : undefined,
     [click],
   );
+
+  return { sound, hasFailed };
 }

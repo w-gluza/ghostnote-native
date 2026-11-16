@@ -45,7 +45,11 @@ import {
   useMetronomeSettings,
 } from "@/features/metronome/stores/metronome-settings";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
-import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
+import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
+import {
+  SOUND_FAILED_MESSAGE,
+  useClickSound,
+} from "@/features/rudiments/hooks/use-stroke-sound";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 const DIAL_GAP = 4;
@@ -64,7 +68,7 @@ export default function MetronomeScreen() {
     MAX_DIAL_SIZE,
   );
   const settings = useMetronomeSettings();
-  const sound = useClickSound();
+  const { sound, hasFailed: hasSoundFailed } = useClickSound();
   const loop = useMemo(() => buildClicks(settings), [settings]);
 
   const changeBpm = (bpm: number) =>
@@ -158,6 +162,11 @@ export default function MetronomeScreen() {
             </AppText>
           </OptionMenu>
         </RhythmBar>
+        {hasSoundFailed ? (
+          <InlineMessage style={styles.soundFailed}>
+            {SOUND_FAILED_MESSAGE}
+          </InlineMessage>
+        ) : null}
 
         <View style={styles.stage}>
           <TempoStepper
@@ -209,6 +218,10 @@ const styles = StyleSheet.create({
   },
   rhythm: {
     marginTop: spacing.xl,
+  },
+  soundFailed: {
+    marginTop: spacing.md,
+    textAlign: "center",
   },
   subdivisionLabel: {
     flexShrink: 1,
