@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { AccessibilityInfo } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
@@ -15,6 +15,7 @@ type RoundClockProps = {
   roundId: string;
   position: number;
   targetSeconds: number;
+  onTargetReached: () => void;
 };
 
 const TICK_MS = 250;
@@ -25,12 +26,14 @@ export function RoundClock({
   roundId,
   position,
   targetSeconds,
+  onTargetReached,
 }: RoundClockProps) {
   const targetMs = targetSeconds * 1000;
   const [playedMs, setPlayedMs] = useState(() =>
     roundPlayedMs(routineId, exerciseId, roundId, Date.now()),
   );
   const wasReached = useRef(isTargetReached(playedMs, targetMs));
+  const targetReached = useEffectEvent(onTargetReached);
   useEffect(() => {
     const read = () => {
       const played = roundPlayedMs(routineId, exerciseId, roundId, Date.now());
@@ -39,6 +42,7 @@ export function RoundClock({
         AccessibilityInfo.announceForAccessibility(
           `Round ${position} target reached`,
         );
+        targetReached();
       }
       wasReached.current = reached;
       setPlayedMs(played);

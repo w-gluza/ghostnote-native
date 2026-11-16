@@ -223,6 +223,7 @@ export default function RudimentScreen() {
                   roundId={round.id}
                   position={done + 1}
                   targetSeconds={round.durationSeconds}
+                  onTargetReached={finishRound}
                 />
               ) : null}
             </RudimentPlayer>
