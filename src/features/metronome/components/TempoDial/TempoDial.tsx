@@ -1,11 +1,18 @@
+import { useRef } from "react";
 import { StyleSheet, View, type GestureResponderEvent } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import {
+  ARC_END,
+  ARC_START,
+  isOnRing,
+  touchAngle,
+  turnBetween,
+  turnedBpm,
+} from "@/features/metronome/domain/dial";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const ARC_START = -150;
-const ARC_END = 150;
 const TICK_STEP = 3;
 const MAJOR_EVERY = 10;
 
@@ -26,13 +33,31 @@ export function TempoDial({ bpm, min, max, size, onChange }: TempoDialProps) {
   const position = (bpm - min) / (max - min);
   const markerAngle = ARC_START + position * (ARC_END - ARC_START);
 
-  const turnTo = (event: GestureResponderEvent) => {
-    const { locationX, locationY } = event.nativeEvent;
-    const degrees =
-      (Math.atan2(locationX - size / 2, size / 2 - locationY) * 180) / Math.PI;
-    const angle = Math.min(ARC_END, Math.max(ARC_START, degrees));
-    const turned = (angle - ARC_START) / (ARC_END - ARC_START);
-    onChange(Math.round(min + turned * (max - min)));
+  const drag = useRef({ angle: 0, bpm });
+
+  const touchOf = (event: GestureResponderEvent) => ({
+    x: event.nativeEvent.locationX,
+    y: event.nativeEvent.locationY,
+  });
+  const startsOnRing = (event: GestureResponderEvent) =>
+    isOnRing(touchOf(event), size);
+  const startTurn = (event: GestureResponderEvent) => {
+    drag.current = { angle: touchAngle(touchOf(event), size), bpm };
+  };
+  const turn = (event: GestureResponderEvent) => {
+    const touch = touchOf(event);
+    if (!isOnRing(touch, size)) {
+      return;
+    }
+    const angle = touchAngle(touch, size);
+    const turned = turnedBpm(
+      drag.current.bpm,
+      turnBetween(drag.current.angle, angle),
+      min,
+      max,
+    );
+    drag.current = { angle, bpm: turned };
+    onChange(Math.round(turned));
   };
 
   return (
@@ -45,11 +70,11 @@ export function TempoDial({ bpm, min, max, size, onChange }: TempoDialProps) {
       onAccessibilityAction={(event) =>
         onChange(bpm + (event.nativeEvent.actionName === "increment" ? 1 : -1))
       }
-      onStartShouldSetResponder={() => true}
-      onMoveShouldSetResponder={() => true}
+      onStartShouldSetResponder={startsOnRing}
+      onMoveShouldSetResponder={startsOnRing}
       onResponderTerminationRequest={() => false}
-      onResponderGrant={turnTo}
-      onResponderMove={turnTo}
+      onResponderGrant={startTurn}
+      onResponderMove={turn}
       style={{ width: size, height: size }}
     >
       {tickAngles.map((angle, index) => (
