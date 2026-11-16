@@ -5,6 +5,7 @@ import type {
   TimelineStroke,
 } from "@/features/rudiments/domain/timeline";
 import { AppText } from "@/components/AppText/AppText";
+import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 import { spacing } from "@/theme/layout";
 
@@ -57,6 +58,9 @@ export function StickingPattern({
                   ) : null}
                   {stroke.hand}
                 </AppText>
+                <View
+                  style={[styles.playhead, isActive && styles.playheadActive]}
+                />
               </View>
             );
           })}
@@ -83,6 +87,16 @@ const styles = StyleSheet.create({
   },
   accent: {
     fontFamily: typography.fontFamily.semibold,
+  },
+  playhead: {
+    alignSelf: "stretch",
+    height: 2,
+    marginTop: spacing.xs,
+    marginHorizontal: spacing.xs,
+    borderRadius: 1,
+  },
+  playheadActive: {
+    backgroundColor: colors.violet,
   },
   grace: {
     fontSize: typography.fontSize.caption,

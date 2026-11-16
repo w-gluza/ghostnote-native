@@ -25,7 +25,12 @@ function spoken(ms: number) {
 
 export function WeekChart({ days, todayIndex }: WeekChartProps) {
   const longest = Math.max(...days.map((day) => day.ms), 1);
-  const summary = days.map((day) => `${day.day} ${spoken(day.ms)}`).join(", ");
+  const summary = days
+    .map(
+      (day, index) =>
+        `${day.day}${index === todayIndex ? ", today," : ""} ${spoken(day.ms)}`,
+    )
+    .join(", ");
 
   return (
     <View accessible accessibilityLabel={summary} style={styles.chart}>
