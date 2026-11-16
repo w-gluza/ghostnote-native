@@ -41,6 +41,7 @@
         "react-native-audio-api",
         {
           "iosBackgroundMode": false,
+          "iosMicrophonePermission": "Ghostnote does not record audio. Its audio playback library requires this message, and the app never asks for microphone access.",
           "androidForegroundService": false,
           "androidPermissions": []
         }
