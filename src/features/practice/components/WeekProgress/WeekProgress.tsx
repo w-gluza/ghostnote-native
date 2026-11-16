@@ -9,6 +9,7 @@ type WeekProgressProps = {
   goal: number;
   unit?: string;
   description?: string;
+  showMarks?: boolean;
 };
 
 export function WeekProgress({
@@ -16,17 +17,20 @@ export function WeekProgress({
   goal,
   unit = goal === 1 ? "session" : "sessions",
   description = `${done} of ${goal} ${unit} this week`,
+  showMarks = true,
 }: WeekProgressProps) {
   return (
     <View accessible accessibilityLabel={description} style={styles.container}>
-      <View style={styles.marks}>
-        {Array.from({ length: goal }, (_, index) => (
-          <View
-            key={index}
-            style={[styles.mark, index < done && styles.markDone]}
-          />
-        ))}
-      </View>
+      {showMarks ? (
+        <View style={styles.marks}>
+          {Array.from({ length: goal }, (_, index) => (
+            <View
+              key={index}
+              style={[styles.mark, index < done && styles.markDone]}
+            />
+          ))}
+        </View>
+      ) : null}
       <AppText variant="bodySmall" tone="secondary">
         {done}/{goal} {unit}
       </AppText>

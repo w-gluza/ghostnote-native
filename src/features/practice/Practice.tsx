@@ -4,10 +4,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
-import {
-  RudimentRow,
-  type Rudiment,
-} from "@/features/practice/components/RudimentRow/RudimentRow";
+import { RudimentRow } from "@/features/practice/components/RudimentRow/RudimentRow";
 import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
 import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
 import {
@@ -23,6 +20,7 @@ import {
 import { useWeeklyGoal } from "@/features/practice/stores/weekly-goal";
 import {
   exerciseMinutes,
+  exercisesLabel,
   routineLevel,
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
@@ -43,7 +41,8 @@ export default function PracticeScreen() {
   const weeklyGoal = useWeeklyGoal();
   const routine = usePracticeRoutine();
   const hasUnfinishedPractice = useActiveSession(routine.id) !== undefined;
-  const rudiments: Rudiment[] = routine.exercises.map((exercise) => ({
+  const rudiments = routine.exercises.map((exercise) => ({
+    id: exercise.id,
     name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
     minutes: exerciseMinutes(exercise),
     rounds: exercise.rounds.length,
@@ -66,8 +65,8 @@ export default function PracticeScreen() {
 
       <View style={styles.summary}>
         <AppText variant="bodySmall">
-          {routineMinutes(routine)} min · {rudiments.length} rudiments · Lvl{" "}
-          {routineLevel(routine)}
+          {routine.name} · {routineMinutes(routine)} min ·{" "}
+          {exercisesLabel(rudiments.length)} · Lvl {routineLevel(routine)}
         </AppText>
         <WeekProgress done={sessionsThisWeek} goal={weeklyGoal} />
       </View>
@@ -75,7 +74,7 @@ export default function PracticeScreen() {
       <View style={styles.card}>
         {rudiments.map((rudiment, index) => (
           <RudimentRow
-            key={rudiment.name}
+            key={rudiment.id}
             rudiment={rudiment}
             position={index + 1}
             isLast={index === rudiments.length - 1}

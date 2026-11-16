@@ -64,6 +64,10 @@ function secondsOf(exercise: RoutineExercise) {
   );
 }
 
+export function exercisesLabel(count: number) {
+  return count === 1 ? "1 exercise" : `${count} exercises`;
+}
+
 export function exerciseMinutes(exercise: RoutineExercise) {
   return minutesOf(secondsOf(exercise));
 }

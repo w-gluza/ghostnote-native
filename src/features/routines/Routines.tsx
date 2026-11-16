@@ -8,8 +8,10 @@ import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { useSavedRoutines } from "@/features/routines/stores/saved-routines";
+import { usePracticeRoutine } from "@/features/practice/stores/practice-choice";
 import { isRecommended } from "@/features/routines/domain/starter-routines";
 import {
+  exercisesLabel,
   routineLevel,
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
@@ -20,29 +22,35 @@ import { layoutStyles, spacing } from "@/theme/layout";
 
 function RoutineRow({
   routine,
+  isInUse,
   position,
   isLast,
   onPress,
 }: {
   routine: Routine;
+  isInUse: boolean;
   position: number;
   isLast: boolean;
   onPress: () => void;
 }) {
   const minutes = routineMinutes(routine);
-  const recommended = isRecommended(routine);
+  const exercises = exercisesLabel(routine.exercises.length);
+  const labels = [
+    isInUse ? "IN USE" : undefined,
+    isRecommended(routine) ? "RECOMMENDED" : undefined,
+  ].filter((label) => label !== undefined);
 
   return (
     <NumberedRow
       position={position}
-      accessibilityLabel={`${routine.name}, ${recommended ? "recommended, " : ""}${minutes} minutes, ${routine.exercises.length} rudiments, level ${routineLevel(routine)}`}
+      accessibilityLabel={`${[routine.name, ...labels.map((label) => label.toLowerCase())].join(", ")}, ${minutes} minutes, ${exercises}, level ${routineLevel(routine)}`}
       isLast={isLast}
       onPress={onPress}
     >
       <RowText
-        label={recommended ? "RECOMMENDED" : undefined}
+        label={labels.join(" · ") || undefined}
         title={routine.name}
-        detail={`${minutes} min · ${routine.exercises.length} rudiments · Lvl ${routineLevel(routine)}`}
+        detail={`${minutes} min · ${exercises} · Lvl ${routineLevel(routine)}`}
       />
     </NumberedRow>
   );
@@ -51,6 +59,7 @@ function RoutineRow({
 export default function RoutinesScreen() {
   const router = useRouter();
   const savedRoutines = useSavedRoutines();
+  const practiceRoutine = usePracticeRoutine();
   const create = () => router.push("/routine-editor");
 
   return (
@@ -87,6 +96,7 @@ export default function RoutinesScreen() {
           <RoutineRow
             key={routine.id}
             routine={routine}
+            isInUse={routine.id === practiceRoutine.id}
             position={index + 1}
             isLast={index === savedRoutines.length - 1}
             onPress={() =>

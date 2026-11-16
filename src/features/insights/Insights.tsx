@@ -153,7 +153,7 @@ export default function InsightsScreen() {
           <TechniqueBalance techniques={techniques} />
         ) : (
           <EmptyState>
-            Play a round in a routine to see how your practice is split.
+            Practise any rudiment to see how your time is split.
           </EmptyState>
         )}
       </View>

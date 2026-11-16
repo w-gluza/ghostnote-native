@@ -29,6 +29,7 @@ import { Button } from "@/components/Button/Button";
 import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 
 const MIN_PAD_SCALE = 0.6;
+const MAX_ROUND_MARKS = 5;
 
 export default function RudimentScreen() {
   const {
@@ -170,6 +171,7 @@ export default function RudimentScreen() {
             goal={roundGoal}
             unit="rounds"
             description={`${done} of ${roundGoal} rounds done`}
+            showMarks={roundGoal <= MAX_ROUND_MARKS}
           />
           {done > 0 ? (
             <Button
@@ -215,6 +217,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
     ...divider.top,
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-between",
     gap: spacing.md,

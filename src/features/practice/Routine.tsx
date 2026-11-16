@@ -25,6 +25,7 @@ import {
 } from "@/features/practice/domain/session";
 import {
   exerciseMinutes,
+  exercisesLabel,
   routineLevel,
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
@@ -141,14 +142,14 @@ export default function RoutineScreen() {
             tintColor={colors.text.secondary}
           />
           <AppText variant="bodySmall" tone="secondary">
-            {totalMinutes} min · {routine.exercises.length} rudiments · Lvl{" "}
-            {routineLevel(routine)}
+            {totalMinutes} min · {exercisesLabel(routine.exercises.length)} ·
+            Lvl {routineLevel(routine)}
           </AppText>
         </View>
 
         <SectionHeader
           title="YOUR SETLIST"
-          trailing={`${routine.exercises.length} exercises`}
+          trailing={exercisesLabel(routine.exercises.length)}
           style={styles.sectionHeader}
         />
 
