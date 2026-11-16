@@ -1,3 +1,4 @@
+import { NotificationFeedbackType, notificationAsync } from "expo-haptics";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -76,6 +77,9 @@ export default function RudimentScreen() {
   } = useRoundPractice({ rudiment, routineId: routine, exerciseId });
   const finishRound = () => {
     const outcome = completeRound();
+    if (outcome) {
+      notificationAsync(NotificationFeedbackType.Success).catch(() => {});
+    }
     if (outcome === "routine-complete" && activeRoutine) {
       router.replace({
         pathname: "/summary",
