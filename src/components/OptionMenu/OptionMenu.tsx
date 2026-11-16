@@ -1,8 +1,15 @@
 import { SymbolView } from "expo-symbols";
-import { useRef, useState, type ComponentRef, type ReactNode } from "react";
+import {
+  use,
+  useRef,
+  useState,
+  type ComponentRef,
+  type ReactNode,
+} from "react";
 import {
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -11,7 +18,13 @@ import {
   type ViewStyle,
 } from "react-native";
 
+import { SafeAreaInsetsContext } from "react-native-safe-area-context";
+
 import { AppText } from "@/components/AppText/AppText";
+import {
+  menuMaxHeight,
+  placeMenu,
+} from "@/components/OptionMenu/menu-placement";
 import { colors } from "@/theme/colors";
 import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 
@@ -33,9 +46,10 @@ type OptionMenuProps<Key extends string | number> = {
   children: ReactNode;
 };
 
-type Anchor = { top: number; left?: number; right?: number };
+type Rect = { x: number; y: number; width: number; height: number };
+type Size = { width: number; height: number };
 
-const MENU_GAP = 8;
+const NO_INSETS = { top: 0, bottom: 0 };
 
 export function OptionMenu<Key extends string | number>({
   name,
@@ -48,22 +62,26 @@ export function OptionMenu<Key extends string | number>({
   style,
   children,
 }: OptionMenuProps<Key>) {
-  const { width: windowWidth } = useWindowDimensions();
+  const window = useWindowDimensions();
+  const insets = use(SafeAreaInsetsContext) ?? NO_INSETS;
   const trigger = useRef<ComponentRef<typeof View>>(null);
-  const [anchor, setAnchor] = useState<Anchor | null>(null);
+  const [anchor, setAnchor] = useState<Rect | null>(null);
+  const [menuSize, setMenuSize] = useState<Size | null>(null);
   const current = options.find((option) => option.key === selected);
 
   const open = () => {
-    trigger.current?.measureInWindow((x, y, width, height) => {
-      const top = y + height + MENU_GAP;
-      setAnchor(
-        align === "end"
-          ? { top, right: windowWidth - (x + width) }
-          : { top, left: x },
-      );
-    });
+    trigger.current?.measureInWindow((x, y, width, height) =>
+      setAnchor({ x, y, width, height }),
+    );
   };
-  const close = () => setAnchor(null);
+  const close = () => {
+    setAnchor(null);
+    setMenuSize(null);
+  };
+  const position =
+    anchor && menuSize
+      ? placeMenu({ trigger: anchor, menu: menuSize, window, insets, align })
+      : styles.measuring;
 
   return (
     <>
@@ -98,12 +116,26 @@ export function OptionMenu<Key extends string | number>({
         onRequestClose={close}
       >
         <Pressable
+          accessibilityRole="button"
           accessibilityLabel={`Close ${name.toLowerCase()} menu`}
           onPress={close}
           style={StyleSheet.absoluteFill}
         />
         {anchor ? (
-          <View accessibilityRole="menu" style={[styles.menu, anchor]}>
+          <ScrollView
+            accessibilityRole="menu"
+            onAccessibilityEscape={close}
+            onLayout={(event) => {
+              const { width, height } = event.nativeEvent.layout;
+              setMenuSize({ width, height });
+            }}
+            alwaysBounceVertical={false}
+            style={[
+              styles.menu,
+              { maxHeight: menuMaxHeight(window, insets) },
+              position,
+            ]}
+          >
             {options.map((option, index) => {
               const isSelected = option.key === selected;
               return (
@@ -138,7 +170,7 @@ export function OptionMenu<Key extends string | number>({
                 </Pressable>
               );
             })}
-          </View>
+          </ScrollView>
         ) : null}
       </Modal>
     </>
@@ -165,6 +197,11 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.surface,
     overflow: "hidden",
+  },
+  measuring: {
+    top: 0,
+    left: 0,
+    opacity: 0,
   },
   item: {
     minHeight: 48,
