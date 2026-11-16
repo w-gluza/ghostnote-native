@@ -6,23 +6,11 @@ import { IconButton } from "@/components/IconButton/IconButton";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/layout";
 
-type ScreenHeaderProps = {
-  onBack?: () => void;
-};
-
-export function ScreenHeader({ onBack }: ScreenHeaderProps) {
+export function ScreenHeader() {
   const router = useRouter();
 
   return (
     <View style={styles.header}>
-      {onBack ? (
-        <IconButton
-          icon="chevron.left"
-          accessibilityLabel="Back"
-          style={styles.back}
-          onPress={onBack}
-        />
-      ) : null}
       <AppText variant="headline">ghostnote</AppText>
       <View style={styles.rule} />
       <IconButton
@@ -43,10 +31,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.lg,
-  },
-  back: {
-    marginRight: -24,
-    alignItems: "flex-start",
   },
   profile: {
     marginLeft: -20,

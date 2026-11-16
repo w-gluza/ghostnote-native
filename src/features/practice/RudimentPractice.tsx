@@ -1,6 +1,11 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,7 +19,7 @@ import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker
 import { STAGE_HEIGHT } from "@/features/rudiments/components/PadAnimation/PadAnimation";
 import { RoundClock } from "@/features/practice/components/RoundClock/RoundClock";
 import { RudimentPlayer } from "@/features/rudiments/components/RudimentPlayer/RudimentPlayer";
-import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
+import { IconButton } from "@/components/IconButton/IconButton";
 import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
 import { fraction, multiply } from "@/features/rudiments/domain/fraction";
 import { findRudiment } from "@/features/rudiments/domain/library";
@@ -28,10 +33,13 @@ import {
 } from "@/features/rudiments/domain/timeline";
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { Button } from "@/components/Button/Button";
+import { colors } from "@/theme/colors";
 import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
+import { nativeHeader } from "@/theme/navigation";
 
 const MIN_PAD_SCALE = 0.6;
 const MAX_ROUND_MARKS = 5;
+const HEADER_BUTTONS_WIDTH = 152;
 
 export default function RudimentScreen() {
   const {
@@ -45,6 +53,7 @@ export default function RudimentScreen() {
   }>();
   const rudiment = findRudiment(id);
   const router = useRouter();
+  const { width: windowWidth } = useWindowDimensions();
   const sound = useStrokeSound();
   const {
     routine: activeRoutine,
@@ -106,10 +115,42 @@ export default function RudimentScreen() {
 
   return (
     <SafeAreaView
-      edges={["top", "bottom"]}
+      edges={["bottom"]}
       style={[layoutStyles.screen, styles.screen]}
     >
-      <ScreenHeader onBack={router.back} />
+      <Stack.Screen
+        options={{
+          ...nativeHeader,
+          headerBackTitle: activeRoutine?.name ?? "Rudiments",
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: () => (
+            <View
+              style={[
+                styles.wordmark,
+                { width: windowWidth - HEADER_BUTTONS_WIDTH },
+              ]}
+            >
+              <AppText variant="headline">ghostnote</AppText>
+              <View style={styles.rule} />
+            </View>
+          ),
+          unstable_headerRightItems: () => [
+            {
+              type: "custom",
+              hidesSharedBackground: true,
+              element: (
+                <IconButton
+                  icon="person"
+                  accessibilityLabel="Profile"
+                  size={24}
+                  weight="light"
+                  onPress={() => router.push("/profile")}
+                />
+              ),
+            },
+          ],
+        }}
+      />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -209,12 +250,20 @@ export default function RudimentScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    paddingTop: spacing.sm,
     paddingHorizontal: layout.screenInset,
   },
   scroll: {
     flex: 1,
-    marginTop: spacing.lg,
+  },
+  wordmark: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.lg,
+  },
+  rule: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.border,
   },
   content: {
     paddingBottom: spacing.sm,
