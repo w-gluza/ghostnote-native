@@ -2,6 +2,12 @@
 
 An iOS app for learning and practising drum rudiments, such as rolls and paradiddles. You pick a routine, play each rudiment against a click, and the app keeps a record of your practice.
 
+<p>
+  <img src=".github/readme/app-store-search.png" width="40%" alt="Ghostnote in App Store search results, with previews of the Practice, rudiment player and Metronome screens">
+  &nbsp;&nbsp;&nbsp;
+  <img src=".github/readme/app-store-page.png" width="40%" alt="The Ghostnote App Store page, with the ghost icon and the tagline Drum rudiment practice">
+</p>
+
 ## What it does
 
 - **Practice** - play a routine of rudiments, round by round, with a tempo and a duration for each round.
