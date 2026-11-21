@@ -30,8 +30,10 @@ const strokeSamples: Record<StrokeVoice, Samples> = {
 
 const GAIN: Record<HitLevel, number> = { full: 1, soft: 0.4, grace: 0.22 };
 
-export const SOUND_FAILED_MESSAGE =
+const SOUND_FAILED_MESSAGE =
   "The click sound could not be loaded, so playback is silent. Close and reopen the app to try again.";
+const SOUND_SWITCH_FAILED_MESSAGE =
+  "The new sound could not be loaded, so the previous one is still playing. Choose it again to retry.";
 
 type Pending = { source: AudioBufferSourceNode; timeMs: number };
 
@@ -52,7 +54,7 @@ type Buffers = Record<keyof Samples, AudioBuffer>;
 type Engine = {
   context: AudioContext;
   sound: ClickSound;
-  use: (buffers: Buffers | undefined) => void;
+  use: (buffers: Buffers) => void;
 };
 
 function createEngine(): Engine {
@@ -140,7 +142,6 @@ function useSampler(samples: Samples) {
       })
       .catch(() => {
         if (isActive) {
-          current.use(undefined);
           setFailed(samples);
         }
       });
@@ -150,7 +151,9 @@ function useSampler(samples: Samples) {
     };
   }, [samples]);
 
-  return { sound, hasFailed: failed === samples };
+  const hasFailed = failed === samples;
+  const working = sound ? SOUND_SWITCH_FAILED_MESSAGE : SOUND_FAILED_MESSAGE;
+  return { sound, problem: hasFailed ? working : undefined };
 }
 
 export function useClickSound() {
@@ -159,7 +162,7 @@ export function useClickSound() {
 
 export function useStrokeSound() {
   const voice = useStrokeVoice();
-  const { sound: click, hasFailed } = useSampler(strokeSamples[voice]);
+  const { sound: click, problem } = useSampler(strokeSamples[voice]);
 
   const sound = useMemo<StrokeSound | undefined>(
     () =>
@@ -176,5 +179,5 @@ export function useStrokeSound() {
     [click],
   );
 
-  return { sound, hasFailed };
+  return { sound, problem };
 }

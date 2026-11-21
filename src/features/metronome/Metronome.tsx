@@ -46,10 +46,7 @@ import {
 } from "@/features/metronome/stores/metronome-settings";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
-import {
-  SOUND_FAILED_MESSAGE,
-  useClickSound,
-} from "@/features/rudiments/hooks/use-stroke-sound";
+import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 const DIAL_GAP = 4;
@@ -68,7 +65,7 @@ export default function MetronomeScreen() {
     MAX_DIAL_SIZE,
   );
   const settings = useMetronomeSettings();
-  const { sound, hasFailed: hasSoundFailed } = useClickSound();
+  const { sound, problem: soundProblem } = useClickSound();
   const { meter, subdivision, beats } = settings;
   const loop = useMemo(
     () => buildClicks({ meter, subdivision, beats }),
@@ -166,9 +163,9 @@ export default function MetronomeScreen() {
             </AppText>
           </OptionMenu>
         </RhythmBar>
-        {hasSoundFailed ? (
+        {soundProblem ? (
           <InlineMessage style={styles.soundFailed}>
-            {SOUND_FAILED_MESSAGE}
+            {soundProblem}
           </InlineMessage>
         ) : null}
 

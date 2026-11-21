@@ -34,10 +34,7 @@ import {
   evenStep,
   scaleToStep,
 } from "@/features/rudiments/domain/timeline";
-import {
-  SOUND_FAILED_MESSAGE,
-  useStrokeSound,
-} from "@/features/rudiments/hooks/use-stroke-sound";
+import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { Button } from "@/components/Button/Button";
 import { colors } from "@/theme/colors";
 import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
@@ -60,7 +57,7 @@ export default function RudimentScreen() {
   const rudiment = findRudiment(id);
   const router = useRouter();
   const { width: windowWidth } = useWindowDimensions();
-  const { sound, hasFailed: hasSoundFailed } = useStrokeSound();
+  const { sound, problem: soundProblem } = useStrokeSound();
   const {
     routine: activeRoutine,
     exercise,
@@ -195,9 +192,9 @@ export default function RudimentScreen() {
                 />
               ) : null}
             </RhythmBar>
-            {hasSoundFailed ? (
+            {soundProblem ? (
               <InlineMessage style={styles.soundFailed}>
-                {SOUND_FAILED_MESSAGE}
+                {soundProblem}
               </InlineMessage>
             ) : null}
             <RudimentPlayer
