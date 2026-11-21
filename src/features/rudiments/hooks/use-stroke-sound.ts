@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AudioContext,
   AudioManager,
+  type AudioBuffer,
   type AudioBufferSourceNode,
 } from "react-native-audio-api";
 
@@ -46,76 +47,110 @@ export type StrokeSound = {
   cancel: () => void;
 };
 
-function useSampler(samples: Samples) {
-  const [loaded, setLoaded] = useState<{
-    samples: Samples;
-    sound?: ClickSound;
-  }>();
+type Buffers = Record<keyof Samples, AudioBuffer>;
 
-  useEffect(() => {
-    let isActive = true;
-    let pending: Pending[] = [];
+type Engine = {
+  context: AudioContext;
+  sound: ClickSound;
+  use: (buffers: Buffers | undefined) => void;
+};
 
-    AudioManager.setSystemOptions({
-      ios: { category: "playback", options: ["mixWithOthers"] },
-    });
-    const context = new AudioContext();
-    const quiet = (level: "soft" | "grace") => {
-      const node = context.createGain();
-      node.gain.value = GAIN[level];
-      node.connect(context.destination);
-      return node;
-    };
-    const output = {
-      full: context.destination,
-      soft: quiet("soft"),
-      grace: quiet("grace"),
-    };
-    const now = () => context.currentTime * 1000;
+function createEngine(): Engine {
+  let pending: Pending[] = [];
+  let buffers: Buffers | undefined;
 
-    Promise.all([
-      context.decodeAudioData(samples.tap),
-      context.decodeAudioData(samples.accent),
-      context.resume(),
-    ])
-      .then(([tap, accent]) => {
-        if (!isActive) {
+  AudioManager.setSystemOptions({
+    ios: { category: "playback", options: ["mixWithOthers"] },
+  });
+  const context = new AudioContext();
+  const quiet = (level: "soft" | "grace") => {
+    const node = context.createGain();
+    node.gain.value = GAIN[level];
+    node.connect(context.destination);
+    return node;
+  };
+  const output = {
+    full: context.destination,
+    soft: quiet("soft"),
+    grace: quiet("grace"),
+  };
+  const now = () => context.currentTime * 1000;
+
+  return {
+    context,
+    use: (next) => {
+      buffers = next;
+    },
+    sound: {
+      now,
+      play: (sample, level, timeMs) => {
+        if (!buffers || context.state === "closed") {
           return;
         }
-        const sound: ClickSound = {
-          now,
-          play: (sample, level, timeMs) => {
-            const source = context.createBufferSource();
-            source.buffer = sample === "accent" ? accent : tap;
-            source.connect(output[level]);
-            source.start(Math.max(timeMs, now()) / 1000);
-            pending = pending.filter((item) => item.timeMs > now());
-            pending.push({ source, timeMs });
-          },
-          cancel: () => {
-            const current = now();
-            pending
-              .filter((item) => item.timeMs > current)
-              .forEach((item) => item.source.stop());
-            pending = [];
-          },
-        };
-        setLoaded({ samples, sound });
+        const source = context.createBufferSource();
+        source.buffer = buffers[sample];
+        source.connect(output[level]);
+        source.start(Math.max(timeMs, now()) / 1000);
+        pending = pending.filter((item) => item.timeMs > now());
+        pending.push({ source, timeMs });
+      },
+      cancel: () => {
+        const current = now();
+        pending
+          .filter((item) => item.timeMs > current)
+          .forEach((item) => item.source.stop());
+        pending = [];
+      },
+    },
+  };
+}
+
+function useSampler(samples: Samples) {
+  const engine = useRef<Engine>(undefined);
+  const [sound, setSound] = useState<ClickSound>();
+  const [failed, setFailed] = useState<Samples>();
+
+  useEffect(() => {
+    const created = createEngine();
+    engine.current = created;
+    return () => {
+      engine.current = undefined;
+      created.context.close().catch(() => {});
+    };
+  }, []);
+
+  useEffect(() => {
+    const current = engine.current;
+    if (!current) {
+      return;
+    }
+    let isActive = true;
+
+    Promise.all([
+      current.context.decodeAudioData(samples.tap),
+      current.context.decodeAudioData(samples.accent),
+      current.context.resume(),
+    ])
+      .then(([tap, accent]) => {
+        if (isActive) {
+          current.use({ tap, accent });
+          setSound(current.sound);
+          setFailed(undefined);
+        }
       })
       .catch(() => {
         if (isActive) {
-          setLoaded({ samples });
+          current.use(undefined);
+          setFailed(samples);
         }
       });
 
     return () => {
       isActive = false;
-      context.close().catch(() => {});
     };
   }, [samples]);
 
-  const current = loaded?.samples === samples ? loaded : undefined;
-  return { sound: current?.sound, hasFailed: current ? !current.sound : false };
+  return { sound, hasFailed: failed === samples };
 }
 
 export function useClickSound() {
