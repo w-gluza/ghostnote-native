@@ -23,7 +23,6 @@ export type KitPattern = {
 export type KitStage = {
   id: string;
   title: string;
-  instruction: string;
   notes: MidiNote[];
 };
 

@@ -1,71 +1,68 @@
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
-import {
-  limbName,
-  limbOf,
-  notesOf,
-} from "@/features/kit-coordination/domain/exercises";
-import {
-  midiNoteName,
-  type MidiNote,
-} from "@/features/kit-coordination/domain/midi-map";
+import { InstrumentIcon } from "@/features/kit-coordination/components/RhythmGrid/InstrumentIcon";
+import { limbName } from "@/features/kit-coordination/domain/exercises";
+import type { MidiNote } from "@/features/kit-coordination/domain/midi-map";
 import {
   countLabels,
-  strikesOf,
+  rowsOf,
+  type KitCell,
+  type KitRow,
 } from "@/features/kit-coordination/domain/timeline";
 import type { KitPattern } from "@/features/kit-coordination/domain/types";
 import { limbColor } from "@/features/kit-coordination/instrument-colors";
 import { colors } from "@/theme/colors";
-import { layout, spacing } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 
 type RhythmGridProps = {
   pattern: KitPattern;
-  active: MidiNote[];
+  enabled: MidiNote[];
   playingColumn: number | null;
+  onToggle: (row: KitRow) => void;
 };
 
-const LABEL_WIDTH = 92;
-const CELL_HEIGHT = 36;
-const STRIKE_SIZE = 14;
+const LABEL_WIDTH = 96;
+const ROW_HEIGHT = 52;
+const COUNT_HEIGHT = 28;
+const STRIKE_SIZE = 16;
 const REST_SIZE = 4;
+const PLAYHEAD_RADIUS = 8;
+
+function Marker({ cell, color }: { cell: KitCell; color: string }) {
+  if (cell === "rest") {
+    return <View style={styles.rest} />;
+  }
+  return (
+    <View
+      style={[
+        styles.strike,
+        cell === "open"
+          ? { borderColor: color }
+          : { borderColor: color, backgroundColor: color },
+      ]}
+    />
+  );
+}
 
 export function RhythmGrid({
   pattern,
-  active,
+  enabled,
   playingColumn,
+  onToggle,
 }: RhythmGridProps) {
   const { fontScale } = useWindowDimensions();
   const labelColumn = { width: LABEL_WIDTH * Math.min(fontScale, 1.4) };
   const counts = countLabels(pattern);
-  const tracks = notesOf(pattern).map((note) => {
-    const strikes = strikesOf(pattern, note);
-    const limb = limbOf(pattern, note);
-    return {
-      note,
-      strikes,
-      limb: limb ? limbName(limb) : "",
-      color: limb ? limbColor(limb) : colors.text.secondary,
-      isActive: active.includes(note),
-      spoken: counts.filter((_, column) => strikes[column]).join(", "),
-    };
-  });
-  const description = tracks
-    .map((track) =>
-      track.isActive
-        ? `${midiNoteName(track.note)}, ${track.limb.toLowerCase()}, on ${track.spoken}`
-        : `${midiNoteName(track.note)}, not in this stage`,
-    )
-    .join(". ");
+  const rows = rowsOf(pattern);
 
   return (
-    <View
-      accessible
-      accessibilityRole="image"
-      accessibilityLabel={`Rhythm, counted ${counts.join(" ")}. ${description}`}
-      style={styles.grid}
-    >
-      <View style={styles.row}>
+    <View>
+      <View
+        style={styles.row}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
         <View style={labelColumn} />
         {counts.map((count, column) => (
           <View
@@ -88,104 +85,106 @@ export function RhythmGrid({
         ))}
       </View>
 
-      {tracks.map((track, position) => (
-        <View key={track.note} style={styles.row}>
-          <View
-            style={[
-              styles.trackLabel,
-              labelColumn,
-              !track.isActive && styles.inactive,
-            ]}
-          >
-            <AppText variant="label" numberOfLines={1}>
-              {midiNoteName(track.note)}
-            </AppText>
-            <AppText variant="caption" tone="secondary" numberOfLines={1}>
-              {track.limb}
-            </AppText>
-          </View>
-          {track.strikes.map((isStrike, column) => (
-            <View
-              key={column}
-              style={[
-                styles.cell,
-                column === playingColumn && styles.playing,
-                column === playingColumn &&
-                  position === tracks.length - 1 &&
-                  styles.playingBottom,
+      {rows.map((row, position) => {
+        const isOn = row.notes.every((note) => enabled.includes(note));
+        const color = isOn ? limbColor(row.limb) : colors.border;
+        const spoken = counts.filter(
+          (_, column) => row.cells[column] !== "rest",
+        );
+
+        return (
+          <View key={row.id} style={styles.row}>
+            <Pressable
+              accessibilityRole="switch"
+              accessibilityState={{ checked: isOn }}
+              accessibilityLabel={`${row.name}, ${limbName(row.limb).toLowerCase()}, plays on ${spoken.join(", ")}`}
+              onPress={() => onToggle(row)}
+              style={({ pressed }) => [
+                styles.label,
+                labelColumn,
+                pressed && layoutStyles.pressed,
               ]}
             >
+              <InstrumentIcon note={row.id} color={color} />
+              <AppText
+                variant="label"
+                tone={isOn ? "primary" : "secondary"}
+                numberOfLines={1}
+                style={[styles.name, !isOn && styles.muted]}
+              >
+                {row.name}
+              </AppText>
+            </Pressable>
+            {row.cells.map((cell, column) => (
               <View
-                style={
-                  isStrike
-                    ? [
-                        styles.strike,
-                        {
-                          backgroundColor: track.isActive
-                            ? track.color
-                            : colors.border,
-                        },
-                      ]
-                    : [styles.rest, !track.isActive && styles.restInactive]
-                }
-              />
-            </View>
-          ))}
-        </View>
-      ))}
+                key={column}
+                accessibilityElementsHidden
+                importantForAccessibility="no"
+                style={[
+                  styles.cell,
+                  column === playingColumn && styles.playing,
+                  column === playingColumn &&
+                    position === rows.length - 1 &&
+                    styles.playingBottom,
+                ]}
+              >
+                <Marker cell={cell} color={color} />
+              </View>
+            ))}
+          </View>
+        );
+      })}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  grid: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: layout.radius.panel,
-    backgroundColor: colors.surface,
-  },
   row: {
     flexDirection: "row",
     alignItems: "stretch",
   },
-  inactive: {
-    opacity: 0.4,
+  label: {
+    minHeight: ROW_HEIGHT,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
   },
-  trackLabel: {
-    justifyContent: "center",
+  name: {
+    flexShrink: 1,
+  },
+  muted: {
+    opacity: 0.6,
   },
   cell: {
     flex: 1,
-    minHeight: CELL_HEIGHT,
+    minHeight: ROW_HEIGHT,
     alignItems: "center",
     justifyContent: "center",
   },
   countCell: {
-    minHeight: 24,
+    minHeight: COUNT_HEIGHT,
   },
   playing: {
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surface,
   },
   playingTop: {
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    borderTopLeftRadius: PLAYHEAD_RADIUS,
+    borderTopRightRadius: PLAYHEAD_RADIUS,
   },
   playingBottom: {
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: PLAYHEAD_RADIUS,
+    borderBottomRightRadius: PLAYHEAD_RADIUS,
   },
   strike: {
     width: STRIKE_SIZE,
     height: STRIKE_SIZE,
     borderRadius: STRIKE_SIZE / 2,
+    borderWidth: 2,
   },
   rest: {
     width: REST_SIZE,
     height: REST_SIZE,
     borderRadius: REST_SIZE / 2,
-    backgroundColor: colors.disabled,
-  },
-  restInactive: {
     backgroundColor: colors.border,
   },
 });

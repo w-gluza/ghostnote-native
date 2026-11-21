@@ -77,22 +77,16 @@ export const kitExercises: KitExercise[] = [
       {
         id: "hihat",
         title: "Hi-hat",
-        instruction:
-          "Play steady eighth notes on the closed hi-hat. Count 1 & 2 & 3 & 4 &.",
         notes: [HIHAT],
       },
       {
         id: "snare",
         title: "Hi-hat + Snare",
-        instruction:
-          "Add the snare on beats 2 and 4. Both hands land together there.",
         notes: [HIHAT, SNARE],
       },
       {
         id: "kick",
         title: "Full beat",
-        instruction:
-          "Add the kick on 1, on 3 and on the & of 3. The hi-hat should not get louder when the kick plays.",
         notes: [HIHAT, SNARE, KICK],
       },
     ],
@@ -113,28 +107,21 @@ export const kitExercises: KitExercise[] = [
       {
         id: "ride",
         title: "Ride",
-        instruction: "Play steady eighth notes on the ride cymbal.",
         notes: [RIDE],
       },
       {
         id: "hihat-pedal",
         title: "Ride + Hi-hat pedal",
-        instruction:
-          "Close the hi-hat with your foot on beats 2 and 4. Keep the heel movement small and even.",
         notes: [RIDE, HIHAT_PEDAL],
       },
       {
         id: "kick",
         title: "Ride + both feet",
-        instruction:
-          "Add the kick on beats 1 and 3. Your feet now take turns: right, left, right, left.",
         notes: [RIDE, HIHAT_PEDAL, KICK],
       },
       {
         id: "snare",
         title: "All four parts",
-        instruction:
-          "Add the snare on beats 2 and 4, together with the hi-hat pedal.",
         notes: [RIDE, HIHAT_PEDAL, KICK, SNARE],
       },
     ],
@@ -155,29 +142,21 @@ export const kitExercises: KitExercise[] = [
       {
         id: "ride",
         title: "Ride",
-        instruction:
-          "Play steady eighth notes on the ride cymbal. Count 1 & 2 & 3 & 4 & and keep every note even.",
         notes: [RIDE],
       },
       {
         id: "kick",
         title: "Ride + Kick",
-        instruction:
-          "Add the kick on beats 1 and 3. Keep the ride moving without changing its sound.",
         notes: [RIDE, KICK],
       },
       {
         id: "snare",
         title: "Ride + Kick + Snare",
-        instruction:
-          "Add the snare on beats 2 and 4. The kick and snare now take turns under the ride.",
         notes: [RIDE, KICK, SNARE],
       },
       {
         id: "hihat-pedal",
         title: "All four parts",
-        instruction:
-          "Add the hi-hat pedal. Keep the other three parts going while closing the hi-hat on every offbeat.",
         notes: [RIDE, KICK, SNARE, HIHAT_PEDAL],
       },
     ],
@@ -199,28 +178,21 @@ export const kitExercises: KitExercise[] = [
       {
         id: "hihat",
         title: "Hi-hat",
-        instruction:
-          "Play eighth notes on the hi-hat, leaving a gap on the & of 2 and the & of 4.",
-        notes: [HIHAT],
+        notes: [HIHAT, OPEN_HIHAT],
       },
       {
-        id: "open",
+        id: "pedal",
         title: "Open and close",
-        instruction:
-          "Fill the gaps with an open hi-hat: lift your left foot as you hit, then close it on the next beat.",
         notes: [HIHAT, OPEN_HIHAT, HIHAT_PEDAL],
       },
       {
         id: "kick",
         title: "+ Kick",
-        instruction:
-          "Add the kick on beats 1 and 3. Both feet go down together there.",
         notes: [HIHAT, OPEN_HIHAT, HIHAT_PEDAL, KICK],
       },
       {
         id: "snare",
         title: "Full groove",
-        instruction: "Add the snare on beats 2 and 4.",
         notes: [HIHAT, OPEN_HIHAT, HIHAT_PEDAL, KICK, SNARE],
       },
     ],
@@ -241,22 +213,16 @@ export const kitExercises: KitExercise[] = [
       {
         id: "feet",
         title: "Feet",
-        instruction:
-          "Walk your feet: kick on beats 1 and 3, hi-hat pedal on beats 2 and 4.",
         notes: [KICK, HIHAT_PEDAL],
       },
       {
         id: "floor-tom",
         title: "Feet + Floor tom",
-        instruction:
-          "Add the floor tom right after each kick. No two limbs play at the same time.",
         notes: [KICK, HIHAT_PEDAL, FLOOR_TOM],
       },
       {
         id: "rack-tom",
         title: "All four parts",
-        instruction:
-          "Add the high tom right after each hi-hat pedal. One limb per eighth note: foot, hand, foot, hand.",
         notes: [KICK, HIHAT_PEDAL, FLOOR_TOM, RACK_TOM],
       },
     ],
@@ -277,28 +243,21 @@ export const kitExercises: KitExercise[] = [
       {
         id: "kick",
         title: "Kick",
-        instruction:
-          "Play the kick on each beat and on the sixteenth just before it. Count 1 e & a 2 e & a.",
         notes: [KICK],
       },
       {
         id: "hihat-pedal",
         title: "Both feet",
-        instruction:
-          "Add the hi-hat pedal on every &. This foot pattern is the base of a samba.",
         notes: [KICK, HIHAT_PEDAL],
       },
       {
         id: "ride",
         title: "Feet + Ride",
-        instruction:
-          "Add eighth notes on the ride. Keep your feet steady and relaxed under it.",
         notes: [KICK, HIHAT_PEDAL, RIDE],
       },
       {
         id: "snare",
         title: "All four parts",
-        instruction: "Add the snare on beat 2.",
         notes: [KICK, HIHAT_PEDAL, RIDE, SNARE],
       },
     ],
@@ -319,28 +278,21 @@ export const kitExercises: KitExercise[] = [
       {
         id: "ride",
         title: "Ride",
-        instruction:
-          "Play the swing pattern on the ride: beat 1, beat 2 and the last triplet of 2, then the same on 3 and 4.",
         notes: [RIDE],
       },
       {
         id: "hihat-pedal",
         title: "Ride + Hi-hat pedal",
-        instruction: "Close the hi-hat with your foot on beats 2 and 4.",
         notes: [RIDE, HIHAT_PEDAL],
       },
       {
         id: "kick",
         title: "+ Kick",
-        instruction:
-          "Add a very soft kick on all four beats. It should be felt more than heard.",
         notes: [RIDE, HIHAT_PEDAL, KICK],
       },
       {
         id: "snare",
         title: "All four parts",
-        instruction:
-          "Add a soft snare on the last triplet of 2 and 4, together with the ride.",
         notes: [RIDE, HIHAT_PEDAL, KICK, SNARE],
       },
     ],
@@ -367,12 +319,16 @@ export function notesLabel(notes: MidiNote[]) {
   return notes.map(midiNoteName).join(" · ");
 }
 
-export function stageChips(exercise: KitExercise) {
-  return exercise.stages.map((stage, index) => {
-    const before = exercise.stages[index - 1]?.notes ?? [];
-    const added = stage.notes.filter((note) => !before.includes(note));
-    return `${index === 0 ? "" : "+ "}${notesLabel(added)}`;
-  });
+export function partsLabel(exercise: KitExercise, enabled: MidiNote[]) {
+  const playing = notesOf(exercise.pattern).filter((note) =>
+    enabled.includes(note),
+  );
+  const stage = exercise.stages.find(
+    (candidate) =>
+      candidate.notes.length === playing.length &&
+      candidate.notes.every((note) => playing.includes(note)),
+  );
+  return stage?.title ?? "Your own mix";
 }
 
 export function sessionReference(exercise: KitExercise): PatternReference {

@@ -15,15 +15,16 @@ import {
   limbOf,
   notesLabel,
   notesOf,
+  partsLabel,
   sessionReference,
-  stageChips,
 } from "./exercises.ts";
 import { midiNoteName, velocityLevel, type MidiNote } from "./midi-map.ts";
 import {
   buildKitTimeline,
   columnCount,
   countLabels,
-  strikesOf,
+  rowsOf,
+  toggled,
 } from "./timeline.ts";
 
 const RIDE = 51;
@@ -83,17 +84,25 @@ test("instruments are General MIDI drum notes, and the hi-hat part is the pedal,
 });
 
 test("the grid shows a strike or a rest for every eighth of each instrument", () => {
-  assert.deepEqual(strikesOf(pattern, KICK), [
-    true,
-    false,
-    false,
-    false,
-    true,
-    false,
-    false,
-    false,
+  const rows = rowsOf(pattern);
+  assert.deepEqual(
+    rows.map((row) => row.name),
+    ["Ride", "Snare", "Kick", "Pedal"],
+  );
+  assert.deepEqual(rows.find((row) => row.id === KICK)?.cells, [
+    "strike",
+    "rest",
+    "rest",
+    "rest",
+    "strike",
+    "rest",
+    "rest",
+    "rest",
   ]);
-  assert.equal(strikesOf(pattern, RIDE).every(Boolean), true);
+  assert.equal(
+    rows[0]?.cells.every((cell) => cell === "strike"),
+    true,
+  );
 });
 
 test("each instrument is played by one limb, kept apart from the instrument itself", () => {
@@ -160,15 +169,6 @@ test("the four stages add one instrument at a time over the same pattern", () =>
       ).length,
   );
   assert.deepEqual(counts, [8, 10, 12, 16]);
-});
-
-test("the stage buttons name what each stage adds", () => {
-  assert.deepEqual(stageChips(fourWay), [
-    "Ride",
-    "+ Kick",
-    "+ Snare",
-    "+ Hi-hat pedal",
-  ]);
 });
 
 test("a stage leaves out the instruments it has not introduced yet", () => {
@@ -263,8 +263,8 @@ for (const exercise of kitExercises) {
       [...exercise.stages.at(-1)!.notes].sort(),
       [...notesOf(exercise.pattern)].sort(),
     );
-    const chips = stageChips(exercise);
-    assert.equal(new Set(chips).size, chips.length);
+    const titles = exercise.stages.map((stage) => stage.title);
+    assert.equal(new Set(titles).size, titles.length);
   });
 }
 
@@ -280,4 +280,63 @@ test("bars in sixteenths and triplets are counted the way drummers say them", ()
     "a",
   ]);
   assert.equal(columnCount(findKitExercise("swing-time")!.pattern), 12);
+});
+
+const openGroove = findKitExercise("open-hihat-groove")!;
+
+test("open and closed hi-hat share one row but stay separate notes", () => {
+  const rows = rowsOf(openGroove.pattern);
+  assert.deepEqual(
+    rows.map((row) => row.name),
+    ["Hi-hat", "Snare", "Kick", "Pedal"],
+  );
+  const hihat = rows[0]!;
+  assert.deepEqual(hihat.notes, [42, 46]);
+  assert.deepEqual(hihat.cells, [
+    "strike",
+    "strike",
+    "strike",
+    "open",
+    "strike",
+    "strike",
+    "strike",
+    "open",
+  ]);
+  assert.equal(
+    openGroove.pattern.events.filter((event) => event.note === 46).length,
+    2,
+  );
+});
+
+test("turning a row off silences its notes and leaves the pattern as written", () => {
+  const rows = rowsOf(openGroove.pattern);
+  const everything = notesOf(openGroove.pattern);
+  const before = structuredClone(openGroove.pattern);
+
+  const withoutHihat = toggled(everything, rows[0]!);
+  assert.deepEqual([...withoutHihat].sort(), [36, 38, 44]);
+  assert.deepEqual(
+    [...toggled(withoutHihat, rows[0]!)].sort(),
+    [...everything].sort(),
+  );
+  assert.deepEqual(toggled([], rows[2]!), [36]);
+  assert.deepEqual(openGroove.pattern, before);
+
+  const audible = buildKitTimeline(openGroove.pattern, everything)
+    .strokes.flatMap((step) => step.events)
+    .filter((event) => withoutHihat.includes(event.note));
+  assert.equal(
+    audible.some((event) => event.note === 42 || event.note === 46),
+    false,
+  );
+  assert.equal(audible.length, 6);
+});
+
+test("the label names a known combination, or says it is the drummer's own", () => {
+  assert.equal(partsLabel(fourWay, [51]), "Ride");
+  assert.equal(partsLabel(fourWay, [36, 51]), "Ride + Kick");
+  assert.equal(partsLabel(fourWay, all), "All four parts");
+  assert.equal(partsLabel(fourWay, [38]), "Your own mix");
+  assert.equal(partsLabel(fourWay, []), "Your own mix");
+  assert.equal(partsLabel(openGroove, [42, 46]), "Hi-hat");
 });

@@ -43,12 +43,11 @@ export default function KitCoordinationScreen() {
 
         {kitExercises.map((exercise, index) => {
           const instruments = notesLabel(notesOf(exercise.pattern));
-          const stages = `${exercise.stages.length} stages`;
           return (
             <NumberedRow
               key={exercise.id}
               position={index + 1}
-              accessibilityLabel={`${exercise.name}, level ${exercise.level}, ${stages}, ${instruments}`}
+              accessibilityLabel={`${exercise.name}, level ${exercise.level}, ${instruments}`}
               isLast={index === kitExercises.length - 1}
               onPress={() =>
                 router.push({
@@ -58,7 +57,7 @@ export default function KitCoordinationScreen() {
               }
             >
               <RowText
-                label={`LVL ${exercise.level} · ${stages.toUpperCase()}`}
+                label={`LVL ${exercise.level}`}
                 title={exercise.name}
                 detail={instruments}
               />

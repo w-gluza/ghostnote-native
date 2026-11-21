@@ -14,10 +14,13 @@ import {
   findKitExercise,
   notesOf,
   sessionReference,
-  stageChips,
+  partsLabel,
 } from "@/features/kit-coordination/domain/exercises";
 import { velocityLevel } from "@/features/kit-coordination/domain/midi-map";
-import { buildKitTimeline } from "@/features/kit-coordination/domain/timeline";
+import {
+  buildKitTimeline,
+  toggled,
+} from "@/features/kit-coordination/domain/timeline";
 import type { KitExercise } from "@/features/kit-coordination/domain/types";
 import {
   hasKitSample,
@@ -27,7 +30,6 @@ import {
   finishFree,
   trackFree,
 } from "@/features/practice/stores/practice-session";
-import { FilterChips } from "@/features/rudiments/components/FilterChips/FilterChips";
 import { ONE } from "@/features/rudiments/domain/fraction";
 import { clampBpm, MAX_BPM, MIN_BPM } from "@/features/rudiments/domain/timing";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
@@ -38,10 +40,7 @@ const BPM_STEP = 5;
 
 function KitPlayer({ exercise }: { exercise: KitExercise }) {
   const { pattern, stages } = exercise;
-  const chips = stageChips(exercise);
-  const [stageIndex, setStageIndex] = useState(0);
-  const stage = stages[stageIndex] ?? stages[0];
-  const notes = useMemo(() => stage?.notes ?? [], [stage]);
+  const [enabled, setEnabled] = useState(stages[0]?.notes ?? []);
   const timeline = useMemo(
     () => buildKitTimeline(pattern, notesOf(pattern)),
     [pattern],
@@ -77,7 +76,7 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
     restartOnPlay: true,
     onSchedule: (index, timeMs) => {
       timeline.strokes[index]?.events.forEach((event) => {
-        if (notes.includes(event.note) && hasKitSample(event.note)) {
+        if (enabled.includes(event.note) && hasKitSample(event.note)) {
           sound?.play(`${event.note}`, velocityLevel(event.velocity), timeMs);
         }
       });
@@ -143,22 +142,11 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
       >
         <PageTitle>{exercise.name}</PageTitle>
 
-        <View style={styles.stages}>
-          <FilterChips
-            options={chips}
-            selected={chips[stageIndex] ?? ""}
-            onSelect={(chip) => setStageIndex(Math.max(0, chips.indexOf(chip)))}
-          />
-        </View>
-
         <AppText variant="overline" tone="secondary" style={styles.overline}>
-          STAGE {stageIndex + 1} OF {stages.length} · LVL {exercise.level}
+          LVL {exercise.level}
         </AppText>
-        <AppText variant="heading" accessibilityRole="header">
-          {stage?.title}
-        </AppText>
-        <AppText variant="body" tone="secondary" style={styles.instruction}>
-          {stage?.instruction}
+        <AppText variant="heading" style={styles.parts}>
+          {partsLabel(exercise, enabled)}
         </AppText>
 
         {soundProblem ? (
@@ -167,8 +155,9 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
 
         <RhythmGrid
           pattern={pattern}
-          active={notes}
+          enabled={enabled}
           playingColumn={playingColumn}
+          onToggle={(row) => setEnabled(toggled(enabled, row))}
         />
       </ScrollView>
       <View style={styles.controls}>
@@ -224,15 +213,11 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: spacing.xl,
   },
-  stages: {
-    marginTop: spacing.lg,
-  },
   overline: {
-    marginTop: spacing.xl,
+    marginTop: spacing.md,
     marginBottom: spacing.xs,
   },
-  instruction: {
-    marginTop: spacing.sm,
+  parts: {
     marginBottom: spacing.xl,
   },
   problem: {

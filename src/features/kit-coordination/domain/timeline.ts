@@ -1,6 +1,6 @@
 import { compare, toNumber } from "../../rudiments/domain/fraction.ts";
-import type { MidiNote } from "./midi-map";
-import type { KitEvent, KitPattern } from "./types";
+import { midiNoteName, type MidiNote } from "./midi-map.ts";
+import type { KitEvent, KitPattern, Limb } from "./types";
 
 export type KitStep = {
   beat: number;
@@ -60,13 +60,50 @@ export function countLabels(pattern: KitPattern) {
   });
 }
 
-export function strikesOf(pattern: KitPattern, note: MidiNote) {
-  const columns = new Set(
-    pattern.events
-      .filter((event) => event.note === note)
-      .map((event) => Math.round(toNumber(event.at) * pattern.stepsPerBeat)),
-  );
-  return Array.from({ length: columnCount(pattern) }, (_, column) =>
-    columns.has(column),
-  );
+export type KitCell = "strike" | "open" | "rest";
+
+export type KitRow = {
+  id: MidiNote;
+  name: string;
+  limb: Limb;
+  notes: MidiNote[];
+  cells: KitCell[];
+};
+
+const HIHAT = 42;
+const OPEN_HIHAT = 46;
+const PEDAL = 44;
+
+function rowOf(note: MidiNote): MidiNote {
+  return note === OPEN_HIHAT ? HIHAT : note;
+}
+
+export function rowsOf(pattern: KitPattern): KitRow[] {
+  const rows: KitRow[] = [];
+  for (const event of pattern.events) {
+    const id = rowOf(event.note);
+    let row = rows.find((candidate) => candidate.id === id);
+    if (!row) {
+      row = {
+        id,
+        name: id === PEDAL ? "Pedal" : midiNoteName(id),
+        limb: event.limb,
+        notes: [],
+        cells: Array.from({ length: columnCount(pattern) }, () => "rest"),
+      };
+      rows.push(row);
+    }
+    if (!row.notes.includes(event.note)) {
+      row.notes.push(event.note);
+    }
+    const column = Math.round(toNumber(event.at) * pattern.stepsPerBeat);
+    row.cells[column] = event.note === OPEN_HIHAT ? "open" : "strike";
+  }
+  return rows;
+}
+
+export function toggled(enabled: MidiNote[], row: KitRow) {
+  return row.notes.every((note) => enabled.includes(note))
+    ? enabled.filter((note) => !row.notes.includes(note))
+    : [...new Set([...enabled, ...row.notes])];
 }
