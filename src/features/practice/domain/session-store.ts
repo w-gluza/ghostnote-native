@@ -16,14 +16,24 @@ import {
   removeLastRound,
   startSession,
 } from "./session.ts";
-import { isActiveSession, isPracticeSession, isSegment } from "./stored.ts";
+import {
+  isActiveSession,
+  isOptionalExerciseKind,
+  isPracticeSession,
+  isSegment,
+} from "./stored.ts";
 import {
   isPatternReference,
   isFields,
   isName,
 } from "../../rudiments/domain/validate.ts";
 import { validItems } from "../../../storage/validators.ts";
-import type { ActiveSession, PracticeSegment, PracticeSession } from "./types";
+import type {
+  ActiveSession,
+  ExerciseKind,
+  PracticeSegment,
+  PracticeSession,
+} from "./types";
 import type { Fraction, PatternReference } from "../../rudiments/domain/types";
 import type {
   Routine,
@@ -50,6 +60,7 @@ type StoredTrackedRound = Omit<TrackedRound, "tracker"> & {
 
 type FreeTracked = {
   id: string;
+  kind?: ExerciseKind;
   pattern: PatternReference;
   rudimentName: string;
   tracker: RoundTracker;
@@ -72,6 +83,7 @@ function isStoredFreeTracked(value: unknown): value is StoredFreeTracked {
   return (
     isFields(value) &&
     isName(value.id) &&
+    isOptionalExerciseKind(value.kind) &&
     isPatternReference(value.pattern) &&
     isName(value.rudimentName) &&
     Array.isArray(value.segments) &&
@@ -99,6 +111,7 @@ function freeSession(
     activeDurationMs: played.activeDurationMs,
     exercises: [
       {
+        ...(entry.kind ? { kind: entry.kind } : {}),
         rudimentName: entry.rudimentName,
         pattern: entry.pattern,
         rounds: [
@@ -344,15 +357,21 @@ export function createSessionStore(storage: KeyValueStorage) {
       return freeHistory;
     },
 
-    trackFree(pattern: PatternReference, activity: Activity, now: number) {
+    trackFree(
+      pattern: PatternReference,
+      activity: Activity,
+      now: number,
+      exercise?: { kind: ExerciseKind; name: string },
+    ) {
       const entry = freeTracked.get(pattern.rudimentId);
       if (!activity.isPlaying && !entry) {
         return;
       }
       freeTracked.set(pattern.rudimentId, {
         id: entry?.id ?? newId("session"),
+        ...(exercise ? { kind: exercise.kind } : {}),
         pattern,
-        rudimentName: nameOf({ pattern }),
+        rudimentName: exercise?.name ?? nameOf({ pattern }),
         tracker: trackActivity(entry?.tracker ?? idleTracker, activity, now),
       });
       saveCurrent(now);

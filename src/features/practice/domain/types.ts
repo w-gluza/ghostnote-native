@@ -20,7 +20,10 @@ export type CompletedRound = {
   completedAt: string;
 };
 
+export type ExerciseKind = "coordination";
+
 export type CompletedExercise = {
+  kind?: ExerciseKind;
   sourceExerciseId?: string;
   rudimentName: string;
   pattern: PatternReference;

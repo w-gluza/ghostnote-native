@@ -364,3 +364,60 @@ test("changing the note value during free practice splits the time into two stre
     [10000, 20000],
   );
 });
+
+const fourWay = {
+  rudimentId: "four-way-coordination",
+  patternId: "standard",
+  patternVersion: 1,
+};
+const coordination = {
+  kind: "coordination" as const,
+  name: "Four-Way Coordination",
+};
+
+test("kit coordination practice is saved by exercise id and kind, without copying the pattern", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackFree(fourWay, playing, 0, coordination);
+  store.trackFree(fourWay, paused, 45000, coordination);
+  assert.equal(store.finishFree("four-way-coordination", 50000), true);
+
+  const [saved] = createSessionStore(storage).freeHistory();
+  assert.equal(saved?.activeDurationMs, 45000);
+  assert.deepEqual(
+    { ...saved?.exercises[0], rounds: undefined },
+    {
+      kind: "coordination",
+      rudimentName: "Four-Way Coordination",
+      pattern: fourWay,
+      rounds: undefined,
+    },
+  );
+});
+
+test("kit coordination practice interrupted by the app closing is kept with its kind", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackFree(fourWay, playing, 0, coordination);
+  store.checkpoint(20000);
+
+  const [saved] = createSessionStore(storage).freeHistory();
+  assert.equal(saved?.exercises[0]?.kind, "coordination");
+  assert.equal(saved?.exercises[0]?.rudimentName, "Four-Way Coordination");
+});
+
+test("rudiment practice saved before exercise kinds existed still loads, and stays without a kind", () => {
+  const storage = memory();
+  const store = createSessionStore(storage);
+  store.trackFree(paradiddle, playing, 0);
+  store.finishFree("single-paradiddle", 10000);
+  store.trackRound(routine, first, first.rounds[0]!, playing, 20000);
+  store.completeRound(routine, first, first.rounds[0]!, 30000);
+
+  const stored = JSON.stringify(storage.load(FREE_KEY));
+  assert.equal(stored.includes('kind":"coordination'), false);
+  const reopened = createSessionStore(storage);
+  assert.equal(reopened.freeHistory().length, 1);
+  assert.equal(reopened.freeHistory()[0]?.exercises[0]?.kind, undefined);
+  assert.equal(reopened.activeSession("r")?.exercises.length, 1);
+});

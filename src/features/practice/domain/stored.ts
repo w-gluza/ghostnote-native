@@ -44,9 +44,14 @@ function isCompletedRound(value: unknown): value is CompletedRound {
   );
 }
 
+export function isOptionalExerciseKind(value: unknown) {
+  return value === undefined || value === "coordination";
+}
+
 function isCompletedExercise(value: unknown): value is CompletedExercise {
   return (
     isFields(value) &&
+    isOptionalExerciseKind(value.kind) &&
     isOptionalName(value.sourceExerciseId) &&
     isName(value.rudimentName) &&
     isPatternReference(value.pattern) &&
