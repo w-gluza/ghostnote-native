@@ -10,3 +10,7 @@ export const setStrokeVoice = store.setStrokeVoice;
 export function useStrokeVoice() {
   return useSyncExternalStore(store.subscribe, store.strokeVoice);
 }
+
+export function useStrokeVoiceSelections() {
+  return useSyncExternalStore(store.subscribe, store.selections);
+}

@@ -25,6 +25,7 @@ export function strokeVoiceFrom(stored: unknown): StrokeVoice {
 export function createStrokeVoiceStore(storage: VoiceStorage) {
   const listeners = new Set<() => void>();
   let strokeVoice = strokeVoiceFrom(storage.load(VOICE_KEY));
+  let selections = 0;
 
   return {
     subscribe(listener: () => void) {
@@ -38,11 +39,16 @@ export function createStrokeVoiceStore(storage: VoiceStorage) {
       return strokeVoice;
     },
 
+    selections() {
+      return selections;
+    },
+
     setStrokeVoice(voice: StrokeVoice) {
       if (!storage.save(VOICE_KEY, voice)) {
         return false;
       }
       strokeVoice = voice;
+      selections += 1;
       listeners.forEach((listener) => listener());
       return true;
     },

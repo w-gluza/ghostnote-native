@@ -9,7 +9,10 @@ import {
 import { hitsOf, type HitLevel } from "../domain/hits";
 import type { StrokeVoice } from "../domain/stroke-voice-store";
 import type { TimelineStroke } from "../domain/timeline";
-import { useStrokeVoice } from "../stores/stroke-voice";
+import {
+  useStrokeVoice,
+  useStrokeVoiceSelections,
+} from "../stores/stroke-voice";
 
 type Samples = { tap: number; accent: number };
 
@@ -107,7 +110,7 @@ function createEngine(): Engine {
   };
 }
 
-function useSampler(samples: Samples) {
+function useSampler(samples: Samples, attempt = 0) {
   const engine = useRef<Engine>(undefined);
   const [sound, setSound] = useState<ClickSound>();
   const [failed, setFailed] = useState<Samples>();
@@ -149,7 +152,7 @@ function useSampler(samples: Samples) {
     return () => {
       isActive = false;
     };
-  }, [samples]);
+  }, [samples, attempt]);
 
   const hasFailed = failed === samples;
   const working = sound ? SOUND_SWITCH_FAILED_MESSAGE : SOUND_FAILED_MESSAGE;
@@ -162,7 +165,11 @@ export function useClickSound() {
 
 export function useStrokeSound() {
   const voice = useStrokeVoice();
-  const { sound: click, problem } = useSampler(strokeSamples[voice]);
+  const selections = useStrokeVoiceSelections();
+  const { sound: click, problem } = useSampler(
+    strokeSamples[voice],
+    selections,
+  );
 
   const sound = useMemo<StrokeSound | undefined>(
     () =>

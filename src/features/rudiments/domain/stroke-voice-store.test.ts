@@ -36,6 +36,19 @@ test("a chosen stroke sound is kept and announced", () => {
   assert.equal(createStrokeVoiceStore(storage).strokeVoice(), "snare");
 });
 
+test("choosing the same sound again still counts as a new selection", () => {
+  const store = createStrokeVoiceStore(memory());
+  let announced = 0;
+  store.subscribe(() => {
+    announced += 1;
+  });
+  store.setStrokeVoice("snare");
+  store.setStrokeVoice("snare");
+  assert.equal(store.strokeVoice(), "snare");
+  assert.equal(store.selections(), 2);
+  assert.equal(announced, 2);
+});
+
 test("an unknown stored sound falls back to the practice pad", () => {
   const storage = memory();
   storage.save(VOICE_KEY, "cowbell");
