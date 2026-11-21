@@ -15,7 +15,7 @@ import {
   strikesOf,
 } from "@/features/kit-coordination/domain/timeline";
 import type { KitPattern } from "@/features/kit-coordination/domain/types";
-import { instrumentColor } from "@/features/kit-coordination/instrument-colors";
+import { limbColor } from "@/features/kit-coordination/instrument-colors";
 import { colors } from "@/theme/colors";
 import { layout, spacing } from "@/theme/layout";
 
@@ -45,6 +45,7 @@ export function RhythmGrid({
       note,
       strikes,
       limb: limb ? limbName(limb) : "",
+      color: limb ? limbColor(limb) : colors.text.secondary,
       isActive: active.includes(note),
       spoken: counts.filter((_, column) => strikes[column]).join(", "),
     };
@@ -121,7 +122,7 @@ export function RhythmGrid({
                         styles.strike,
                         {
                           backgroundColor: track.isActive
-                            ? instrumentColor(track.note)
+                            ? track.color
                             : colors.border,
                         },
                       ]

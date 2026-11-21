@@ -216,3 +216,68 @@ test("a practice session can point at the exercise by a stable id and version", 
   const ids = kitExercises.map((exercise) => exercise.id);
   assert.equal(new Set(ids).size, ids.length);
 });
+
+const sampled = [36, 38, 42, 44, 45, 46, 48, 51];
+
+for (const exercise of kitExercises) {
+  const columns = columnCount(exercise.pattern);
+
+  test(`${exercise.name}: every note sits on the grid, inside the bar, and has a sound`, () => {
+    for (const event of exercise.pattern.events) {
+      const column = toNumber(event.at) * exercise.pattern.stepsPerBeat;
+      assert.equal(Number.isInteger(column), true, event.id);
+      assert.equal(column >= 0 && column < columns, true, event.id);
+      assert.equal(sampled.includes(event.note), true, event.id);
+    }
+    const ids = exercise.pattern.events.map((event) => event.id);
+    assert.equal(new Set(ids).size, ids.length);
+    assert.equal(countLabels(exercise.pattern).length, columns);
+  });
+
+  test(`${exercise.name}: each instrument has one limb, and no limb plays two things at once`, () => {
+    for (const note of notesOf(exercise.pattern)) {
+      const limbs = new Set(
+        exercise.pattern.events
+          .filter((event) => event.note === note)
+          .map((event) => event.limb),
+      );
+      assert.equal(limbs.size, 1, midiNoteName(note));
+    }
+    const busy = exercise.pattern.events.map(
+      (event) => `${event.limb}@${toNumber(event.at)}`,
+    );
+    assert.equal(new Set(busy).size, busy.length);
+  });
+
+  test(`${exercise.name}: stages only add instruments and end with the whole pattern`, () => {
+    exercise.stages.forEach((stage, index) => {
+      const before = exercise.stages[index - 1]?.notes ?? [];
+      assert.equal(
+        before.every((note) => stage.notes.includes(note)),
+        true,
+        stage.id,
+      );
+      assert.equal(stage.notes.length > before.length, true, stage.id);
+    });
+    assert.deepEqual(
+      [...exercise.stages.at(-1)!.notes].sort(),
+      [...notesOf(exercise.pattern)].sort(),
+    );
+    const chips = stageChips(exercise);
+    assert.equal(new Set(chips).size, chips.length);
+  });
+}
+
+test("bars in sixteenths and triplets are counted the way drummers say them", () => {
+  assert.deepEqual(countLabels(findKitExercise("samba-feet")!.pattern), [
+    "1",
+    "e",
+    "&",
+    "a",
+    "2",
+    "e",
+    "&",
+    "a",
+  ]);
+  assert.equal(columnCount(findKitExercise("swing-time")!.pattern), 12);
+});

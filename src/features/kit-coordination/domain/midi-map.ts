@@ -1,4 +1,4 @@
-export type MidiNote = 36 | 38 | 42 | 44 | 45 | 47 | 48 | 49 | 51;
+export type MidiNote = 36 | 38 | 42 | 44 | 45 | 46 | 47 | 48 | 49 | 51;
 
 export type Velocity = 127 | 100 | 64 | 30;
 
@@ -7,6 +7,7 @@ const NOTE_NAMES: Record<MidiNote, string> = {
   51: "Ride",
   42: "Hi-hat",
   44: "Hi-hat pedal",
+  46: "Open hi-hat",
   48: "High tom",
   47: "Mid tom",
   38: "Snare",

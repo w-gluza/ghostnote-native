@@ -1,13 +1,13 @@
-import type { MidiNote } from "@/features/kit-coordination/domain/midi-map";
+import type { Limb } from "@/features/kit-coordination/domain/types";
 import { colors } from "@/theme/colors";
 
-const COLORS: Partial<Record<MidiNote, string>> = {
-  51: colors.accent,
-  38: colors.violet,
-  36: colors.slate,
-  44: colors.text.primary,
+const COLORS: Record<Limb, string> = {
+  "right-hand": colors.accent,
+  "left-hand": colors.violet,
+  "right-foot": colors.slate,
+  "left-foot": colors.text.primary,
 };
 
-export function instrumentColor(note: MidiNote) {
-  return COLORS[note] ?? colors.text.secondary;
+export function limbColor(limb: Limb) {
+  return COLORS[limb];
 }
