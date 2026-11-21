@@ -21,14 +21,9 @@ export default function TabsLayout() {
         />
         <NativeTabs.Trigger.Label>Metronome</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="rudiments">
-        <NativeTabs.Trigger.Icon
-          sf={{
-            default: "list.bullet.rectangle",
-            selected: "list.bullet.rectangle.fill",
-          }}
-        />
-        <NativeTabs.Trigger.Label>Rudiments</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="library">
+        <NativeTabs.Trigger.Icon sf="music.note.list" />
+        <NativeTabs.Trigger.Label>Library</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="insights">
         <NativeTabs.Trigger.Icon

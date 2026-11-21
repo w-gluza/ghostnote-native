@@ -12,7 +12,7 @@ An iOS app for learning and practising drum rudiments, such as rolls and paradid
 
 - **Practice** - play a routine of rudiments, round by round, with a tempo and a duration for each round.
 - **Metronome** - a standalone click with time signatures, subdivisions and a tempo dial.
-- **Rudiments** - a library with sticking notation, grouped by category and level, with search.
+- **Library** - the 40 rudiments with sticking notation, grouped by category and level, with search. Kit coordination exercises are planned.
 - **Insights** - time practised, the balance between techniques, and achievements.
 - **Routines** - build your own from the library, or start from a recommended one.
 

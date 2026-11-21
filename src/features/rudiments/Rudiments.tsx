@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 
@@ -10,7 +10,6 @@ import {
   RudimentListItem,
   type RudimentSummary,
 } from "@/features/rudiments/components/RudimentListItem/RudimentListItem";
-import { ScreenHeader } from "@/components/ScreenHeader/ScreenHeader";
 import { SearchField } from "@/features/rudiments/components/SearchField/SearchField";
 import {
   ALL_CATEGORIES,
@@ -26,6 +25,7 @@ import { buildTimeline } from "@/features/rudiments/domain/timeline";
 import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
+import { nativeHeader } from "@/theme/navigation";
 
 const rudiments: RudimentSummary[] = rudimentLibrary.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
@@ -88,13 +88,15 @@ export default function RudimentsScreen() {
         </EmptyState>
       }
       style={layoutStyles.screen}
-      contentContainerStyle={layoutStyles.contentBelowHeader}
+      contentContainerStyle={layoutStyles.content}
       contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       ListHeaderComponent={
         <View style={styles.header}>
-          <ScreenHeader />
+          <Stack.Screen
+            options={{ ...nativeHeader, headerBackTitle: "Library" }}
+          />
           {isSearching ? (
             <View style={styles.searchRow}>
               <SearchField
