@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { hitsOf } from "./hits.ts";
+import { leadMs } from "./timing.ts";
 
 const tap = { accent: false, bounce: false, grace: [] };
 
@@ -28,11 +29,12 @@ test("a drag plays two grace notes in order before the stroke", () => {
   );
 });
 
-test("grace notes squeeze together at fast tempos so they stay after the previous stroke", () => {
+test("grace notes squeeze together at fast tempos so they fit inside the stick's approach", () => {
   const offsets = hitsOf({ ...tap, grace: ["L", "L"] }, 80).map(
     (hit) => hit.offsetMs,
   );
-  assert.deepEqual(offsets, [-40, -20, 0]);
+  assert.deepEqual(offsets, [-36, -18, 0]);
+  assert.equal(-(offsets[0] ?? 0), leadMs(80));
 });
 
 test("a bounce stroke is followed by quieter rebounds that end before the next stroke", () => {

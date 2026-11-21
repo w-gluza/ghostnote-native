@@ -1,4 +1,5 @@
 import type { TimelineStroke } from "./timeline";
+import { leadMs } from "./timing.ts";
 
 export type HitLevel = "full" | "soft" | "grace";
 
@@ -15,7 +16,7 @@ const BOUNCE_REBOUNDS = 3;
 type Sounded = Pick<TimelineStroke, "accent" | "bounce" | "grace">;
 
 export function graceOffsetsMs(count: number, gapMs: number) {
-  const spacing = Math.min(GRACE_SPACING_MS, gapMs / (count + 2));
+  const spacing = Math.min(GRACE_SPACING_MS, leadMs(gapMs) / count);
   return Array.from(
     { length: count },
     (_, index) => -(count - index) * spacing,

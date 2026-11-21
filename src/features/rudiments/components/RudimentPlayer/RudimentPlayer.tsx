@@ -99,6 +99,18 @@ export function RudimentPlayer({
     }
     return TAP_LIFT;
   };
+  const graceAnimations = useRef(new Set<Animated.CompositeAnimation>());
+  const startGraceAnimation = (animation: Animated.CompositeAnimation) => {
+    graceAnimations.current.add(animation);
+    animation.start(() => graceAnimations.current.delete(animation));
+  };
+  const stopGraceAnimations = () => {
+    const running = [...graceAnimations.current];
+    graceAnimations.current.clear();
+    running.forEach((animation) => animation.stop());
+    left.ripple.setValue(1);
+    right.ripple.setValue(1);
+  };
   const playGraceNotes = (index: number, msUntilStroke: number) => {
     const stroke = timeline.strokes[index];
     if (!stroke || stroke.grace.length === 0) {
@@ -128,30 +140,34 @@ export function RudimentPlayer({
         });
         return order === 0 ? [fall] : [rebound, fall];
       });
-      Animated.sequence([
-        ...taps,
-        Animated.timing(motion.lift, {
-          toValue: restLiftAfter(index, hand),
-          duration: GRACE_RETURN_MS,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ]).start();
-      hits.forEach((hit) => {
+      startGraceAnimation(
         Animated.sequence([
-          Animated.delay(hit.inMs),
-          Animated.timing(motion.ripple, {
-            toValue: 0,
-            duration: 0,
+          ...taps,
+          Animated.timing(motion.lift, {
+            toValue: restLiftAfter(index, hand),
+            duration: GRACE_RETURN_MS,
+            easing: Easing.inOut(Easing.quad),
             useNativeDriver: true,
           }),
-          Animated.timing(motion.ripple, {
-            toValue: 1,
-            duration: RIPPLE_MS,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }),
-        ]).start();
+        ]),
+      );
+      hits.forEach((hit) => {
+        startGraceAnimation(
+          Animated.sequence([
+            Animated.delay(hit.inMs),
+            Animated.timing(motion.ripple, {
+              toValue: 0,
+              duration: 0,
+              useNativeDriver: true,
+            }),
+            Animated.timing(motion.ripple, {
+              toValue: 1,
+              duration: RIPPLE_MS,
+              easing: Easing.out(Easing.quad),
+              useNativeDriver: true,
+            }),
+          ]),
+        );
       });
     });
   };
@@ -168,7 +184,10 @@ export function RudimentPlayer({
         sound?.schedule(stroke, timeMs, strokeGapMs(index));
       }
     },
-    onCancel: sound?.cancel,
+    onCancel: () => {
+      sound?.cancel();
+      stopGraceAnimations();
+    },
     onApproach: (index, msUntilStroke) => {
       Animated.timing(motionOf(index).lift, {
         toValue: 0,
