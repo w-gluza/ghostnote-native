@@ -14,7 +14,9 @@ import {
   useStrokeVoiceSelections,
 } from "../stores/stroke-voice";
 
-type Samples = { tap: number; accent: number };
+type SampleSet<Name extends string> = Record<Name, number>;
+
+type Samples = SampleSet<"tap" | "accent">;
 
 const clickSamples: Samples = {
   tap: require("@/assets/sounds/click.wav"),
@@ -40,11 +42,13 @@ const SOUND_SWITCH_FAILED_MESSAGE =
 
 type Pending = { source: AudioBufferSourceNode; timeMs: number };
 
-export type ClickSound = {
+export type SampleSound<Name extends string> = {
   now: () => number;
-  play: (sample: keyof Samples, level: HitLevel, timeMs: number) => void;
+  play: (sample: Name, level: HitLevel, timeMs: number) => void;
   cancel: () => void;
 };
+
+export type ClickSound = SampleSound<"tap" | "accent">;
 
 export type StrokeSound = {
   now: () => number;
@@ -52,15 +56,15 @@ export type StrokeSound = {
   cancel: () => void;
 };
 
-type Buffers = Record<keyof Samples, AudioBuffer>;
+type Buffers = Partial<Record<string, AudioBuffer>>;
 
-type Engine = {
+type Engine<Name extends string> = {
   context: AudioContext;
-  sound: ClickSound;
+  sound: SampleSound<Name>;
   use: (buffers: Buffers) => void;
 };
 
-function createEngine(): Engine {
+function createEngine<Name extends string>(): Engine<Name> {
   let pending: Pending[] = [];
   let buffers: Buffers | undefined;
 
@@ -89,11 +93,12 @@ function createEngine(): Engine {
     sound: {
       now,
       play: (sample, level, timeMs) => {
-        if (!buffers || context.state === "closed") {
+        const buffer = buffers?.[sample];
+        if (!buffer || context.state === "closed") {
           return;
         }
         const source = context.createBufferSource();
-        source.buffer = buffers[sample];
+        source.buffer = buffer;
         source.connect(output[level]);
         source.start(Math.max(timeMs, now()) / 1000);
         pending = pending.filter((item) => item.timeMs > now());
@@ -110,13 +115,16 @@ function createEngine(): Engine {
   };
 }
 
-function useSampler(samples: Samples, attempt = 0) {
-  const engine = useRef<Engine>(undefined);
-  const [sound, setSound] = useState<ClickSound>();
-  const [failed, setFailed] = useState<Samples>();
+export function useSampler<Name extends string>(
+  samples: SampleSet<Name>,
+  attempt = 0,
+) {
+  const engine = useRef<Engine<Name>>(undefined);
+  const [sound, setSound] = useState<SampleSound<Name>>();
+  const [failed, setFailed] = useState<SampleSet<Name>>();
 
   useEffect(() => {
-    const created = createEngine();
+    const created = createEngine<Name>();
     engine.current = created;
     return () => {
       engine.current = undefined;
@@ -131,14 +139,20 @@ function useSampler(samples: Samples, attempt = 0) {
     }
     let isActive = true;
 
+    const names = Object.keys(samples) as Name[];
     Promise.all([
-      current.context.decodeAudioData(samples.tap),
-      current.context.decodeAudioData(samples.accent),
+      Promise.all(
+        names.map((name) => current.context.decodeAudioData(samples[name])),
+      ),
       current.context.resume(),
     ])
-      .then(([tap, accent]) => {
+      .then(([decoded]) => {
         if (isActive) {
-          current.use({ tap, accent });
+          current.use(
+            Object.fromEntries(
+              names.map((name, index) => [name, decoded[index]]),
+            ),
+          );
           setSound(current.sound);
           setFailed(undefined);
         }
