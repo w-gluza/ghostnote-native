@@ -20,6 +20,7 @@ import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker
 import { STAGE_HEIGHT } from "@/features/rudiments/components/PadAnimation/PadAnimation";
 import { RoundClock } from "@/features/practice/components/RoundClock/RoundClock";
 import { RudimentPlayer } from "@/features/rudiments/components/RudimentPlayer/RudimentPlayer";
+import { StrokeVoicePicker } from "@/features/rudiments/components/StrokeVoicePicker/StrokeVoicePicker";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
@@ -184,15 +185,7 @@ export default function RudimentScreen() {
                 4/4
               </AppText>
               <RhythmBarSeparator />
-              <AppText
-                variant="body"
-                tone="secondary"
-                numberOfLines={1}
-                accessibilityLabel={`${rudiment.category}, level ${rudiment.level}`}
-                style={styles.detail}
-              >
-                {rudiment.category} · Lvl {rudiment.level}
-              </AppText>
+              <StrokeVoicePicker />
               {pattern && step ? (
                 <NoteValuePicker
                   subdivision={subdivision}
@@ -306,8 +299,5 @@ const styles = StyleSheet.create({
   },
   undo: {
     marginRight: "auto",
-  },
-  detail: {
-    flex: 1,
   },
 });

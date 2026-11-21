@@ -6,7 +6,9 @@ import {
 } from "react-native-audio-api";
 
 import { hitsOf, type HitLevel } from "../domain/hits";
+import type { StrokeVoice } from "../domain/stroke-voice-store";
 import type { TimelineStroke } from "../domain/timeline";
+import { useStrokeVoice } from "../stores/stroke-voice";
 
 type Samples = { tap: number; accent: number };
 
@@ -14,9 +16,15 @@ const clickSamples: Samples = {
   tap: require("@/assets/sounds/click.wav"),
   accent: require("@/assets/sounds/click-accent.wav"),
 };
-const padSamples: Samples = {
-  tap: require("@/assets/sounds/pad-tap.wav"),
-  accent: require("@/assets/sounds/pad-accent.wav"),
+const strokeSamples: Record<StrokeVoice, Samples> = {
+  pad: {
+    tap: require("@/assets/sounds/pad-tap.wav"),
+    accent: require("@/assets/sounds/pad-accent.wav"),
+  },
+  snare: {
+    tap: require("@/assets/sounds/snare-tap.wav"),
+    accent: require("@/assets/sounds/snare-accent.wav"),
+  },
 };
 
 const GAIN: Record<HitLevel, number> = { full: 1, soft: 0.4, grace: 0.22 };
@@ -39,8 +47,10 @@ export type StrokeSound = {
 };
 
 function useSampler(samples: Samples) {
-  const [sound, setSound] = useState<ClickSound>();
-  const [hasFailed, setHasFailed] = useState(false);
+  const [loaded, setLoaded] = useState<{
+    samples: Samples;
+    sound?: ClickSound;
+  }>();
 
   useEffect(() => {
     let isActive = true;
@@ -72,7 +82,7 @@ function useSampler(samples: Samples) {
         if (!isActive) {
           return;
         }
-        setSound({
+        const sound: ClickSound = {
           now,
           play: (sample, level, timeMs) => {
             const source = context.createBufferSource();
@@ -89,11 +99,12 @@ function useSampler(samples: Samples) {
               .forEach((item) => item.source.stop());
             pending = [];
           },
-        });
+        };
+        setLoaded({ samples, sound });
       })
       .catch(() => {
         if (isActive) {
-          setHasFailed(true);
+          setLoaded({ samples });
         }
       });
 
@@ -103,7 +114,8 @@ function useSampler(samples: Samples) {
     };
   }, [samples]);
 
-  return { sound, hasFailed };
+  const current = loaded?.samples === samples ? loaded : undefined;
+  return { sound: current?.sound, hasFailed: current ? !current.sound : false };
 }
 
 export function useClickSound() {
@@ -111,7 +123,8 @@ export function useClickSound() {
 }
 
 export function useStrokeSound() {
-  const { sound: click, hasFailed } = useSampler(padSamples);
+  const voice = useStrokeVoice();
+  const { sound: click, hasFailed } = useSampler(strokeSamples[voice]);
 
   const sound = useMemo<StrokeSound | undefined>(
     () =>

@@ -30,6 +30,14 @@ import {
   setWeeklyGoal,
   useWeeklyGoal,
 } from "@/features/practice/stores/weekly-goal";
+import {
+  STROKE_VOICES,
+  strokeVoiceName,
+} from "@/features/rudiments/domain/stroke-voice-store";
+import {
+  setStrokeVoice,
+  useStrokeVoice,
+} from "@/features/rudiments/stores/stroke-voice";
 import { layoutStyles, spacing } from "@/theme/layout";
 
 const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
@@ -37,10 +45,17 @@ const GOAL_OPTIONS = WEEKLY_GOAL_CHOICES.map((count) => ({
   label: sessionsLabel(count),
 }));
 
+const VOICE_OPTIONS = STROKE_VOICES.map((voice) => ({
+  key: voice,
+  label: strokeVoiceName(voice),
+}));
+
 export default function ProfileScreen() {
   const router = useRouter();
   const weeklyGoal = useWeeklyGoal();
   const [goalSaveFailed, setGoalSaveFailed] = useState(false);
+  const strokeVoice = useStrokeVoice();
+  const [voiceSaveFailed, setVoiceSaveFailed] = useState(false);
   const history = usePracticeHistory();
   const free = useFreePractice();
   const active = useActiveSessions();
@@ -91,6 +106,32 @@ export default function ProfileScreen() {
           >
             <AppText variant="bodyStrong" tabular>
               {sessionsLabel(weeklyGoal)}
+            </AppText>
+          </OptionMenu>
+        </SettingsRow>
+        <SettingsRow
+          symbol="speaker.wave.2"
+          style={styles.goalRow}
+          footer={
+            voiceSaveFailed ? (
+              <InlineMessage style={styles.problem}>
+                Your stroke sound could not be saved. Choose it again to retry.
+              </InlineMessage>
+            ) : null
+          }
+        >
+          <AppText variant="body" tone="secondary" style={styles.goalLabel}>
+            Stroke sound
+          </AppText>
+          <OptionMenu
+            name="Stroke sound"
+            options={VOICE_OPTIONS}
+            selected={strokeVoice}
+            onChange={(voice) => setVoiceSaveFailed(!setStrokeVoice(voice))}
+            align="end"
+          >
+            <AppText variant="bodyStrong">
+              {strokeVoiceName(strokeVoice)}
             </AppText>
           </OptionMenu>
         </SettingsRow>
