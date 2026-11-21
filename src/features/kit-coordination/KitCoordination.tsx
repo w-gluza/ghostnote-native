@@ -1,18 +1,22 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { RowText } from "@/components/RowText/RowText";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import {
-  plannedKitExercises,
-  voicesLabel,
+  kitExercises,
+  notesLabel,
+  notesOf,
 } from "@/features/kit-coordination/domain/exercises";
-import { divider, layoutStyles, spacing } from "@/theme/layout";
+import { layoutStyles, spacing } from "@/theme/layout";
 import { nativeHeader } from "@/theme/navigation";
 
 export default function KitCoordinationScreen() {
+  const router = useRouter();
+
   return (
     <View style={layoutStyles.screen}>
       <Stack.Screen options={{ ...nativeHeader, headerBackTitle: "Library" }} />
@@ -23,26 +27,42 @@ export default function KitCoordinationScreen() {
       >
         <PageTitle>Kit Coordination</PageTitle>
         <AppText variant="body" tone="secondary" style={styles.subtitle}>
-          Guided exercises for limb independence and timing across the ride,
-          snare, kick and hi-hat pedal. They are not ready to play yet.
+          Guided exercises for limb independence and timing on the kit, built up
+          one part at a time.
         </AppText>
 
-        <SectionHeader title="COMING SOON" style={styles.sectionHeader} />
+        <SectionHeader
+          title="EXERCISES"
+          trailing={
+            kitExercises.length === 1
+              ? "1 exercise"
+              : `${kitExercises.length} exercises`
+          }
+          style={styles.sectionHeader}
+        />
 
-        {plannedKitExercises.map((exercise, index) => {
-          const voices = voicesLabel(exercise.voices);
+        {kitExercises.map((exercise, index) => {
+          const instruments = notesLabel(notesOf(exercise.pattern));
+          const stages = `${exercise.stages.length} stages`;
           return (
-            <View
+            <NumberedRow
               key={exercise.id}
-              accessible
-              accessibilityLabel={`${exercise.name}, coming soon, ${voices}`}
-              style={[
-                styles.row,
-                index < plannedKitExercises.length - 1 && divider.bottom,
-              ]}
+              position={index + 1}
+              accessibilityLabel={`${exercise.name}, level ${exercise.level}, ${stages}, ${instruments}`}
+              isLast={index === kitExercises.length - 1}
+              onPress={() =>
+                router.push({
+                  pathname: "/kit-exercise/[id]",
+                  params: { id: exercise.id },
+                })
+              }
             >
-              <RowText title={exercise.name} detail={voices} />
-            </View>
+              <RowText
+                label={`LVL ${exercise.level} · ${stages.toUpperCase()}`}
+                title={exercise.name}
+                detail={instruments}
+              />
+            </NumberedRow>
           );
         })}
       </ScrollView>
@@ -56,8 +76,5 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     marginTop: spacing.section,
-  },
-  row: {
-    paddingVertical: spacing.xl,
   },
 });
