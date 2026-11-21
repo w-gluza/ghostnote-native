@@ -29,13 +29,15 @@ import { StickingPattern } from "@/features/rudiments/components/StickingPattern
 import {
   beatsUntilSameHand,
   clampBpm,
+  gapBeforeOrdinal,
   MAX_BPM,
   MIN_BPM,
   msPerQuarterUnit,
   nextIndexOfHand,
 } from "@/features/rudiments/domain/timing";
+import { graceOffsetsMs } from "@/features/rudiments/domain/hits";
 import type { Timeline } from "@/features/rudiments/domain/timeline";
-import type { Tempo } from "@/features/rudiments/domain/types";
+import type { Hand, Tempo } from "@/features/rudiments/domain/types";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import type { StrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { spacing } from "@/theme/layout";
@@ -54,6 +56,8 @@ const COMPACT_HEIGHT = 850;
 const MAX_RETURN_MS = 500;
 const RETURN_SHARE = 0.55;
 const RIPPLE_MS = 280;
+const GRACE_LIFT = 0.35;
+const GRACE_RETURN_MS = 160;
 
 export function RudimentPlayer({
   timeline,
@@ -79,8 +83,78 @@ export function RudimentPlayer({
     lift: useAnimatedValue(TAP_LIFT),
     ripple: useAnimatedValue(1),
   };
+  const motionOfHand = (hand: Hand | undefined) =>
+    hand === "L" ? left : right;
   const motionOf = (index: number) =>
-    timeline.strokes[index]?.hand === "L" ? left : right;
+    motionOfHand(timeline.strokes[index]?.hand);
+  const strokeGapMs = (index: number) =>
+    gapBeforeOrdinal(timeline, index) * msPerQuarterUnit(tempo);
+  const restLiftAfter = (index: number, hand: Hand) => {
+    const count = timeline.strokes.length;
+    for (let step = 1; step <= count; step += 1) {
+      const next = timeline.strokes[(index + step) % count];
+      if (next?.hand === hand) {
+        return next.accent ? ACCENT_LIFT : TAP_LIFT;
+      }
+    }
+    return TAP_LIFT;
+  };
+  const playGraceNotes = (index: number, msUntilStroke: number) => {
+    const stroke = timeline.strokes[index];
+    if (!stroke || stroke.grace.length === 0) {
+      return;
+    }
+    const offsets = graceOffsetsMs(stroke.grace.length, strokeGapMs(index));
+    const graceHits = stroke.grace.map((hand, order) => ({
+      hand,
+      inMs: Math.max(0, msUntilStroke + (offsets[order] ?? 0)),
+    }));
+    new Set(stroke.grace).forEach((hand) => {
+      const hits = graceHits.filter((hit) => hit.hand === hand);
+      const motion = motionOfHand(hand);
+      const taps = hits.flatMap((hit, order) => {
+        const sincePrevious = hit.inMs - (hits[order - 1]?.inMs ?? 0);
+        const fall = Animated.timing(motion.lift, {
+          toValue: 0,
+          duration: order === 0 ? sincePrevious : sincePrevious / 2,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        });
+        const rebound = Animated.timing(motion.lift, {
+          toValue: GRACE_LIFT,
+          duration: sincePrevious / 2,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        });
+        return order === 0 ? [fall] : [rebound, fall];
+      });
+      Animated.sequence([
+        ...taps,
+        Animated.timing(motion.lift, {
+          toValue: restLiftAfter(index, hand),
+          duration: GRACE_RETURN_MS,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ]).start();
+      hits.forEach((hit) => {
+        Animated.sequence([
+          Animated.delay(hit.inMs),
+          Animated.timing(motion.ripple, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: true,
+          }),
+          Animated.timing(motion.ripple, {
+            toValue: 1,
+            duration: RIPPLE_MS,
+            easing: Easing.out(Easing.quad),
+            useNativeDriver: true,
+          }),
+        ]).start();
+      });
+    });
+  };
 
   const isHeard = useRef(false);
 
@@ -91,7 +165,7 @@ export function RudimentPlayer({
     onSchedule: (index, timeMs) => {
       const stroke = timeline.strokes[index];
       if (stroke) {
-        sound?.schedule(stroke, timeMs);
+        sound?.schedule(stroke, timeMs, strokeGapMs(index));
       }
     },
     onCancel: sound?.cancel,
@@ -102,6 +176,7 @@ export function RudimentPlayer({
         easing: Easing.in(Easing.quad),
         useNativeDriver: true,
       }).start();
+      playGraceNotes(index, msUntilStroke);
     },
     onStroke: (index) => {
       const stroke = timeline.strokes[index];
