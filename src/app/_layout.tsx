@@ -16,6 +16,8 @@ const theme = {
   },
 };
 
+export const unstable_settings = { anchor: "(tabs)" };
+
 startPracticeTracking();
 
 export default function RootLayout() {
