@@ -20,7 +20,7 @@ import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { newId } from "@/features/rudiments/domain/ids";
 import {
-  availableRudiments,
+  rudimentLibrary,
   findRudiment,
 } from "@/features/rudiments/domain/library";
 import {
@@ -221,7 +221,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
           );
         })}
 
-        {availableRudiments.length > 0 ? (
+        {rudimentLibrary.length > 0 ? (
           <Button
             variant="text"
             tone="accent"
@@ -235,7 +235,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         ) : null}
 
         {isAdding
-          ? availableRudiments.map((rudiment) => (
+          ? rudimentLibrary.map((rudiment) => (
               <Pressable
                 key={rudiment.id}
                 accessibilityRole="button"

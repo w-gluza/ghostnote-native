@@ -18,7 +18,7 @@ import {
   filterRudiments,
 } from "@/features/rudiments/domain/filter";
 import {
-  availableRudiments,
+  rudimentLibrary,
   defaultPattern,
   stickingOf,
 } from "@/features/rudiments/domain/library";
@@ -27,7 +27,7 @@ import { rudimentVideos } from "@/features/rudiments/domain/videos";
 import { colors } from "@/theme/colors";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 
-const rudiments: RudimentSummary[] = availableRudiments.map((rudiment) => {
+const rudiments: RudimentSummary[] = rudimentLibrary.map((rudiment) => {
   const timeline = buildTimeline(defaultPattern(rudiment));
   return {
     id: rudiment.id,

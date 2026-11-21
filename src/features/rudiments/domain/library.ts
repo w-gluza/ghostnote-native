@@ -21,16 +21,6 @@ type RudimentEntry = {
 const FALLBACK_BPM = 80;
 const STANDARD = { patternId: "standard", patternVersion: 1 };
 
-const playableIds = new Set([
-  "single-stroke-roll",
-  "triple-stroke-roll",
-  "double-stroke-roll",
-  "single-paradiddle",
-  "double-paradiddle",
-  "triple-paradiddle",
-  "single-paradiddle-diddle",
-]);
-
 const entries: RudimentEntry[] = [
   {
     pasNumber: 1,
@@ -456,10 +446,6 @@ export const rudimentLibrary: Rudiment[] = entries.map((entry) => ({
     }),
   ],
 }));
-
-export const availableRudiments = rudimentLibrary.filter((rudiment) =>
-  playableIds.has(rudiment.id),
-);
 
 export function findRudiment(id: string) {
   return rudimentLibrary.find((rudiment) => rudiment.id === id);

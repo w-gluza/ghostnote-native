@@ -3,7 +3,6 @@ import { test } from "node:test";
 
 import { add, fraction, isReduced, toNumber } from "./fraction.ts";
 import {
-  availableRudiments,
   findRudiment,
   resolvePattern,
   rudimentLibrary,
@@ -280,16 +279,4 @@ test("tempo validation rejects impossible tempos", () => {
   );
   assert.ok(validateTempo({ bpm: 0, pulseQuarterUnits: fraction(1) }).length);
   assert.ok(validateTempo({ bpm: 80, pulseQuarterUnits: fraction(0) }).length);
-});
-
-test("rudiments shown in the app have even strokes and no grace or bounce", () => {
-  assert.equal(availableRudiments.length, 7);
-  for (const rudiment of availableRudiments) {
-    const pattern = defaultPattern(rudiment);
-    assert.notEqual(evenStep(pattern), undefined, rudiment.name);
-    for (const stroke of buildTimeline(pattern).strokes) {
-      assert.deepEqual(stroke.grace, [], rudiment.name);
-      assert.equal(stroke.bounce, false, rudiment.name);
-    }
-  }
 });
