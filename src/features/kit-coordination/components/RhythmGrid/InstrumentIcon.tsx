@@ -1,4 +1,9 @@
-import { StyleSheet, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  View,
+  type ImageSourcePropType,
+} from "react-native";
 
 import type { MidiNote } from "@/features/kit-coordination/domain/midi-map";
 
@@ -11,24 +16,26 @@ const SIZE = 20;
 const STROKE = 1.5;
 
 const CYMBALS: MidiNote[] = [49, 51];
-const HIHATS: MidiNote[] = [42, 46];
 const PEDAL = 44;
-const KICK = 36;
+
+const PICTURES: Partial<Record<MidiNote, ImageSourcePropType>> = {
+  36: require("@/assets/images/instruments/kick.png"),
+  38: require("@/assets/images/instruments/snare.png"),
+  42: require("@/assets/images/instruments/hihat.png"),
+  46: require("@/assets/images/instruments/hihat.png"),
+  51: require("@/assets/images/instruments/ride.png"),
+};
 
 export function InstrumentIcon({ note, color }: InstrumentIconProps) {
+  const picture = PICTURES[note];
+  if (picture !== undefined) {
+    return <Image source={picture} tintColor={color} style={styles.picture} />;
+  }
   const tint = { borderColor: color };
 
   if (CYMBALS.includes(note)) {
     return (
       <View style={styles.box}>
-        <View style={[styles.cymbal, tint]} />
-      </View>
-    );
-  }
-  if (HIHATS.includes(note)) {
-    return (
-      <View style={styles.box}>
-        <View style={[styles.cymbal, tint]} />
         <View style={[styles.cymbal, tint]} />
       </View>
     );
@@ -44,11 +51,7 @@ export function InstrumentIcon({ note, color }: InstrumentIconProps) {
   }
   return (
     <View style={styles.box}>
-      <View style={[styles.drum, note === KICK && styles.kick, tint]}>
-        {note === KICK ? (
-          <View style={[styles.beater, { backgroundColor: color }]} />
-        ) : null}
-      </View>
+      <View style={[styles.drum, tint]} />
     </View>
   );
 }
@@ -83,13 +86,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  kick: {
+  picture: {
     width: SIZE,
-    height: SIZE,
-  },
-  beater: {
-    width: 5,
-    height: 5,
-    borderRadius: 999,
+    height: 24,
+    marginVertical: -2,
   },
 });
