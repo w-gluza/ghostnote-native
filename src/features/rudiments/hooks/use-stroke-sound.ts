@@ -21,17 +21,17 @@ type SampleSet<Name extends string> = Record<Name, number>;
 type Samples = SampleSet<"tap" | "accent">;
 
 const clickSamples: Samples = {
-  tap: require("@/assets/sounds/click.wav"),
-  accent: require("@/assets/sounds/click-accent.wav"),
+  tap: require("@/assets/sounds/click/tap.wav"),
+  accent: require("@/assets/sounds/click/accent.wav"),
 };
 const strokeSamples: Record<StrokeVoice, Samples> = {
   pad: {
-    tap: require("@/assets/sounds/pad-tap.wav"),
-    accent: require("@/assets/sounds/pad-accent.wav"),
+    tap: require("@/assets/sounds/pad/tap.wav"),
+    accent: require("@/assets/sounds/pad/accent.wav"),
   },
   snare: {
-    tap: require("@/assets/sounds/snare-tap.wav"),
-    accent: require("@/assets/sounds/snare-accent.wav"),
+    tap: require("@/assets/sounds/kit/snare/tap.wav"),
+    accent: require("@/assets/sounds/kit/snare/accent.wav"),
   },
 };
 
