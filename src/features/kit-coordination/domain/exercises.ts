@@ -204,8 +204,8 @@ export const kitExercises: KitExercise[] = [
     level: 3,
     defaultTempo: tempo(60),
     pattern: pattern(4, EIGHTHS, [
-      ...part(FLOOR_TOM, "right-hand", [1, 5], EIGHTHS),
       ...part(RACK_TOM, "left-hand", [3, 7], EIGHTHS),
+      ...part(FLOOR_TOM, "right-hand", [1, 5], EIGHTHS),
       ...part(KICK, "right-foot", [0, 4], EIGHTHS),
       ...part(HIHAT_PEDAL, "left-foot", [2, 6], EIGHTHS),
     ]),
