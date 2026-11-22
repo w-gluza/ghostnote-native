@@ -21,6 +21,7 @@ import {
 } from "./exercises.ts";
 import { midiNoteName, velocityLevel, type MidiNote } from "./midi-map.ts";
 import {
+  buildKitGrid,
   buildKitTimeline,
   columnCount,
   countLabels,
@@ -405,4 +406,27 @@ test("exercise names are short enough for one line on a small iPhone", () => {
     ],
   );
   assert.ok(kitExercises.every((exercise) => exercise.name.length <= 15));
+});
+
+test("the playhead visits every count, including the ones where nothing is written", () => {
+  for (const exercise of kitExercises) {
+    const grid = buildKitGrid(exercise.pattern);
+    assert.deepEqual(
+      grid.strokes.map((step) => step.column),
+      Array.from(
+        { length: columnCount(exercise.pattern) },
+        (_, column) => column,
+      ),
+      exercise.name,
+    );
+    assert.equal(
+      grid.strokes.flatMap((step) => step.events).length,
+      exercise.pattern.events.length,
+      exercise.name,
+    );
+  }
+
+  const samba = buildKitGrid(findKitExercise("samba-feet")!.pattern);
+  assert.deepEqual(samba.strokes[1], { beat: 0.25, column: 1, events: [] });
+  assert.equal(gapBeforeOrdinal(samba, 8), 0.25);
 });

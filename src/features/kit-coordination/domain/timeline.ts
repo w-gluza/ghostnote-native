@@ -50,6 +50,23 @@ export function buildKitTimeline(
   return { cycleBeats: toNumber(pattern.cycleDuration), strokes };
 }
 
+export function buildKitGrid(pattern: KitPattern): KitTimeline {
+  const written = buildKitTimeline(
+    pattern,
+    pattern.events.map((event) => event.note),
+  );
+  const strokes = Array.from(
+    { length: columnCount(pattern) },
+    (_, column): KitStep =>
+      written.strokes.find((step) => step.column === column) ?? {
+        beat: column / pattern.stepsPerBeat,
+        column,
+        events: [],
+      },
+  );
+  return { cycleBeats: written.cycleBeats, strokes };
+}
+
 export function countLabels(pattern: KitPattern) {
   const marks = SUBDIVISION_MARKS[pattern.stepsPerBeat] ?? [];
   return Array.from({ length: columnCount(pattern) }, (_, column) => {

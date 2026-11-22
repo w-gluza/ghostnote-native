@@ -32,7 +32,7 @@ import {
 } from "@/features/kit-coordination/domain/exercises";
 import { velocityLevel } from "@/features/kit-coordination/domain/midi-map";
 import {
-  buildKitTimeline,
+  buildKitGrid,
   toggled,
 } from "@/features/kit-coordination/domain/timeline";
 import type { KitExercise } from "@/features/kit-coordination/domain/types";
@@ -95,10 +95,7 @@ function KitPlayer({
 }) {
   const { pattern } = exercise;
   const [enabled, setEnabled] = useState(() => notesOf(pattern));
-  const timeline = useMemo(
-    () => buildKitTimeline(pattern, notesOf(pattern)),
-    [pattern],
-  );
+  const timeline = useMemo(() => buildKitGrid(pattern), [pattern]);
   const [bpm, setBpm] = useState(
     clampBpm(round?.initialBpm ?? exercise.defaultTempo.bpm),
   );
