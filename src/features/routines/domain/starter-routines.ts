@@ -9,14 +9,14 @@ export const quickWarmUp: Routine = {
   exercises: [
     presetExercise("quick-warm-up-e1", "single-stroke-roll", 2, 70, 3),
     presetKitExercise(
-      "quick-warm-up-e2",
+      "quick-warm-up-snare-over-feet",
       findKitExercise("snare-over-feet"),
       2,
       70,
       3,
     ),
     presetKitExercise(
-      "quick-warm-up-e3",
+      "quick-warm-up-basic-rock",
       findGroove("groove-basic-rock"),
       2,
       80,

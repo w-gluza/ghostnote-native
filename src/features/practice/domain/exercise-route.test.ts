@@ -23,7 +23,7 @@ test("each routine exercise opens in the player that can play it", () => {
         params: {
           id: "snare-over-feet",
           routine: "quick-warm-up",
-          exercise: "quick-warm-up-e2",
+          exercise: "quick-warm-up-snare-over-feet",
         },
       },
       {
@@ -31,7 +31,7 @@ test("each routine exercise opens in the player that can play it", () => {
         params: {
           id: "groove-basic-rock",
           routine: "quick-warm-up",
-          exercise: "quick-warm-up-e3",
+          exercise: "quick-warm-up-basic-rock",
         },
       },
     ],
