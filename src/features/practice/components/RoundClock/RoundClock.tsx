@@ -32,7 +32,7 @@ export function RoundClock({
   const [playedMs, setPlayedMs] = useState(() =>
     roundPlayedMs(routineId, exerciseId, roundId, Date.now()),
   );
-  const wasReached = useRef(isTargetReached(playedMs, targetMs));
+  const wasReached = useRef(false);
   const targetReached = useEffectEvent(onTargetReached);
   useEffect(() => {
     const read = () => {
