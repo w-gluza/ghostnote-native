@@ -1,5 +1,10 @@
 import type { VideoSource } from "expo-video";
-import { Pressable, StyleSheet, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  type ImageSourcePropType,
+} from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
 import { RowText } from "@/components/RowText/RowText";
@@ -13,6 +18,7 @@ export type Rudiment = {
   rounds: number;
   bpm: number;
   video?: VideoSource;
+  photo?: ImageSourcePropType;
 };
 
 type RudimentRowProps = {
@@ -60,6 +66,7 @@ export function RudimentRow({
         </Pressable>
         <RudimentThumbnail
           video={rudiment.video}
+          photo={rudiment.photo}
           label={rudiment.name}
           size="large"
         />

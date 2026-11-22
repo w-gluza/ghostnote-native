@@ -1,5 +1,12 @@
 import { Stack, useIsFocused, useLocalSearchParams } from "expo-router";
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   AppState,
   Image,
@@ -14,9 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AppText } from "@/components/AppText/AppText";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
-import { PlayButton } from "@/components/PlayButton/PlayButton";
-import { Stat } from "@/components/Stat/Stat";
-import { TempoStepper } from "@/components/TempoStepper/TempoStepper";
+import { PlaybackControls } from "@/components/PlaybackControls/PlaybackControls";
 import { RhythmGrid } from "@/features/kit-coordination/components/RhythmGrid/RhythmGrid";
 import {
   findKitExercise,
@@ -58,15 +63,15 @@ const KIT_PICTURES: Record<
   { source: ImageSourcePropType; aspectRatio: number }
 > = {
   "hihat-snare-kick": {
-    source: require("@/assets/images/kit-hihat-snare-kick.webp"),
+    source: require("@/assets/images/kits/hihat-snare-kick.webp"),
     aspectRatio: 1153 / 962,
   },
   "hihat-snare-kick-ride": {
-    source: require("@/assets/images/kit-hihat-snare-kick-ride.webp"),
+    source: require("@/assets/images/kits/hihat-snare-kick-ride.webp"),
     aspectRatio: 1290 / 931,
   },
   full: {
-    source: require("@/assets/images/kit-full.webp"),
+    source: require("@/assets/images/kits/full.webp"),
     aspectRatio: 1441 / 869,
   },
 };
@@ -81,10 +86,12 @@ function KitPlayer({
   exercise,
   round,
   isInRoutine,
+  roundBar,
 }: {
   exercise: KitExercise;
   round?: RoutineRoundInPlay;
   isInRoutine: boolean;
+  roundBar?: ReactNode;
 }) {
   const { pattern } = exercise;
   const [enabled, setEnabled] = useState(() => notesOf(pattern));
@@ -201,7 +208,6 @@ function KitPlayer({
         showsVerticalScrollIndicator={false}
       >
         <PageTitle
-          style={styles.title}
           numberOfLines={fitsOneLine ? 1 : undefined}
           adjustsFontSizeToFit={fitsOneLine}
           minimumFontScale={0.75}
@@ -222,41 +228,38 @@ function KitPlayer({
           <InlineMessage style={styles.problem}>{soundProblem}</InlineMessage>
         ) : null}
 
-        <Image
-          source={picture.source}
-          resizeMode="contain"
-          accessible={false}
-          accessibilityIgnoresInvertColors
-          style={[
-            styles.kit,
-            isInRoutine && styles.kitInRoutine,
-            { aspectRatio: picture.aspectRatio },
-          ]}
-        />
-
-        <RhythmGrid
-          pattern={pattern}
-          enabled={enabled}
-          playingColumn={playingColumn}
-          onToggle={(row) => setEnabled(toggled(enabled, row))}
-        />
-      </ScrollView>
-      <View style={styles.controls}>
-        <TempoStepper
-          canDecrease={bpm > MIN_BPM}
-          canIncrease={bpm < MAX_BPM}
-          onDecrease={() => changeBpm(bpm - BPM_STEP)}
-          onIncrease={() => changeBpm(bpm + BPM_STEP)}
-        >
-          <Stat
-            value={bpm}
-            label="BPM"
-            accessibilityLabel={`${bpm} beats per minute`}
-            style={styles.readout}
+        <View style={styles.stage}>
+          <Image
+            source={picture.source}
+            resizeMode="contain"
+            accessible={false}
+            accessibilityIgnoresInvertColors
+            style={[
+              styles.kit,
+              isInRoutine && styles.kitInRoutine,
+              { aspectRatio: picture.aspectRatio },
+            ]}
           />
-        </TempoStepper>
-        <PlayButton isPlaying={playback.isPlaying} onPress={togglePlayback} />
-      </View>
+
+          <RhythmGrid
+            pattern={pattern}
+            enabled={enabled}
+            playingColumn={playingColumn}
+            onToggle={(row) => setEnabled(toggled(enabled, row))}
+          />
+        </View>
+      </ScrollView>
+      {roundBar}
+      <PlaybackControls
+        variant="bar"
+        bpm={bpm}
+        minBpm={MIN_BPM}
+        maxBpm={MAX_BPM}
+        step={BPM_STEP}
+        isPlaying={playback.isPlaying}
+        onChangeBpm={changeBpm}
+        onTogglePlayback={togglePlayback}
+      />
     </>
   );
 }
@@ -288,6 +291,29 @@ export function KitExerciseScreenFor({
         }
       : undefined;
 
+  const roundBar =
+    practice.routine && practice.exercise ? (
+      <RoundBar
+        done={practice.done}
+        goal={practice.roundGoal}
+        onUndo={practice.undo}
+        onFinish={finishRound}
+        clock={
+          practice.round ? (
+            <RoundClock
+              key={practice.round.id}
+              routineId={practice.routine.id}
+              exerciseId={practice.exercise.id}
+              roundId={practice.round.id}
+              position={practice.done + 1}
+              targetSeconds={practice.round.durationSeconds}
+              onTargetReached={finishRound}
+            />
+          ) : null
+        }
+      />
+    ) : undefined;
+
   return (
     <SafeAreaView
       edges={["bottom"]}
@@ -300,33 +326,13 @@ export function KitExerciseScreenFor({
           exercise={exercise}
           round={round}
           isInRoutine={practice.exercise !== undefined}
+          roundBar={roundBar}
         />
       ) : (
         <AppText variant="bodySmall" tone="secondary">
           This exercise could not be found.
         </AppText>
       )}
-      {exercise && practice.routine && practice.exercise ? (
-        <RoundBar
-          done={practice.done}
-          goal={practice.roundGoal}
-          onUndo={practice.undo}
-          onFinish={finishRound}
-          clock={
-            practice.round ? (
-              <RoundClock
-                key={practice.round.id}
-                routineId={practice.routine.id}
-                exerciseId={practice.exercise.id}
-                roundId={practice.round.id}
-                position={practice.done + 1}
-                targetSeconds={practice.round.durationSeconds}
-                onTargetReached={finishRound}
-              />
-            ) : null
-          }
-        />
-      ) : null}
     </SafeAreaView>
   );
 }
@@ -350,14 +356,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingBottom: spacing.xl,
+    flexGrow: 1,
   },
-  title: {
-    marginBottom: spacing.lg,
+  stage: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingVertical: spacing.lg,
   },
   kitInRoutine: {
     height: 150,
-    marginTop: spacing.sm,
     marginBottom: spacing.xl,
   },
   problem: {
@@ -368,16 +375,6 @@ const styles = StyleSheet.create({
     width: undefined,
     maxWidth: "100%",
     height: 200,
-    marginTop: spacing.md,
     marginBottom: spacing.xxl,
-  },
-  controls: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: spacing.md,
-  },
-  readout: {
-    minWidth: 72,
   },
 });

@@ -4,7 +4,8 @@ import { StyleSheet, View } from "react-native";
 import { Button } from "@/components/Button/Button";
 import { IconButton } from "@/components/IconButton/IconButton";
 import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
-import { divider, spacing } from "@/theme/layout";
+import { colors } from "@/theme/colors";
+import { spacing } from "@/theme/layout";
 
 type RoundBarProps = {
   done: number;
@@ -29,15 +30,15 @@ export function RoundBar({
   return (
     <View style={styles.bar}>
       <View style={styles.progress}>
-        {clock}
         <WeekProgress
           done={done}
           goal={goal}
-          unit="rounds"
+          unit=""
           description={`${done} of ${goal} rounds done`}
           showMarks={hasMarks}
           showCount={!hasMarks}
         />
+        {clock}
       </View>
       {done > 0 ? (
         <IconButton
@@ -46,7 +47,12 @@ export function RoundBar({
           onPress={onUndo}
         />
       ) : null}
-      <Button variant="tonal" disabled={isComplete} onPress={onFinish}>
+      <Button
+        variant="tonal"
+        disabled={isComplete}
+        style={styles.log}
+        onPress={onFinish}
+      >
         Log Round
       </Button>
     </View>
@@ -55,17 +61,21 @@ export function RoundBar({
 
 const styles = StyleSheet.create({
   bar: {
-    marginTop: spacing.sm,
-    paddingTop: spacing.sm,
-    marginBottom: -spacing.sm,
-    ...divider.top,
+    paddingVertical: spacing.md,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
   },
   progress: {
     flex: 1,
-    alignItems: "flex-start",
-    gap: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  log: {
+    paddingHorizontal: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.disabled,
+    backgroundColor: "transparent",
   },
 });

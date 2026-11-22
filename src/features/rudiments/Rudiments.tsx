@@ -4,6 +4,8 @@ import { FlatList, StyleSheet, View } from "react-native";
 
 import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { IconButton } from "@/components/IconButton/IconButton";
+import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
+import { AppText } from "@/components/AppText/AppText";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { FilterChips } from "@/features/rudiments/components/FilterChips/FilterChips";
 import {
@@ -22,8 +24,6 @@ import {
   stickingOf,
 } from "@/features/rudiments/domain/library";
 import { buildTimeline } from "@/features/rudiments/domain/timeline";
-import { rudimentVideos } from "@/features/rudiments/domain/videos";
-import { colors } from "@/theme/colors";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 import { nativeHeader } from "@/theme/navigation";
 
@@ -38,15 +38,10 @@ const rudiments: RudimentSummary[] = rudimentLibrary.map((rudiment) => {
     phrases: timeline.phrases.map((phrase) =>
       phrase.flatMap((index) => timeline.strokes[index] ?? []),
     ),
-    video: rudimentVideos[rudiment.id],
   };
 });
 
 const categories = categoryOptions(rudiments);
-
-function Separator() {
-  return <View style={styles.separator} />;
-}
 
 export default function RudimentsScreen() {
   const [isSearching, setIsSearching] = useState(false);
@@ -65,21 +60,21 @@ export default function RudimentsScreen() {
     <FlatList
       data={results}
       keyExtractor={(rudiment) => rudiment.name}
-      renderItem={({ item }) => {
+      renderItem={({ item, index }) => {
         const { id } = item;
         return (
           <RudimentListItem
             rudiment={item}
-            onPress={
-              id
-                ? () =>
-                    router.push({ pathname: "/rudiment/[id]", params: { id } })
-                : undefined
-            }
+            position={index + 1}
+            isLast={index === results.length - 1}
+            onPress={() => {
+              if (id) {
+                router.push({ pathname: "/rudiment/[id]", params: { id } });
+              }
+            }}
           />
         );
       }}
-      ItemSeparatorComponent={Separator}
       ListEmptyComponent={
         <EmptyState>
           {category === ALL_CATEGORIES
@@ -93,7 +88,7 @@ export default function RudimentsScreen() {
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       ListHeaderComponent={
-        <View style={styles.header}>
+        <View>
           <Stack.Screen
             options={{ ...nativeHeader, headerBackTitle: "Library" }}
           />
@@ -121,11 +116,30 @@ export default function RudimentsScreen() {
               />
             </View>
           )}
-          <FilterChips
-            options={categories}
-            selected={category}
-            onSelect={setCategory}
-          />
+          {isSearching ? null : (
+            <AppText variant="body" tone="secondary" style={styles.subtitle}>
+              The 40 essential sticking patterns, from rolls and diddles to
+              flams and drags. Play each one against a click at your own tempo.
+            </AppText>
+          )}
+          <View style={styles.filters}>
+            <FilterChips
+              options={categories}
+              selected={category}
+              onSelect={setCategory}
+            />
+          </View>
+          {results.length > 0 ? (
+            <SectionHeader
+              title="PATTERNS"
+              trailing={
+                results.length === 1
+                  ? "1 pattern"
+                  : `${results.length} patterns`
+              }
+              style={styles.sectionHeader}
+            />
+          ) : null}
         </View>
       }
     />
@@ -133,9 +147,14 @@ export default function RudimentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    gap: spacing.lg,
-    paddingBottom: spacing.md,
+  subtitle: {
+    marginTop: spacing.sm,
+  },
+  filters: {
+    marginTop: spacing.xl,
+  },
+  sectionHeader: {
+    marginTop: spacing.xl,
   },
   titleRow: {
     flexDirection: "row",
@@ -154,9 +173,5 @@ const styles = StyleSheet.create({
   searchRow: {
     minHeight: layout.minTouchSize,
     justifyContent: "flex-end",
-  },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.border,
   },
 });

@@ -4,7 +4,7 @@
     "slug": "ghostnote-native",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/app/icon.png",
     "scheme": "ghostnotenative",
     "userInterfaceStyle": "dark",
     "ios": {
@@ -20,7 +20,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#151619",
-          "image": "./assets/images/splash-pad.png",
+          "image": "./assets/images/app/splash-pad.png",
           "imageWidth": 300
         }
       ],

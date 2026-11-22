@@ -17,6 +17,7 @@ import {
   nextExercise,
 } from "@/features/practice/domain/session";
 import { findEntry } from "@/features/library/domain/catalogue";
+import { libraryPhotos } from "@/features/library/photos";
 import { exerciseRoute } from "@/features/practice/domain/exercise-route";
 import { usePracticeRoutine } from "@/features/practice/stores/practice-choice";
 import {
@@ -47,14 +48,18 @@ export default function PracticeScreen() {
   const routine = usePracticeRoutine();
   const session = useActiveSession(routine.id);
   const hasUnfinishedPractice = session !== undefined;
-  const rudiments = routine.exercises.map((exercise) => ({
-    id: exercise.id,
-    name: findEntry(exercise.pattern.rudimentId)?.name ?? "",
-    minutes: exerciseMinutes(exercise),
-    rounds: exercise.rounds.length,
-    bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
-    video: rudimentVideos[exercise.pattern.rudimentId],
-  }));
+  const rudiments = routine.exercises.map((exercise) => {
+    const entry = findEntry(exercise.pattern.rudimentId);
+    return {
+      id: exercise.id,
+      name: entry?.name ?? "",
+      minutes: exerciseMinutes(exercise),
+      rounds: exercise.rounds.length,
+      bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
+      video: rudimentVideos[exercise.pattern.rudimentId],
+      photo: entry ? libraryPhotos[entry.source] : undefined,
+    };
+  });
   const open = () =>
     router.push({ pathname: "/routine", params: { id: routine.id } });
   const start = () => {

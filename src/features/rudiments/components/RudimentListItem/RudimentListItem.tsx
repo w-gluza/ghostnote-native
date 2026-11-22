@@ -1,12 +1,10 @@
-import { SymbolView } from "expo-symbols";
-import type { VideoSource } from "expo-video";
-import { Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 
 import { AppText } from "@/components/AppText/AppText";
+import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { RowText } from "@/components/RowText/RowText";
-import { RudimentThumbnail } from "@/features/rudiments/components/RudimentThumbnail/RudimentThumbnail";
-import { colors } from "@/theme/colors";
-import { layoutStyles, spacing } from "@/theme/layout";
+import { stickingPreview } from "@/features/rudiments/domain/sticking-preview";
+import { spacing } from "@/theme/layout";
 import { typography } from "@/theme/typography";
 
 export type StickingStroke = { hand: string; grace: string[] };
@@ -18,18 +16,20 @@ export type RudimentSummary = {
   level: number;
   sticking: string;
   phrases: StickingStroke[][];
-  video?: VideoSource;
 };
 
 const CELL_WIDTH = 14;
 
 type RudimentListItemProps = {
   rudiment: RudimentSummary;
-  onPress?: () => void;
+  position: number;
+  isLast: boolean;
+  onPress: () => void;
 };
 
 function Sticking({ phrases }: { phrases: StickingStroke[][] }) {
   const { fontScale } = useWindowDimensions();
+  const preview = stickingPreview(phrases);
 
   return (
     <View
@@ -37,7 +37,7 @@ function Sticking({ phrases }: { phrases: StickingStroke[][] }) {
       importantForAccessibility="no-hide-descendants"
       style={styles.sticking}
     >
-      {phrases.map((phrase, phraseIndex) => (
+      {preview.phrases.map((phrase, phraseIndex) => (
         <View key={phraseIndex} style={styles.phrase}>
           {phrase.map((stroke, index) => (
             <View
@@ -64,45 +64,38 @@ function Sticking({ phrases }: { phrases: StickingStroke[][] }) {
           ))}
         </View>
       ))}
+      {preview.isShortened ? (
+        <AppText variant="bodySmall" tone="secondary" style={styles.stroke}>
+          …
+        </AppText>
+      ) : null}
     </View>
   );
 }
 
-export function RudimentListItem({ rudiment, onPress }: RudimentListItemProps) {
+export function RudimentListItem({
+  rudiment,
+  position,
+  isLast,
+  onPress,
+}: RudimentListItemProps) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
+    <NumberedRow
+      position={position}
+      isLast={isLast}
       accessibilityLabel={`${rudiment.name}, ${rudiment.category}, level ${rudiment.level}, sticking ${rudiment.sticking}`}
-      style={({ pressed }) => [styles.row, pressed && layoutStyles.pressed]}
+      onPress={onPress}
     >
-      <RudimentThumbnail video={rudiment.video} label={rudiment.name} />
       <RowText
         label={`${rudiment.category} · Lvl ${rudiment.level}`.toUpperCase()}
         title={rudiment.name}
         detail={<Sticking phrases={rudiment.phrases} />}
-        style={styles.details}
       />
-      <SymbolView
-        name="chevron.right"
-        size={13}
-        weight="medium"
-        tintColor={colors.text.secondary}
-      />
-    </Pressable>
+    </NumberedRow>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  details: {
-    flex: 1,
-  },
   sticking: {
     flexDirection: "row",
     flexWrap: "wrap",

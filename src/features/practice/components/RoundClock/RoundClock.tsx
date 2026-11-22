@@ -59,7 +59,7 @@ export function RoundClock({
       tabular
       accessibilityLabel={`Round ${position}, played ${spokenClock(playedMs)} of ${spokenClock(targetMs)}${isReached ? ", target reached" : ""}`}
     >
-      <AppText variant="heading" tone={isReached ? "accent" : "primary"}>
+      <AppText variant="bodyStrong" tone={isReached ? "accent" : "primary"}>
         {clockLabel(playedMs)}
       </AppText>{" "}
       / {clockLabel(targetMs)}

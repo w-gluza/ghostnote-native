@@ -21,6 +21,8 @@ export function WeekProgress({
   showMarks = true,
   showCount = true,
 }: WeekProgressProps) {
+  const label = showCount ? `${done}/${goal} ${unit}`.trim() : unit;
+
   return (
     <View accessible accessibilityLabel={description} style={styles.container}>
       {showMarks ? (
@@ -33,9 +35,11 @@ export function WeekProgress({
           ))}
         </View>
       ) : null}
-      <AppText variant="bodySmall" tone="secondary">
-        {showCount ? `${done}/${goal} ${unit}`.trim() : unit}
-      </AppText>
+      {label ? (
+        <AppText variant="bodySmall" tone="secondary">
+          {label}
+        </AppText>
+      ) : null}
     </View>
   );
 }

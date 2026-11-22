@@ -16,15 +16,13 @@ import {
   View,
 } from "react-native";
 
-import { Stat } from "@/components/Stat/Stat";
-import { TempoStepper } from "@/components/TempoStepper/TempoStepper";
+import { PlaybackControls } from "@/components/PlaybackControls/PlaybackControls";
 import {
   ACCENT_LIFT,
   PadAnimation,
   TAP_LIFT,
   type StickMotion,
 } from "@/features/rudiments/components/PadAnimation/PadAnimation";
-import { PlayButton } from "@/components/PlayButton/PlayButton";
 import { StickingPattern } from "@/features/rudiments/components/StickingPattern/StickingPattern";
 import {
   beatsUntilSameHand,
@@ -285,21 +283,17 @@ export function RudimentPlayer({
         activeIndex={playback.isPlaying ? playback.activeIndex : null}
       />
 
-      <TempoStepper
-        canDecrease={bpm > MIN_BPM}
-        canIncrease={bpm < MAX_BPM}
-        onDecrease={() => changeBpm(bpm - BPM_STEP)}
-        onIncrease={() => changeBpm(bpm + BPM_STEP)}
-      >
-        <Stat
-          value={bpm}
-          label="BPM"
-          accessibilityLabel={`${bpm} beats per minute`}
-          style={styles.readout}
-        />
-      </TempoStepper>
-
-      <PlayButton isPlaying={playback.isPlaying} onPress={togglePlayback} />
+      <PlaybackControls
+        variant="stacked"
+        bpm={bpm}
+        minBpm={MIN_BPM}
+        maxBpm={MAX_BPM}
+        step={BPM_STEP}
+        isPlaying={playback.isPlaying}
+        style={isCompact && styles.playerCompact}
+        onChangeBpm={changeBpm}
+        onTogglePlayback={togglePlayback}
+      />
       {children}
     </View>
   );
@@ -312,8 +306,5 @@ const styles = StyleSheet.create({
   },
   playerCompact: {
     gap: spacing.lg,
-  },
-  readout: {
-    minWidth: 72,
   },
 });

@@ -1,5 +1,12 @@
 import type { VideoSource } from "expo-video";
-import { Image, StyleSheet, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  View,
+  type ImageSourcePropType,
+} from "react-native";
+
+import { libraryPhotos } from "@/features/library/photos";
 
 import { RudimentVideo } from "@/features/rudiments/components/RudimentVideo/RudimentVideo";
 import { colors } from "@/theme/colors";
@@ -8,12 +15,14 @@ import { layout } from "@/theme/layout";
 type RudimentThumbnailProps = {
   label: string;
   video?: VideoSource;
+  photo?: ImageSourcePropType;
   size?: "small" | "large";
 };
 
 export function RudimentThumbnail({
   label,
   video,
+  photo = libraryPhotos.rudiment,
   size = "small",
 }: RudimentThumbnailProps) {
   return (
@@ -23,7 +32,7 @@ export function RudimentThumbnail({
       ) : (
         <Image
           accessible={false}
-          source={placeholder}
+          source={photo}
           resizeMode="cover"
           style={styles.photo}
         />
@@ -31,8 +40,6 @@ export function RudimentThumbnail({
     </View>
   );
 }
-
-const placeholder = require("@/assets/images/rudiment-placeholder.jpg");
 
 const styles = StyleSheet.create({
   thumbnail: {
