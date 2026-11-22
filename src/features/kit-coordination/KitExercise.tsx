@@ -232,18 +232,19 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
   );
 }
 
-export default function KitExerciseScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const exercise = findKitExercise(id);
-
+export function KitExerciseScreenFor({
+  exercise,
+  backTitle,
+}: {
+  exercise: KitExercise | undefined;
+  backTitle: string;
+}) {
   return (
     <SafeAreaView
       edges={["bottom"]}
       style={[layoutStyles.screen, styles.screen]}
     >
-      <Stack.Screen
-        options={{ ...nativeHeader, headerBackTitle: "Kit Coordination" }}
-      />
+      <Stack.Screen options={{ ...nativeHeader, headerBackTitle: backTitle }} />
       {exercise ? (
         <KitPlayer exercise={exercise} />
       ) : (
@@ -252,6 +253,17 @@ export default function KitExerciseScreen() {
         </AppText>
       )}
     </SafeAreaView>
+  );
+}
+
+export default function KitExerciseScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  return (
+    <KitExerciseScreenFor
+      exercise={findKitExercise(id)}
+      backTitle="Kit Coordination"
+    />
   );
 }
 

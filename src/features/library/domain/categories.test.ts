@@ -3,10 +3,10 @@ import { test } from "node:test";
 
 import { libraryCategories } from "./categories.ts";
 
-test("the library offers rudiments and kit coordination, in that order", () => {
+test("the library offers rudiments, kit coordination and grooves, in that order", () => {
   assert.deepEqual(
     libraryCategories.map((category) => category.title),
-    ["Rudiments", "Kit Coordination"],
+    ["Rudiments", "Kit Coordination", "Grooves"],
   );
 });
 

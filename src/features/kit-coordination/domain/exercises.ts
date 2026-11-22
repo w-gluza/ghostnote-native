@@ -1,18 +1,24 @@
-import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
 import type { PatternReference } from "../../rudiments/domain/types";
-import { midiNoteName, type MidiNote, type Velocity } from "./midi-map.ts";
-import type { KitEvent, KitExercise, KitPattern, Limb } from "./types";
-
-const RIDE = 51;
-const SNARE = 38;
-const KICK = 36;
-const HIHAT = 42;
-const HIHAT_PEDAL = 44;
-const OPEN_HIHAT = 46;
-const RACK_TOM = 48;
-const FLOOR_TOM = 45;
-const NORMAL: Velocity = 100;
-const GHOST: Velocity = 64;
+import { midiNoteName, type MidiNote } from "./midi-map.ts";
+import {
+  ALL_EIGHTHS,
+  EIGHTHS,
+  FLOOR_TOM,
+  GHOST,
+  HIHAT,
+  HIHAT_PEDAL,
+  KICK,
+  OPEN_HIHAT,
+  RACK_TOM,
+  RIDE,
+  SIXTEENTHS,
+  SNARE,
+  TRIPLETS,
+  part,
+  pattern,
+  tempo,
+} from "./notation.ts";
+import type { KitExercise, KitPattern, Limb } from "./types";
 
 const LIMB_NAMES: Record<Limb, string> = {
   "right-hand": "Right hand",
@@ -20,46 +26,6 @@ const LIMB_NAMES: Record<Limb, string> = {
   "right-foot": "Right foot",
   "left-foot": "Left foot",
 };
-
-const EIGHTHS = 2;
-const TRIPLETS = 3;
-const SIXTEENTHS = 4;
-const ALL_EIGHTHS = [0, 1, 2, 3, 4, 5, 6, 7];
-
-function part(
-  note: MidiNote,
-  limb: Limb,
-  steps: number[],
-  stepsPerBeat: number,
-  velocity = NORMAL,
-) {
-  return steps.map((step): KitEvent => ({
-    id: `${note}-${step}`,
-    note,
-    velocity,
-    limb,
-    at: fraction(step, stepsPerBeat),
-  }));
-}
-
-function pattern(
-  beats: number,
-  stepsPerBeat: number,
-  events: KitEvent[],
-): KitPattern {
-  return {
-    id: "standard",
-    version: 1,
-    timeSignature: { beats, unit: 4 },
-    stepsPerBeat,
-    cycleDuration: fraction(beats),
-    events,
-  };
-}
-
-function tempo(bpm: number) {
-  return { bpm, pulseQuarterUnits: ONE };
-}
 
 export const kitExercises: KitExercise[] = [
   {

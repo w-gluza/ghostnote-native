@@ -1,5 +1,6 @@
 import type { SymbolViewProps } from "expo-symbols";
 
+import { grooves } from "../../grooves/domain/grooves.ts";
 import { rudimentLibrary } from "../../rudiments/domain/library.ts";
 
 export type LibraryCategory = {
@@ -8,7 +9,7 @@ export type LibraryCategory = {
   description: string;
   detail: string;
   symbol: SymbolViewProps["name"];
-  route: "/rudiments" | "/kit-coordination";
+  route: "/rudiments" | "/kit-coordination" | "/grooves";
 };
 
 export const libraryCategories: LibraryCategory[] = [
@@ -27,5 +28,13 @@ export const libraryCategories: LibraryCategory[] = [
     detail: "Guided exercises",
     symbol: "circle.grid.2x2",
     route: "/kit-coordination",
+  },
+  {
+    id: "grooves",
+    title: "Grooves",
+    description: "Essential beats by style",
+    detail: `${grooves.length} beats`,
+    symbol: "waveform",
+    route: "/grooves",
   },
 ];
