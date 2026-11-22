@@ -225,7 +225,7 @@ export const kitExercises: KitExercise[] = [
   {
     id: "samba-feet",
     kind: "coordination",
-    name: "Samba Feet",
+    name: "Samba",
     level: 3,
     defaultTempo: tempo(60),
     pattern: pattern(2, SIXTEENTHS, [
@@ -260,7 +260,7 @@ export const kitExercises: KitExercise[] = [
   {
     id: "swing-time",
     kind: "coordination",
-    name: "Swing Time",
+    name: "Jazz Swing",
     level: 4,
     defaultTempo: tempo(80),
     pattern: pattern(4, TRIPLETS, [

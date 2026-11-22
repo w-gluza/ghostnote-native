@@ -96,7 +96,7 @@ export const grooves: Groove[] = [
     ...snare([2, 6], EIGHTHS),
     ...kick([0, 3, 4], EIGHTHS),
   ]),
-  groove("four-on-the-floor", "Four on Floor", "Pop", 1, 100, EIGHTHS, [
+  groove("four-on-the-floor", "Four on the Floor", "Pop", 1, 100, EIGHTHS, [
     ...hihat(EVERY_EIGHTH, EIGHTHS),
     ...snare([2, 6], EIGHTHS),
     ...kick([0, 2, 4, 6], EIGHTHS),

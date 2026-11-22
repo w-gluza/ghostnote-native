@@ -401,8 +401,8 @@ test("exercise names are short enough for one line on a small iPhone", () => {
       "Four-Way",
       "Open Hi-Hat",
       "Linear Four-Way",
-      "Samba Feet",
-      "Swing Time",
+      "Samba",
+      "Jazz Swing",
     ],
   );
   assert.ok(kitExercises.every((exercise) => exercise.name.length <= 15));
