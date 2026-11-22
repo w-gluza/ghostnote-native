@@ -372,7 +372,7 @@ const fourWay = {
 };
 const coordination = {
   kind: "coordination" as const,
-  name: "Four-Way Coordination",
+  name: "Four-Way",
 };
 
 test("kit coordination practice is saved by exercise id and kind, without copying the pattern", () => {
@@ -388,7 +388,7 @@ test("kit coordination practice is saved by exercise id and kind, without copyin
     { ...saved?.exercises[0], rounds: undefined },
     {
       kind: "coordination",
-      rudimentName: "Four-Way Coordination",
+      rudimentName: "Four-Way",
       pattern: fourWay,
       rounds: undefined,
     },
@@ -403,7 +403,7 @@ test("kit coordination practice interrupted by the app closing is kept with its 
 
   const [saved] = createSessionStore(storage).freeHistory();
   assert.equal(saved?.exercises[0]?.kind, "coordination");
-  assert.equal(saved?.exercises[0]?.rudimentName, "Four-Way Coordination");
+  assert.equal(saved?.exercises[0]?.rudimentName, "Four-Way");
 });
 
 test("rudiment practice saved before exercise kinds existed still loads, and stays without a kind", () => {
