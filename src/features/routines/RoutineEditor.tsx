@@ -20,21 +20,20 @@ import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { newId } from "@/features/rudiments/domain/ids";
 import {
-  rudimentLibrary,
-  findRudiment,
-} from "@/features/rudiments/domain/library";
+  catalogueSections,
+  findEntry,
+} from "@/features/library/domain/catalogue";
 import {
   findRoutine,
   saveRoutine,
 } from "@/features/routines/stores/saved-routines";
 import {
   exerciseMinutes,
-  newExercise,
+  newExerciseFor,
   routineMinutes,
 } from "@/features/routines/domain/routine-builder";
 import { hasRoutineChanged } from "@/features/routines/domain/routine-form";
 import type { RoutineExercise } from "@/features/routines/domain/types";
-import type { Rudiment } from "@/features/rudiments/domain/types";
 import { colors } from "@/theme/colors";
 import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
 import { editorStyles } from "@/features/routines/editorStyles";
@@ -86,8 +85,11 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
   };
   const open = exercises.find((exercise) => exercise.id === openId);
 
-  const add = (rudiment: Rudiment) => {
-    setExercises((current) => [...current, newExercise(rudiment)]);
+  const add = (id: string) => {
+    const added = newExerciseFor(id);
+    if (added) {
+      setExercises((current) => [...current, added]);
+    }
     setIsAdding(false);
   };
   const [saveFailed, setSaveFailed] = useState(false);
@@ -176,7 +178,7 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         <PageTitle>{source ? "Edit Routine" : "New Routine"}</PageTitle>
         {canSave ? null : (
           <AppText variant="bodySmall" tone="secondary" style={styles.hint}>
-            Add a name and at least one rudiment to save.
+            Add a name and at least one exercise to save.
           </AppText>
         )}
         {saveFailed ? (
@@ -203,8 +205,8 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
         />
 
         {exercises.map((exercise, index) => {
-          const rudiment = findRudiment(exercise.pattern.rudimentId);
-          if (!rudiment) {
+          const entry = findEntry(exercise.pattern.rudimentId);
+          if (!entry) {
             return null;
           }
           const rounds = exercise.rounds.length;
@@ -213,51 +215,61 @@ export default function RoutineEditorScreen({ onDelete }: RoutineEditorProps) {
             <NumberedRow
               key={exercise.id}
               position={index + 1}
-              accessibilityLabel={`${rudiment.name}, ${detail}`}
+              accessibilityLabel={`${entry.name}, ${detail}`}
               onPress={() => setOpenId(exercise.id)}
             >
-              <RowText title={rudiment.name} titleLines={1} detail={detail} />
+              <RowText title={entry.name} titleLines={1} detail={detail} />
             </NumberedRow>
           );
         })}
 
-        {rudimentLibrary.length > 0 ? (
-          <Button
-            variant="text"
-            tone="accent"
-            icon="plus"
-            accessibilityState={{ expanded: isAdding }}
-            style={editorStyles.add}
-            onPress={() => setIsAdding((adding) => !adding)}
-          >
-            Add Rudiment
-          </Button>
-        ) : null}
+        <Button
+          variant="text"
+          tone="accent"
+          icon="plus"
+          accessibilityState={{ expanded: isAdding }}
+          style={editorStyles.add}
+          onPress={() => setIsAdding((adding) => !adding)}
+        >
+          Add Exercise
+        </Button>
 
         {isAdding
-          ? rudimentLibrary.map((rudiment) => (
-              <Pressable
-                key={rudiment.id}
-                accessibilityRole="button"
-                accessibilityLabel={`Add ${rudiment.name}, ${rudiment.category}, level ${rudiment.level}`}
-                onPress={() => add(rudiment)}
-                style={({ pressed }) => [
-                  styles.choice,
-                  pressed && layoutStyles.pressed,
-                ]}
-              >
-                <RowText
-                  label={`${rudiment.category} · Lvl ${rudiment.level}`.toUpperCase()}
-                  title={rudiment.name}
-                  style={styles.choiceText}
-                />
-                <SymbolView
-                  name="plus"
-                  size={13}
-                  weight="medium"
-                  tintColor={colors.accent}
-                />
-              </Pressable>
+          ? catalogueSections.map((section) => (
+              <View key={section.title}>
+                <AppText
+                  variant="overline"
+                  tone="secondary"
+                  accessibilityRole="header"
+                  style={styles.choiceSection}
+                >
+                  {section.title.toUpperCase()}
+                </AppText>
+                {section.entries.map((entry) => (
+                  <Pressable
+                    key={entry.id}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Add ${entry.name}, ${entry.category}, level ${entry.level}`}
+                    onPress={() => add(entry.id)}
+                    style={({ pressed }) => [
+                      styles.choice,
+                      pressed && layoutStyles.pressed,
+                    ]}
+                  >
+                    <RowText
+                      label={`${entry.category} · Lvl ${entry.level}`.toUpperCase()}
+                      title={entry.name}
+                      style={styles.choiceText}
+                    />
+                    <SymbolView
+                      name="plus"
+                      size={13}
+                      weight="medium"
+                      tintColor={colors.accent}
+                    />
+                  </Pressable>
+                ))}
+              </View>
             ))
           : null}
 
@@ -299,6 +311,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     borderRadius: layout.radius.panel,
     backgroundColor: colors.surface,
+  },
+  choiceSection: {
+    marginTop: spacing.xl,
   },
   choice: {
     paddingVertical: spacing.lg,

@@ -15,11 +15,8 @@ import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
 import { fraction, multiply } from "@/features/rudiments/domain/fraction";
-import {
-  defaultBpm,
-  findRudiment,
-  resolvePattern,
-} from "@/features/rudiments/domain/library";
+import { findEntry } from "@/features/library/domain/catalogue";
+import { resolvePattern } from "@/features/rudiments/domain/library";
 import { evenStep, scaleToStep } from "@/features/rudiments/domain/timeline";
 import { MAX_BPM, MIN_BPM } from "@/features/rudiments/domain/timing";
 import {
@@ -57,7 +54,7 @@ export function ExerciseEditor({
 }) {
   const { fontScale } = useWindowDimensions();
   const roundColumn = { width: ROUND_COLUMN_WIDTH * fontScale };
-  const rudiment = findRudiment(exercise.pattern.rudimentId);
+  const entry = findEntry(exercise.pattern.rudimentId);
   const pattern = resolvePattern(exercise.pattern);
   const step = pattern ? evenStep(pattern) : undefined;
   const strokeStep = step ? multiply(step, exercise.rhythmicScale) : undefined;
@@ -77,7 +74,7 @@ export function ExerciseEditor({
       rounds: [
         ...exercise.rounds,
         newRound(
-          last?.tempo.bpm ?? (rudiment ? defaultBpm(rudiment) : 80),
+          last?.tempo.bpm ?? entry?.defaultBpm ?? 80,
           last?.durationSeconds ?? NEW_ROUND_SECONDS,
         ),
       ],
@@ -105,14 +102,14 @@ export function ExerciseEditor({
         keyboardDismissMode="on-drag"
         automaticallyAdjustKeyboardInsets
       >
-        <PageTitle>{rudiment?.name}</PageTitle>
+        <PageTitle>{entry?.name}</PageTitle>
         <View style={styles.subtitleRow}>
           <AppText
             variant="body"
             tone="secondary"
-            accessibilityLabel={`${rudiment?.category}, level ${rudiment?.level}`}
+            accessibilityLabel={`${entry?.category}, level ${entry?.level}`}
           >
-            {rudiment?.category} · Lvl {rudiment?.level}
+            {entry?.category} · Lvl {entry?.level}
           </AppText>
           {pattern && strokeStep ? (
             <NoteValuePicker

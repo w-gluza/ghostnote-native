@@ -10,7 +10,8 @@ import { NumberedRow } from "@/components/NumberedRow/NumberedRow";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
-import { findRudiment, stickingOf } from "@/features/rudiments/domain/library";
+import { findEntry } from "@/features/library/domain/catalogue";
+import { exerciseRoute } from "@/features/practice/domain/exercise-route";
 import { useActiveSession } from "@/features/practice/stores/practice-session";
 import {
   selectPracticeRoutine,
@@ -46,17 +47,16 @@ function SetlistRow({
   position: number;
   onPress: () => void;
 }) {
-  const rudiment = findRudiment(exercise.pattern.rudimentId);
-  if (!rudiment) {
+  const entry = findEntry(exercise.pattern.rudimentId);
+  if (!entry) {
     return null;
   }
   const isComplete = done >= exercise.rounds.length;
-  const sticking = stickingOf(rudiment);
 
   return (
     <NumberedRow
       position={position}
-      accessibilityLabel={`${rudiment.name}, ${exerciseMinutes(exercise)} minutes, ${done} of ${exercise.rounds.length} rounds done, sticking ${sticking}`}
+      accessibilityLabel={`${entry.name}, ${exerciseMinutes(exercise)} minutes, ${done} of ${exercise.rounds.length} rounds done, ${entry.source === "rudiment" ? "sticking " : ""}${entry.detail}`}
       indicator={isComplete ? "checkmark" : "chevron"}
       trailing={
         <View style={styles.rowStatus}>
@@ -75,9 +75,9 @@ function SetlistRow({
       onPress={onPress}
     >
       <RowText
-        title={rudiment.name}
+        title={entry.name}
         titleTone={isComplete ? "secondary" : "primary"}
-        detail={sticking}
+        detail={entry.detail}
       />
     </NumberedRow>
   );
@@ -93,14 +93,7 @@ export default function RoutineScreen() {
     setSelectFailed(!selectPracticeRoutine(routine.id));
   const totalMinutes = routineMinutes(routine);
   const openExercise = (exercise: RoutineExercise) =>
-    router.push({
-      pathname: "/rudiment/[id]",
-      params: {
-        id: exercise.pattern.rudimentId,
-        routine: routine.id,
-        exercise: exercise.id,
-      },
-    });
+    router.push(exerciseRoute(exercise, routine.id));
   const session = useActiveSession(routine.id);
   const isComplete = isRoutineComplete(session, routine);
   const isStarted = session !== undefined;

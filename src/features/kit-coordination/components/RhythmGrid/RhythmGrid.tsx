@@ -55,6 +55,11 @@ export function RhythmGrid({
   const labelColumn = { width: LABEL_WIDTH * Math.min(fontScale, 1.4) };
   const counts = countLabels(pattern);
   const rows = rowsOf(pattern);
+  const playing = rows.filter((row) =>
+    row.notes.every((note) => enabled.includes(note)),
+  ).length;
+  const hint =
+    playing === rows.length ? "TAP TO MUTE" : `${playing} OF ${rows.length} ON`;
 
   return (
     <View>
@@ -63,7 +68,11 @@ export function RhythmGrid({
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       >
-        <View style={labelColumn} />
+        <View style={[styles.hint, labelColumn]}>
+          <AppText variant="caption" tone="secondary" numberOfLines={1}>
+            {hint}
+          </AppText>
+        </View>
         {counts.map((count, column) => (
           <View
             key={column}
@@ -142,6 +151,9 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "stretch",
+  },
+  hint: {
+    justifyContent: "center",
   },
   label: {
     minHeight: ROW_HEIGHT,

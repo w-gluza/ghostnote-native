@@ -8,6 +8,9 @@ import {
 } from "../../rudiments/domain/library.ts";
 import { scaleToStep } from "../../rudiments/domain/timeline.ts";
 import { quarterTempo } from "../../rudiments/domain/timing.ts";
+import { findEntry, findKitItem } from "../../library/domain/catalogue.ts";
+import { sessionReference } from "../../kit-coordination/domain/exercises.ts";
+import type { KitExercise } from "../../kit-coordination/domain/types";
 import type { Routine, RoutineExercise, RoutineRound } from "./types";
 import type { Rudiment } from "../../rudiments/domain/types";
 
@@ -29,6 +32,53 @@ export function newExercise(rudiment: Rudiment): RoutineExercise {
   };
 }
 
+export function newKitExercise(item: KitExercise): RoutineExercise {
+  return {
+    id: newId("exercise"),
+    pattern: sessionReference(item),
+    rhythmicScale: ONE,
+    rounds: Array.from({ length: NEW_EXERCISE_ROUNDS }, () =>
+      newRound(item.defaultTempo.bpm, NEW_ROUND_SECONDS),
+    ),
+  };
+}
+
+export function newExerciseFor(id: string): RoutineExercise | undefined {
+  const rudiment = findRudiment(id);
+  if (rudiment) {
+    return newExercise(rudiment);
+  }
+  const item = findKitItem(id);
+  return item ? newKitExercise(item) : undefined;
+}
+
+function presetRounds(id: string, count: number, bpm: number, minutes: number) {
+  const durationSeconds = Math.round((minutes * 60) / count);
+  return Array.from({ length: count }, (_, index) => ({
+    id: `${id}-r${index + 1}`,
+    tempo: quarterTempo(bpm),
+    durationSeconds,
+  }));
+}
+
+export function presetKitExercise(
+  id: string,
+  item: KitExercise | undefined,
+  count: number,
+  bpm: number,
+  minutes: number,
+): RoutineExercise {
+  if (!item) {
+    throw new Error(`No kit exercise for ${id}`);
+  }
+  return {
+    id,
+    pattern: sessionReference(item),
+    rhythmicScale: ONE,
+    rounds: presetRounds(id, count, bpm, minutes),
+  };
+}
+
 export function presetExercise(
   id: string,
   rudimentId: string,
@@ -40,16 +90,11 @@ export function presetExercise(
   if (!rudiment) {
     throw new Error(`No rudiment called ${rudimentId}`);
   }
-  const durationSeconds = Math.round((minutes * 60) / count);
   return {
     id,
     pattern: defaultPatternReference(rudiment),
     rhythmicScale: scaleToStep(defaultPattern(rudiment), ONE),
-    rounds: Array.from({ length: count }, (_, index) => ({
-      id: `${id}-r${index + 1}`,
-      tempo: quarterTempo(bpm),
-      durationSeconds,
-    })),
+    rounds: presetRounds(id, count, bpm, minutes),
   };
 }
 
@@ -88,7 +133,7 @@ export function routineLevel(routine: Pick<Routine, "exercises">) {
   return Math.max(
     1,
     ...routine.exercises.map(
-      (exercise) => findRudiment(exercise.pattern.rudimentId)?.level ?? 1,
+      (exercise) => findEntry(exercise.pattern.rudimentId)?.level ?? 1,
     ),
   );
 }

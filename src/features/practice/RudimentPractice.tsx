@@ -1,12 +1,6 @@
-import { NotificationFeedbackType, notificationAsync } from "expo-haptics";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -21,28 +15,22 @@ import { STAGE_HEIGHT } from "@/features/rudiments/components/PadAnimation/PadAn
 import { RoundClock } from "@/features/practice/components/RoundClock/RoundClock";
 import { RudimentPlayer } from "@/features/rudiments/components/RudimentPlayer/RudimentPlayer";
 import { StrokeVoicePicker } from "@/features/rudiments/components/StrokeVoicePicker/StrokeVoicePicker";
-import { IconButton } from "@/components/IconButton/IconButton";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
-import { WeekProgress } from "@/features/practice/components/WeekProgress/WeekProgress";
+import { RoundBar } from "@/features/practice/components/RoundBar/RoundBar";
 import { fraction, multiply } from "@/features/rudiments/domain/fraction";
 import { findRudiment } from "@/features/rudiments/domain/library";
+import { usePlayerHeader } from "@/features/practice/hooks/use-player-header";
+import { useFinishRound } from "@/features/practice/hooks/use-finish-round";
 import { useRoundPractice } from "@/features/practice/hooks/use-round-practice";
-import { nextExercise } from "@/features/practice/domain/session";
-import { activeSession } from "@/features/practice/stores/practice-session";
 import {
   buildTimeline,
   evenStep,
   scaleToStep,
 } from "@/features/rudiments/domain/timeline";
 import { useStrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
-import { Button } from "@/components/Button/Button";
-import { colors } from "@/theme/colors";
-import { divider, layout, layoutStyles, spacing } from "@/theme/layout";
-import { nativeHeader } from "@/theme/navigation";
+import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 const MIN_PAD_SCALE = 0.6;
-const MAX_ROUND_MARKS = 5;
-const HEADER_BUTTONS_WIDTH = 152;
 
 export default function RudimentScreen() {
   const {
@@ -55,8 +43,6 @@ export default function RudimentScreen() {
     exercise?: string;
   }>();
   const rudiment = findRudiment(id);
-  const router = useRouter();
-  const { width: windowWidth } = useWindowDimensions();
   const { sound, problem: soundProblem } = useStrokeSound();
   const {
     routine: activeRoutine,
@@ -64,7 +50,6 @@ export default function RudimentScreen() {
     round,
     done,
     roundGoal,
-    isComplete,
     pattern,
     rhythmicScale,
     initialTempo,
@@ -73,32 +58,8 @@ export default function RudimentScreen() {
     finishRound: completeRound,
     undo,
   } = useRoundPractice({ rudiment, routineId: routine, exerciseId });
-  const finishRound = () => {
-    const outcome = completeRound();
-    if (outcome) {
-      notificationAsync(NotificationFeedbackType.Success).catch(() => {});
-    }
-    if (outcome === "routine-complete" && activeRoutine) {
-      router.replace({
-        pathname: "/summary",
-        params: { routine: activeRoutine.id },
-      });
-    } else if (outcome === "exercise-complete" && activeRoutine) {
-      const next = nextExercise(activeSession(activeRoutine.id), activeRoutine);
-      if (next) {
-        router.replace({
-          pathname: "/rudiment/[id]",
-          params: {
-            id: next.pattern.rudimentId,
-            routine: activeRoutine.id,
-            exercise: next.id,
-          },
-        });
-      } else {
-        router.back();
-      }
-    }
-  };
+  const finishRound = useFinishRound(activeRoutine, completeRound);
+  const header = usePlayerHeader(activeRoutine?.name ?? "Rudiments");
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [padScale, setPadScale] = useState(1);
@@ -124,38 +85,7 @@ export default function RudimentScreen() {
       edges={["bottom"]}
       style={[layoutStyles.screen, styles.screen]}
     >
-      <Stack.Screen
-        options={{
-          ...nativeHeader,
-          headerBackTitle: activeRoutine?.name ?? "Rudiments",
-          headerTitle: () => (
-            <View
-              style={[
-                styles.wordmark,
-                { width: windowWidth - HEADER_BUTTONS_WIDTH },
-              ]}
-            >
-              <AppText variant="headline">ghostnote</AppText>
-              <View style={styles.rule} />
-            </View>
-          ),
-          unstable_headerRightItems: () => [
-            {
-              type: "custom",
-              hidesSharedBackground: true,
-              element: (
-                <IconButton
-                  icon="person"
-                  accessibilityLabel="Profile"
-                  size={24}
-                  weight="light"
-                  onPress={() => router.push("/profile")}
-                />
-              ),
-            },
-          ],
-        }}
-      />
+      <Stack.Screen options={header} />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -204,19 +134,7 @@ export default function RudimentScreen() {
               onActivity={track}
               sound={sound}
               padScale={padScale}
-            >
-              {exercise && activeRoutine && round ? (
-                <RoundClock
-                  key={round.id}
-                  routineId={activeRoutine.id}
-                  exerciseId={exercise.id}
-                  roundId={round.id}
-                  position={done + 1}
-                  targetSeconds={round.durationSeconds}
-                  onTargetReached={finishRound}
-                />
-              ) : null}
-            </RudimentPlayer>
+            />
           </>
         ) : (
           <AppText variant="bodySmall" tone="secondary">
@@ -225,29 +143,25 @@ export default function RudimentScreen() {
         )}
       </ScrollView>
       {exercise && activeRoutine ? (
-        <View style={styles.rounds}>
-          <WeekProgress
-            done={done}
-            goal={roundGoal}
-            unit="rounds"
-            description={`${done} of ${roundGoal} rounds done`}
-            showMarks={roundGoal <= MAX_ROUND_MARKS}
-          />
-          {done > 0 ? (
-            <Button
-              variant="text"
-              tone="muted"
-              accessibilityLabel="Undo last round"
-              style={styles.undo}
-              onPress={undo}
-            >
-              Undo
-            </Button>
-          ) : null}
-          <Button variant="tonal" disabled={isComplete} onPress={finishRound}>
-            {isComplete ? "All Rounds Done" : "Round Done"}
-          </Button>
-        </View>
+        <RoundBar
+          done={done}
+          goal={roundGoal}
+          onUndo={undo}
+          onFinish={finishRound}
+          clock={
+            round ? (
+              <RoundClock
+                key={round.id}
+                routineId={activeRoutine.id}
+                exerciseId={exercise.id}
+                roundId={round.id}
+                position={done + 1}
+                targetSeconds={round.durationSeconds}
+                onTargetReached={finishRound}
+              />
+            ) : null
+          }
+        />
       ) : null}
     </SafeAreaView>
   );
@@ -264,16 +178,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     textAlign: "center",
   },
-  wordmark: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.lg,
-  },
-  rule: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.border,
-  },
   content: {
     paddingBottom: spacing.sm,
   },
@@ -282,19 +186,5 @@ const styles = StyleSheet.create({
   },
   settings: {
     marginBottom: spacing.lg,
-  },
-  rounds: {
-    marginTop: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
-    ...divider.top,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: spacing.md,
-  },
-  undo: {
-    marginRight: "auto",
   },
 });

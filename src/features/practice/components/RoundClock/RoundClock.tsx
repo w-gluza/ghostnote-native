@@ -54,7 +54,7 @@ export function RoundClock({
 
   return (
     <AppText
-      variant="body"
+      variant="bodySmall"
       tone="secondary"
       tabular
       accessibilityLabel={`Round ${position}, played ${spokenClock(playedMs)} of ${spokenClock(targetMs)}${isReached ? ", target reached" : ""}`}

@@ -23,7 +23,6 @@ import {
   kitSetup,
   notesOf,
   sessionReference,
-  partsLabel,
   type KitSetup,
 } from "@/features/kit-coordination/domain/exercises";
 import { velocityLevel } from "@/features/kit-coordination/domain/midi-map";
@@ -36,15 +35,20 @@ import {
   hasKitSample,
   useKitSound,
 } from "@/features/kit-coordination/hooks/use-kit-sound";
+import { RoundBar } from "@/features/practice/components/RoundBar/RoundBar";
+import { RoundClock } from "@/features/practice/components/RoundClock/RoundClock";
+import { usePlayerHeader } from "@/features/practice/hooks/use-player-header";
+import { useFinishRound } from "@/features/practice/hooks/use-finish-round";
+import { useRoundPractice } from "@/features/practice/hooks/use-round-practice";
 import {
   finishFree,
   trackFree,
 } from "@/features/practice/stores/practice-session";
 import { ONE } from "@/features/rudiments/domain/fraction";
 import { clampBpm, MAX_BPM, MIN_BPM } from "@/features/rudiments/domain/timing";
+import type { Tempo } from "@/features/rudiments/domain/types";
 import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
-import { nativeHeader } from "@/theme/navigation";
 
 const BPM_STEP = 5;
 const LARGEST_ONE_LINE_FONT_SCALE = 1.3;
@@ -55,26 +59,42 @@ const KIT_PICTURES: Record<
 > = {
   "hihat-snare-kick": {
     source: require("@/assets/images/kit-hihat-snare-kick.webp"),
-    aspectRatio: 1536 / 1024,
+    aspectRatio: 1153 / 962,
   },
   "hihat-snare-kick-ride": {
     source: require("@/assets/images/kit-hihat-snare-kick-ride.webp"),
-    aspectRatio: 1536 / 1024,
+    aspectRatio: 1290 / 931,
   },
   full: {
     source: require("@/assets/images/kit-full.webp"),
-    aspectRatio: 1759 / 894,
+    aspectRatio: 1441 / 869,
   },
 };
 
-function KitPlayer({ exercise }: { exercise: KitExercise }) {
+type RoutineRoundInPlay = {
+  roundId: string;
+  initialBpm: number;
+  onTrack: (isPlaying: boolean, tempo: Tempo) => void;
+};
+
+function KitPlayer({
+  exercise,
+  round,
+  isInRoutine,
+}: {
+  exercise: KitExercise;
+  round?: RoutineRoundInPlay;
+  isInRoutine: boolean;
+}) {
   const { pattern } = exercise;
   const [enabled, setEnabled] = useState(() => notesOf(pattern));
   const timeline = useMemo(
     () => buildKitTimeline(pattern, notesOf(pattern)),
     [pattern],
   );
-  const [bpm, setBpm] = useState(clampBpm(exercise.defaultTempo.bpm));
+  const [bpm, setBpm] = useState(
+    clampBpm(round?.initialBpm ?? exercise.defaultTempo.bpm),
+  );
   const tempo = { ...exercise.defaultTempo, bpm };
   const { sound, problem: soundProblem } = useKitSound();
 
@@ -83,17 +103,20 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
   const picture = KIT_PICTURES[kitSetup(notesOf(pattern))];
 
   const reference = sessionReference(exercise);
+  const trackRound = round?.onTrack;
   const track = (isPlaying: boolean, playedBpm: number) =>
-    trackFree(
-      reference,
-      {
-        isPlaying,
-        tempo: { ...exercise.defaultTempo, bpm: playedBpm },
-        rhythmicScale: ONE,
-      },
-      Date.now(),
-      { kind: exercise.kind, name: exercise.name },
-    );
+    trackRound
+      ? trackRound(isPlaying, { ...exercise.defaultTempo, bpm: playedBpm })
+      : trackFree(
+          reference,
+          {
+            isPlaying,
+            tempo: { ...exercise.defaultTempo, bpm: playedBpm },
+            rhythmicScale: ONE,
+          },
+          Date.now(),
+          { kind: exercise.kind, name: exercise.name },
+        );
   const isTracking = useRef(false);
   const stopTracking = () => {
     if (isTracking.current) {
@@ -123,12 +146,16 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
     },
   });
 
+  const isFreePractice = round === undefined;
   useEffect(() => {
+    if (!isFreePractice) {
+      return;
+    }
     const exerciseId = exercise.id;
     return () => {
       finishFree(exerciseId, Date.now());
     };
-  }, [exercise.id]);
+  }, [exercise.id, isFreePractice]);
 
   const togglePlayback = () => {
     stopTracking();
@@ -174,6 +201,7 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
         showsVerticalScrollIndicator={false}
       >
         <PageTitle
+          style={styles.title}
           numberOfLines={fitsOneLine ? 1 : undefined}
           adjustsFontSizeToFit={fitsOneLine}
           minimumFontScale={0.75}
@@ -189,9 +217,6 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
         >
           {exercise.name}
         </PageTitle>
-        <AppText variant="bodySmall" tone="secondary" style={styles.parts}>
-          {partsLabel(exercise, enabled)}
-        </AppText>
 
         {soundProblem ? (
           <InlineMessage style={styles.problem}>{soundProblem}</InlineMessage>
@@ -202,7 +227,11 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
           resizeMode="contain"
           accessible={false}
           accessibilityIgnoresInvertColors
-          style={[styles.kit, { aspectRatio: picture.aspectRatio }]}
+          style={[
+            styles.kit,
+            isInRoutine && styles.kitInRoutine,
+            { aspectRatio: picture.aspectRatio },
+          ]}
         />
 
         <RhythmGrid
@@ -239,19 +268,65 @@ export function KitExerciseScreenFor({
   exercise: KitExercise | undefined;
   backTitle: string;
 }) {
+  const { routine: routineId, exercise: exerciseId } = useLocalSearchParams<{
+    routine?: string;
+    exercise?: string;
+  }>();
+  const practice = useRoundPractice({
+    rudiment: undefined,
+    routineId,
+    exerciseId,
+  });
+  const finishRound = useFinishRound(practice.routine, practice.finishRound);
+  const header = usePlayerHeader(practice.routine?.name ?? backTitle);
+  const round =
+    practice.routine && practice.exercise && practice.round
+      ? {
+          roundId: practice.round.id,
+          initialBpm: practice.initialTempo.bpm,
+          onTrack: practice.track,
+        }
+      : undefined;
+
   return (
     <SafeAreaView
       edges={["bottom"]}
       style={[layoutStyles.screen, styles.screen]}
     >
-      <Stack.Screen options={{ ...nativeHeader, headerBackTitle: backTitle }} />
+      <Stack.Screen options={header} />
       {exercise ? (
-        <KitPlayer exercise={exercise} />
+        <KitPlayer
+          key={round?.roundId ?? "free"}
+          exercise={exercise}
+          round={round}
+          isInRoutine={practice.exercise !== undefined}
+        />
       ) : (
         <AppText variant="bodySmall" tone="secondary">
           This exercise could not be found.
         </AppText>
       )}
+      {exercise && practice.routine && practice.exercise ? (
+        <RoundBar
+          done={practice.done}
+          goal={practice.roundGoal}
+          onUndo={practice.undo}
+          onFinish={finishRound}
+          clock={
+            practice.round ? (
+              <RoundClock
+                key={practice.round.id}
+                routineId={practice.routine.id}
+                exerciseId={practice.exercise.id}
+                roundId={practice.round.id}
+                position={practice.done + 1}
+                targetSeconds={practice.round.durationSeconds}
+                onTargetReached={finishRound}
+              />
+            ) : null
+          }
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -277,19 +352,24 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: spacing.xl,
   },
-  parts: {
-    marginTop: spacing.xs,
+  title: {
     marginBottom: spacing.lg,
+  },
+  kitInRoutine: {
+    height: 150,
+    marginTop: spacing.sm,
+    marginBottom: spacing.xl,
   },
   problem: {
     marginBottom: spacing.xl,
   },
   kit: {
     alignSelf: "center",
-    width: "100%",
-    maxWidth: 320,
-    height: undefined,
-    marginBottom: spacing.xl,
+    width: undefined,
+    maxWidth: "100%",
+    height: 200,
+    marginTop: spacing.md,
+    marginBottom: spacing.xxl,
   },
   controls: {
     flexDirection: "row",

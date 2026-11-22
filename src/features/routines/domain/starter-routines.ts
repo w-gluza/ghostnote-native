@@ -1,4 +1,6 @@
-import { presetExercise } from "./routine-builder.ts";
+import { findGroove } from "../../grooves/domain/grooves.ts";
+import { findKitExercise } from "../../kit-coordination/domain/exercises.ts";
+import { presetExercise, presetKitExercise } from "./routine-builder.ts";
 import type { Routine } from "./types";
 
 export const quickWarmUp: Routine = {
@@ -6,8 +8,20 @@ export const quickWarmUp: Routine = {
   name: "Quick Warm-up",
   exercises: [
     presetExercise("quick-warm-up-e1", "single-stroke-roll", 2, 70, 3),
-    presetExercise("quick-warm-up-e2", "double-stroke-roll", 2, 60, 3),
-    presetExercise("quick-warm-up-e3", "single-paradiddle", 2, 60, 3),
+    presetKitExercise(
+      "quick-warm-up-e2",
+      findKitExercise("snare-over-feet"),
+      2,
+      70,
+      3,
+    ),
+    presetKitExercise(
+      "quick-warm-up-e3",
+      findGroove("groove-basic-rock"),
+      2,
+      80,
+      3,
+    ),
   ],
 };
 

@@ -16,7 +16,8 @@ import {
   isRoutineComplete,
   nextExercise,
 } from "@/features/practice/domain/session";
-import { findRudiment } from "@/features/rudiments/domain/library";
+import { findEntry } from "@/features/library/domain/catalogue";
+import { exerciseRoute } from "@/features/practice/domain/exercise-route";
 import { usePracticeRoutine } from "@/features/practice/stores/practice-choice";
 import {
   useActiveSession,
@@ -48,7 +49,7 @@ export default function PracticeScreen() {
   const hasUnfinishedPractice = session !== undefined;
   const rudiments = routine.exercises.map((exercise) => ({
     id: exercise.id,
-    name: findRudiment(exercise.pattern.rudimentId)?.name ?? "",
+    name: findEntry(exercise.pattern.rudimentId)?.name ?? "",
     minutes: exerciseMinutes(exercise),
     rounds: exercise.rounds.length,
     bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
@@ -60,14 +61,7 @@ export default function PracticeScreen() {
     open();
     const next = nextExercise(session, routine);
     if (next && !isRoutineComplete(session, routine)) {
-      router.push({
-        pathname: "/rudiment/[id]",
-        params: {
-          id: next.pattern.rudimentId,
-          routine: routine.id,
-          exercise: next.id,
-        },
-      });
+      router.push(exerciseRoute(next, routine.id));
     }
   };
   const sessionsThisWeek = sessionsSince(history, periodStart("week", now));

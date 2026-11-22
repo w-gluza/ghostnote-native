@@ -123,7 +123,7 @@ export default function RoutinesScreen() {
 
         {savedRoutines.length === 0 ? (
           <EmptyState action={<Button onPress={create}>Create Routine</Button>}>
-            No saved routines yet. Build one from the rudiments you want to
+            No saved routines yet. Build one from the exercises you want to
             practise.
           </EmptyState>
         ) : null}

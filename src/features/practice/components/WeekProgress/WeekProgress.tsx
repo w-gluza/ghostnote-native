@@ -10,6 +10,7 @@ type WeekProgressProps = {
   unit?: string;
   description?: string;
   showMarks?: boolean;
+  showCount?: boolean;
 };
 
 export function WeekProgress({
@@ -18,6 +19,7 @@ export function WeekProgress({
   unit = goal === 1 ? "session" : "sessions",
   description = `${done} of ${goal} ${unit} this week`,
   showMarks = true,
+  showCount = true,
 }: WeekProgressProps) {
   return (
     <View accessible accessibilityLabel={description} style={styles.container}>
@@ -32,7 +34,7 @@ export function WeekProgress({
         </View>
       ) : null}
       <AppText variant="bodySmall" tone="secondary">
-        {`${done}/${goal} ${unit}`.trim()}
+        {showCount ? `${done}/${goal} ${unit}`.trim() : unit}
       </AppText>
     </View>
   );

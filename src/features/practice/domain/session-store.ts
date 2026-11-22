@@ -1,5 +1,5 @@
 import { newId } from "../../rudiments/domain/ids.ts";
-import { findRudiment } from "../../rudiments/domain/library.ts";
+import { findEntry } from "../../library/domain/catalogue.ts";
 import {
   finishTracking,
   idleTracker,
@@ -152,8 +152,7 @@ function trackerKey(routineId: string, exerciseId: string, roundId: string) {
 
 function nameOf(exercise: Pick<RoutineExercise, "pattern">) {
   return (
-    findRudiment(exercise.pattern.rudimentId)?.name ??
-    exercise.pattern.rudimentId
+    findEntry(exercise.pattern.rudimentId)?.name ?? exercise.pattern.rudimentId
   );
 }
 
