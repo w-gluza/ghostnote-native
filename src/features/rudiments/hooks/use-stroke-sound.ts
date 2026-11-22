@@ -4,8 +4,10 @@ import {
   AudioManager,
   type AudioBuffer,
   type AudioBufferSourceNode,
+  type GainNode,
 } from "react-native-audio-api";
 
+import { canBeChoked, chokedBy, type Chokes } from "../domain/choke";
 import { hitsOf, type HitLevel } from "../domain/hits";
 import type { StrokeVoice } from "../domain/stroke-voice-store";
 import type { TimelineStroke } from "../domain/timeline";
@@ -34,6 +36,9 @@ const strokeSamples: Record<StrokeVoice, Samples> = {
 };
 
 const GAIN: Record<HitLevel, number> = { full: 1, soft: 0.4, grace: 0.22 };
+const CHOKE_FADE_MS = 30;
+
+const NO_CHOKES = {};
 
 const SOUND_FAILED_MESSAGE =
   "The click sound could not be loaded, so playback is silent. Close and reopen the app to try again.";
@@ -41,6 +46,8 @@ const SOUND_SWITCH_FAILED_MESSAGE =
   "The new sound could not be loaded, so the previous one is still playing. Choose it again to retry.";
 
 type Pending = { source: AudioBufferSourceNode; timeMs: number };
+
+type Ringing<Name extends string> = Pending & { sample: Name; fader: GainNode };
 
 export type SampleSound<Name extends string> = {
   now: () => number;
@@ -61,12 +68,14 @@ type Buffers = Partial<Record<string, AudioBuffer>>;
 type Engine<Name extends string> = {
   context: AudioContext;
   sound: SampleSound<Name>;
-  use: (buffers: Buffers) => void;
+  use: (buffers: Buffers, chokes: Chokes<Name>) => void;
 };
 
 function createEngine<Name extends string>(): Engine<Name> {
   let pending: Pending[] = [];
   let buffers: Buffers | undefined;
+  let chokes: Chokes<Name> = {};
+  let ringing: Ringing<Name>[] = [];
 
   AudioManager.setSystemOptions({
     ios: { category: "playback", options: ["mixWithOthers"] },
@@ -87,8 +96,9 @@ function createEngine<Name extends string>(): Engine<Name> {
 
   return {
     context,
-    use: (next) => {
+    use: (next, nextChokes) => {
       buffers = next;
+      chokes = nextChokes;
     },
     sound: {
       now,
@@ -97,10 +107,30 @@ function createEngine<Name extends string>(): Engine<Name> {
         if (!buffer || context.state === "closed") {
           return;
         }
+        const startMs = Math.max(timeMs, now());
+        chokedBy(ringing, chokes, sample, startMs).forEach((item) => {
+          item.fader.gain.setValueAtTime(1, startMs / 1000);
+          item.fader.gain.linearRampToValueAtTime(
+            0,
+            (startMs + CHOKE_FADE_MS) / 1000,
+          );
+          item.source.stop((startMs + CHOKE_FADE_MS) / 1000);
+        });
+
         const source = context.createBufferSource();
         source.buffer = buffer;
-        source.connect(output[level]);
-        source.start(Math.max(timeMs, now()) / 1000);
+        if (canBeChoked(chokes, sample)) {
+          const fader = context.createGain();
+          source.connect(fader);
+          fader.connect(output[level]);
+          ringing = ringing.filter(
+            (item) => item.timeMs + buffer.duration * 1000 > now(),
+          );
+          ringing.push({ source, timeMs: startMs, sample, fader });
+        } else {
+          source.connect(output[level]);
+        }
+        source.start(startMs / 1000);
         pending = pending.filter((item) => item.timeMs > now());
         pending.push({ source, timeMs });
       },
@@ -110,6 +140,7 @@ function createEngine<Name extends string>(): Engine<Name> {
           .filter((item) => item.timeMs > current)
           .forEach((item) => item.source.stop());
         pending = [];
+        ringing = ringing.filter((item) => item.timeMs <= current);
       },
     },
   };
@@ -118,6 +149,7 @@ function createEngine<Name extends string>(): Engine<Name> {
 export function useSampler<Name extends string>(
   samples: SampleSet<Name>,
   attempt = 0,
+  chokes: Chokes<Name> = NO_CHOKES,
 ) {
   const engine = useRef<Engine<Name>>(undefined);
   const [sound, setSound] = useState<SampleSound<Name>>();
@@ -152,6 +184,7 @@ export function useSampler<Name extends string>(
             Object.fromEntries(
               names.map((name, index) => [name, decoded[index]]),
             ),
+            chokes,
           );
           setSound(current.sound);
           setFailed(undefined);
@@ -166,7 +199,7 @@ export function useSampler<Name extends string>(
     return () => {
       isActive = false;
     };
-  }, [samples, attempt]);
+  }, [samples, attempt, chokes]);
 
   const hasFailed = failed === samples;
   const working = sound ? SOUND_SWITCH_FAILED_MESSAGE : SOUND_FAILED_MESSAGE;

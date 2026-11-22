@@ -1,3 +1,4 @@
+import type { Chokes } from "@/features/rudiments/domain/choke";
 import { useSampler } from "@/features/rudiments/hooks/use-stroke-sound";
 
 const kitSamples = {
@@ -17,6 +18,11 @@ export function hasKitSample(note: number): note is KitSampleNote {
   return note in kitSamples;
 }
 
+const hihatChokes: Chokes<`${KitSampleNote}`> = {
+  42: ["46"],
+  44: ["46"],
+};
+
 export function useKitSound() {
-  return useSampler<`${KitSampleNote}`>(kitSamples);
+  return useSampler<`${KitSampleNote}`>(kitSamples, 0, hihatChokes);
 }
