@@ -48,3 +48,24 @@ test("a stroke already due when playback is paused is not reported", async () =>
 
   expect(onStroke).not.toHaveBeenCalled();
 });
+
+test("restarting from the top shows no stroke until the first one is due", async () => {
+  const { result } = await renderHook(() =>
+    useRudimentPlayback({ timeline, tempo, restartOnPlay: true }),
+  );
+
+  await act(async () => result.current.play());
+  await act(async () => {
+    jest.advanceTimersByTime(FIRST_STROKE_MS + 1000);
+  });
+  expect(result.current.activeIndex).toBe(1);
+
+  await act(async () => result.current.pause());
+  await act(async () => result.current.play());
+  expect(result.current.activeIndex).toBeNull();
+
+  await act(async () => {
+    jest.advanceTimersByTime(FIRST_STROKE_MS);
+  });
+  expect(result.current.activeIndex).toBe(0);
+});

@@ -42,11 +42,14 @@ export function useRudimentPlayback({
 }: PlaybackOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
   const wantsToPlay = useRef(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const setPlaying = (playing: boolean) => {
+    if (playing && restartOnPlay) {
+      setActiveIndex(null);
+    }
     wantsToPlay.current = playing;
     setIsPlaying(playing);
   };
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const nextOrdinal = useRef(0);
   const playedTimeline = useRef(timeline);
   const unitMs = msPerQuarterUnit(tempo);
