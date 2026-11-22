@@ -5,7 +5,9 @@ An iOS app for learning and practising drum rudiments, such as rolls and paradid
 <p>
   <img src=".github/readme/kit-player.gif" width="30%" alt="The kit player running a Samba exercise, with the rhythm grid for ride, snare, pedal and kick moving in time">
   &nbsp;&nbsp;&nbsp;
-  <img src=".github/readme/rudiment-player.gif" width="30%" alt="The rudiment player running a Single Paradiddle on the practice pad, with the sticks and the sticking letters moving in time">
+  <img src=".github/readme/rudiment-player.png" width="30%" alt="The rudiment player showing a Single Paradiddle on the practice pad, with two sticks and the sticking letters below">
+  &nbsp;&nbsp;&nbsp;
+  <img src=".github/readme/insights.png" width="30%" alt="The Insights screen, with minutes practised on each day of the week and the balance between rolls, diddles, flams and drags">
 </p>
 
 ## What it does
