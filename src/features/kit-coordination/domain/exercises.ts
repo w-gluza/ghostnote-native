@@ -63,6 +63,35 @@ function tempo(bpm: number) {
 
 export const kitExercises: KitExercise[] = [
   {
+    id: "snare-over-feet",
+    kind: "coordination",
+    name: "Snare + Feet",
+    level: 1,
+    defaultTempo: tempo(70),
+    pattern: pattern(4, EIGHTHS, [
+      ...part(SNARE, "left-hand", ALL_EIGHTHS, EIGHTHS),
+      ...part(KICK, "right-foot", [0, 4], EIGHTHS),
+      ...part(HIHAT_PEDAL, "left-foot", [2, 6], EIGHTHS),
+    ]),
+    stages: [
+      {
+        id: "snare",
+        title: "Snare",
+        notes: [SNARE],
+      },
+      {
+        id: "kick",
+        title: "Snare + Kick",
+        notes: [SNARE, KICK],
+      },
+      {
+        id: "hihat-pedal",
+        title: "All three parts",
+        notes: [SNARE, KICK, HIHAT_PEDAL],
+      },
+    ],
+  },
+  {
     id: "eighth-note-rock-beat",
     kind: "coordination",
     name: "Rock Beat",

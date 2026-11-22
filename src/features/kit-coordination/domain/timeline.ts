@@ -74,6 +74,8 @@ const HIHAT = 42;
 const OPEN_HIHAT = 46;
 const PEDAL = 44;
 
+const ROW_ORDER: MidiNote[] = [49, 51, 42, 48, 47, 38, 45, 44, 36];
+
 function rowOf(note: MidiNote): MidiNote {
   return note === OPEN_HIHAT ? HIHAT : note;
 }
@@ -99,7 +101,10 @@ export function rowsOf(pattern: KitPattern): KitRow[] {
     const column = Math.round(toNumber(event.at) * pattern.stepsPerBeat);
     row.cells[column] = event.note === OPEN_HIHAT ? "open" : "strike";
   }
-  return rows;
+  return rows.sort(
+    (first, second) =>
+      ROW_ORDER.indexOf(first.id) - ROW_ORDER.indexOf(second.id),
+  );
 }
 
 export function toggled(enabled: MidiNote[], row: KitRow) {

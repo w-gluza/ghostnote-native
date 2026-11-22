@@ -88,7 +88,7 @@ test("the grid shows a strike or a rest for every eighth of each instrument", ()
   const rows = rowsOf(pattern);
   assert.deepEqual(
     rows.map((row) => row.name),
-    ["Ride", "Snare", "Kick", "Pedal"],
+    ["Ride", "Snare", "Pedal", "Kick"],
   );
   assert.deepEqual(rows.find((row) => row.id === KICK)?.cells, [
     "strike",
@@ -289,7 +289,7 @@ test("open and closed hi-hat share one row but stay separate notes", () => {
   const rows = rowsOf(openGroove.pattern);
   assert.deepEqual(
     rows.map((row) => row.name),
-    ["Hi-hat", "Snare", "Kick", "Pedal"],
+    ["Hi-hat", "Snare", "Pedal", "Kick"],
   );
   const hihat = rows[0]!;
   assert.deepEqual(hihat.notes, [42, 46]);
@@ -320,7 +320,7 @@ test("turning a row off silences its notes and leaves the pattern as written", (
     [...toggled(withoutHihat, rows[0]!)].sort(),
     [...everything].sort(),
   );
-  assert.deepEqual(toggled([], rows[2]!), [36]);
+  assert.deepEqual(toggled([], rows[3]!), [36]);
   assert.deepEqual(openGroove.pattern, before);
 
   const audible = buildKitTimeline(openGroove.pattern, everything)
@@ -364,10 +364,37 @@ test("has a kit picture for every bundled exercise", () => {
   assert.equal(setups["linear-four-way"], "full");
 });
 
+test("the snare plays every eighth note over kick on 1 and 3 and pedal on 2 and 4", () => {
+  const rows = rowsOf(findKitExercise("snare-over-feet")!.pattern);
+  assert.deepEqual(
+    rows.map((row) => [
+      row.name,
+      row.cells.flatMap((cell, column) => (cell === "strike" ? [column] : [])),
+    ]),
+    [
+      ["Snare", [0, 1, 2, 3, 4, 5, 6, 7]],
+      ["Pedal", [2, 6]],
+      ["Kick", [0, 4]],
+    ],
+  );
+});
+
+test("rows run from the cymbals down to the kick, whatever order an exercise is written in", () => {
+  for (const exercise of kitExercises) {
+    const names = rowsOf(exercise.pattern).map((row) => row.name);
+    assert.equal(names.at(-1), "Kick", exercise.name);
+  }
+  assert.deepEqual(
+    rowsOf(findKitExercise("linear-four-way")!.pattern).map((row) => row.name),
+    ["High tom", "Floor tom", "Pedal", "Kick"],
+  );
+});
+
 test("exercise names are short enough for one line on a small iPhone", () => {
   assert.deepEqual(
     kitExercises.map((exercise) => exercise.name),
     [
+      "Snare + Feet",
       "Rock Beat",
       "Pedal on 2 & 4",
       "Four-Way",
