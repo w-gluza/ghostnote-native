@@ -65,7 +65,7 @@ export const kitExercises: KitExercise[] = [
   {
     id: "eighth-note-rock-beat",
     kind: "coordination",
-    name: "Eighth-Note Rock Beat",
+    name: "Rock Beat",
     level: 1,
     defaultTempo: tempo(70),
     pattern: pattern(4, EIGHTHS, [
@@ -94,7 +94,7 @@ export const kitExercises: KitExercise[] = [
   {
     id: "left-foot-backbeat",
     kind: "coordination",
-    name: "Left Foot on 2 and 4",
+    name: "Pedal on 2 & 4",
     level: 1,
     defaultTempo: tempo(70),
     pattern: pattern(4, EIGHTHS, [
@@ -129,7 +129,7 @@ export const kitExercises: KitExercise[] = [
   {
     id: "four-way-coordination",
     kind: "coordination",
-    name: "Four-Way Coordination",
+    name: "Four-Way",
     level: 2,
     defaultTempo: tempo(70),
     pattern: pattern(4, EIGHTHS, [
@@ -164,7 +164,7 @@ export const kitExercises: KitExercise[] = [
   {
     id: "open-hihat-groove",
     kind: "coordination",
-    name: "Open Hi-Hat Groove",
+    name: "Open Hi-Hat",
     level: 2,
     defaultTempo: tempo(70),
     pattern: pattern(4, EIGHTHS, [
@@ -311,6 +311,26 @@ export function notesOf(pattern: KitPattern) {
   return [...new Set(pattern.events.map((event) => event.note))];
 }
 
+const HIHAT_SNARE_KICK: MidiNote[] = [
+  HIHAT,
+  HIHAT_PEDAL,
+  OPEN_HIHAT,
+  SNARE,
+  KICK,
+];
+
+export type KitSetup = "hihat-snare-kick" | "hihat-snare-kick-ride" | "full";
+
+export function kitSetup(notes: MidiNote[]): KitSetup {
+  if (notes.every((note) => HIHAT_SNARE_KICK.includes(note))) {
+    return "hihat-snare-kick";
+  }
+  if (notes.every((note) => note === RIDE || HIHAT_SNARE_KICK.includes(note))) {
+    return "hihat-snare-kick-ride";
+  }
+  return "full";
+}
+
 export function limbOf(pattern: KitPattern, note: MidiNote) {
   return pattern.events.find((event) => event.note === note)?.limb;
 }
@@ -328,7 +348,10 @@ export function partsLabel(exercise: KitExercise, enabled: MidiNote[]) {
       candidate.notes.length === playing.length &&
       candidate.notes.every((note) => playing.includes(note)),
   );
-  return stage?.title ?? "Your own mix";
+  if (!stage) {
+    return "Your own mix";
+  }
+  return `${stage.title} · Stage ${exercise.stages.indexOf(stage) + 1} of ${exercise.stages.length}`;
 }
 
 export function sessionReference(exercise: KitExercise): PatternReference {

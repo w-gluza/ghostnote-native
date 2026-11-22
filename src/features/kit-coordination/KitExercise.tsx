@@ -1,6 +1,14 @@
 import { Stack, useIsFocused, useLocalSearchParams } from "expo-router";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
-import { AppState, ScrollView, StyleSheet, View } from "react-native";
+import {
+  AppState,
+  Image,
+  ScrollView,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+  type ImageSourcePropType,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppText } from "@/components/AppText/AppText";
@@ -12,9 +20,11 @@ import { TempoStepper } from "@/components/TempoStepper/TempoStepper";
 import { RhythmGrid } from "@/features/kit-coordination/components/RhythmGrid/RhythmGrid";
 import {
   findKitExercise,
+  kitSetup,
   notesOf,
   sessionReference,
   partsLabel,
+  type KitSetup,
 } from "@/features/kit-coordination/domain/exercises";
 import { velocityLevel } from "@/features/kit-coordination/domain/midi-map";
 import {
@@ -37,6 +47,25 @@ import { layout, layoutStyles, spacing } from "@/theme/layout";
 import { nativeHeader } from "@/theme/navigation";
 
 const BPM_STEP = 5;
+const LARGEST_ONE_LINE_FONT_SCALE = 1.3;
+
+const KIT_PICTURES: Record<
+  KitSetup,
+  { source: ImageSourcePropType; aspectRatio: number }
+> = {
+  "hihat-snare-kick": {
+    source: require("@/assets/images/kit-hihat-snare-kick.webp"),
+    aspectRatio: 1536 / 1024,
+  },
+  "hihat-snare-kick-ride": {
+    source: require("@/assets/images/kit-hihat-snare-kick-ride.webp"),
+    aspectRatio: 1536 / 1024,
+  },
+  full: {
+    source: require("@/assets/images/kit-full.webp"),
+    aspectRatio: 1759 / 894,
+  },
+};
 
 function KitPlayer({ exercise }: { exercise: KitExercise }) {
   const { pattern, stages } = exercise;
@@ -48,6 +77,10 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
   const [bpm, setBpm] = useState(clampBpm(exercise.defaultTempo.bpm));
   const tempo = { ...exercise.defaultTempo, bpm };
   const { sound, problem: soundProblem } = useKitSound();
+
+  const { fontScale } = useWindowDimensions();
+  const fitsOneLine = fontScale <= LARGEST_ONE_LINE_FONT_SCALE;
+  const picture = KIT_PICTURES[kitSetup(notesOf(pattern))];
 
   const reference = sessionReference(exercise);
   const track = (isPlaying: boolean, playedBpm: number) =>
@@ -140,18 +173,37 @@ function KitPlayer({ exercise }: { exercise: KitExercise }) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <PageTitle>{exercise.name}</PageTitle>
-
-        <AppText variant="overline" tone="secondary" style={styles.overline}>
-          LVL {exercise.level}
-        </AppText>
-        <AppText variant="heading" style={styles.parts}>
+        <PageTitle
+          numberOfLines={fitsOneLine ? 1 : undefined}
+          adjustsFontSizeToFit={fitsOneLine}
+          minimumFontScale={0.75}
+          trailing={
+            <AppText
+              variant="overline"
+              tone="secondary"
+              accessibilityLabel={`Level ${exercise.level}`}
+            >
+              LVL {exercise.level}
+            </AppText>
+          }
+        >
+          {exercise.name}
+        </PageTitle>
+        <AppText variant="bodySmall" tone="secondary" style={styles.parts}>
           {partsLabel(exercise, enabled)}
         </AppText>
 
         {soundProblem ? (
           <InlineMessage style={styles.problem}>{soundProblem}</InlineMessage>
         ) : null}
+
+        <Image
+          source={picture.source}
+          resizeMode="contain"
+          accessible={false}
+          accessibilityIgnoresInvertColors
+          style={[styles.kit, { aspectRatio: picture.aspectRatio }]}
+        />
 
         <RhythmGrid
           pattern={pattern}
@@ -213,14 +265,18 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: spacing.xl,
   },
-  overline: {
-    marginTop: spacing.md,
-    marginBottom: spacing.xs,
-  },
   parts: {
-    marginBottom: spacing.xl,
+    marginTop: spacing.xs,
+    marginBottom: spacing.lg,
   },
   problem: {
+    marginBottom: spacing.xl,
+  },
+  kit: {
+    alignSelf: "center",
+    width: "100%",
+    maxWidth: 320,
+    height: undefined,
     marginBottom: spacing.xl,
   },
   controls: {

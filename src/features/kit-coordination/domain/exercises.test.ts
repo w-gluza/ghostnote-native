@@ -11,6 +11,7 @@ import {
 import {
   findKitExercise,
   kitExercises,
+  kitSetup,
   limbName,
   limbOf,
   notesLabel,
@@ -41,8 +42,8 @@ const eighthsOf = (note: MidiNote) =>
     .filter((event) => event.note === note)
     .map((event) => toNumber(event.at) * 2);
 
-test("Four-Way Coordination is a level 2 exercise in 4/4 at 70 BPM, counted in eighths", () => {
-  assert.equal(fourWay.name, "Four-Way Coordination");
+test("Four-Way is a level 2 exercise in 4/4 at 70 BPM, counted in eighths", () => {
+  assert.equal(fourWay.name, "Four-Way");
   assert.equal(fourWay.kind, "coordination");
   assert.equal(fourWay.level, 2);
   assert.deepEqual(pattern.timeSignature, { beats: 4, unit: 4 });
@@ -333,10 +334,48 @@ test("turning a row off silences its notes and leaves the pattern as written", (
 });
 
 test("the label names a known combination, or says it is the drummer's own", () => {
-  assert.equal(partsLabel(fourWay, [51]), "Ride");
-  assert.equal(partsLabel(fourWay, [36, 51]), "Ride + Kick");
-  assert.equal(partsLabel(fourWay, all), "All four parts");
+  assert.equal(partsLabel(fourWay, [51]), "Ride · Stage 1 of 4");
+  assert.equal(partsLabel(fourWay, [36, 51]), "Ride + Kick · Stage 2 of 4");
+  assert.equal(partsLabel(fourWay, all), "All four parts · Stage 4 of 4");
   assert.equal(partsLabel(fourWay, [38]), "Your own mix");
   assert.equal(partsLabel(fourWay, []), "Your own mix");
-  assert.equal(partsLabel(openGroove, [42, 46]), "Hi-hat");
+  assert.equal(partsLabel(openGroove, [42, 46]), "Hi-hat · Stage 1 of 4");
+});
+
+test("pictures the smallest kit that holds every piece of an exercise", () => {
+  assert.equal(kitSetup([42, 38, 36]), "hihat-snare-kick");
+  assert.equal(kitSetup([42, 46, 44, 38, 36]), "hihat-snare-kick");
+  assert.equal(kitSetup([51, 38, 36, 44]), "hihat-snare-kick-ride");
+  assert.equal(kitSetup([45, 48, 36, 44]), "full");
+  assert.equal(kitSetup([49, 38, 36]), "full");
+});
+
+test("has a kit picture for every bundled exercise", () => {
+  const setups = Object.fromEntries(
+    kitExercises.map((exercise) => [
+      exercise.id,
+      kitSetup(notesOf(exercise.pattern)),
+    ]),
+  );
+
+  assert.equal(setups["eighth-note-rock-beat"], "hihat-snare-kick");
+  assert.equal(setups["open-hihat-groove"], "hihat-snare-kick");
+  assert.equal(setups["left-foot-backbeat"], "hihat-snare-kick-ride");
+  assert.equal(setups["linear-four-way"], "full");
+});
+
+test("exercise names are short enough for one line on a small iPhone", () => {
+  assert.deepEqual(
+    kitExercises.map((exercise) => exercise.name),
+    [
+      "Rock Beat",
+      "Pedal on 2 & 4",
+      "Four-Way",
+      "Open Hi-Hat",
+      "Linear Four-Way",
+      "Samba Feet",
+      "Swing Time",
+    ],
+  );
+  assert.ok(kitExercises.every((exercise) => exercise.name.length <= 15));
 });
