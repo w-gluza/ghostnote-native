@@ -68,8 +68,8 @@ const KIT_PICTURES: Record<
 };
 
 function KitPlayer({ exercise }: { exercise: KitExercise }) {
-  const { pattern, stages } = exercise;
-  const [enabled, setEnabled] = useState(stages[0]?.notes ?? []);
+  const { pattern } = exercise;
+  const [enabled, setEnabled] = useState(() => notesOf(pattern));
   const timeline = useMemo(
     () => buildKitTimeline(pattern, notesOf(pattern)),
     [pattern],
