@@ -18,7 +18,7 @@ export type Rudiment = {
   rounds: number;
   bpm: number;
   video?: VideoSource;
-  photo?: ImageSourcePropType;
+  photo: ImageSourcePropType;
 };
 
 type RudimentRowProps = {

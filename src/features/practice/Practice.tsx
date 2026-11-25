@@ -57,7 +57,7 @@ export default function PracticeScreen() {
       rounds: exercise.rounds.length,
       bpm: exercise.rounds[0]?.tempo.bpm ?? 0,
       video: rudimentVideos[exercise.pattern.rudimentId],
-      photo: entry ? libraryPhotos[entry.source] : undefined,
+      photo: libraryPhotos[entry?.source ?? "rudiment"],
     };
   });
   const open = () =>
