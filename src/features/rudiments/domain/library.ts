@@ -1,4 +1,4 @@
-import { ONE } from "./fraction.ts";
+import { ONE } from "../../../playback/fraction.ts";
 import { parsePattern } from "./notation.ts";
 import type {
   PatternReference,

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
+import { fraction, ONE } from "../../../playback/fraction.ts";
 import {
   finishTracking,
   idleTracker,
@@ -28,7 +28,7 @@ import {
 } from "./session.ts";
 import type { ActiveSession, CompletedRound } from "./types.ts";
 import type { Routine, RoutineExercise } from "../../routines/domain/types.ts";
-import type { Tempo } from "../../rudiments/domain/types.ts";
+import type { Tempo } from "../../../playback/timing.ts";
 
 const at = (bpm: number): Tempo => ({ bpm, pulseQuarterUnits: ONE });
 const pattern = {

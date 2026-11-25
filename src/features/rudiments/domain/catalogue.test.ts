@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { add, fraction, isReduced, toNumber } from "./fraction.ts";
+import {
+  add,
+  fraction,
+  isReduced,
+  toNumber,
+} from "../../../playback/fraction.ts";
 import {
   findRudiment,
   resolvePattern,

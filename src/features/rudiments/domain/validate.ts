@@ -1,5 +1,10 @@
-import { compare, isReduced, ZERO } from "./fraction.ts";
-import type { Fraction, PatternReference } from "./types";
+import {
+  compare,
+  isReduced,
+  ZERO,
+  type Fraction,
+} from "../../../playback/fraction.ts";
+import type { PatternReference } from "./types";
 
 const DYNAMICS = ["normal", "ghost", "accent"];
 const HANDS = ["R", "L"];

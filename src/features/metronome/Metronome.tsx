@@ -44,9 +44,9 @@ import {
   changeMetronomeSettings as change,
   useMetronomeSettings,
 } from "@/features/metronome/stores/metronome-settings";
-import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
+import { usePlayback } from "@/playback/use-playback";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
-import { useClickSound } from "@/features/rudiments/hooks/use-stroke-sound";
+import { useClickSound } from "@/features/metronome/hooks/use-click-sound";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 const DIAL_GAP = 4;
@@ -85,7 +85,7 @@ export default function MetronomeScreen() {
   const stopRepeat = () => clearInterval(repeat.current);
   useEffect(() => () => clearInterval(repeat.current), []);
 
-  const playback = useRudimentPlayback({
+  const playback = usePlayback({
     timeline: loop,
     tempo: tempoOf(settings),
     clock: sound?.now,

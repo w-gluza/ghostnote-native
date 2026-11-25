@@ -1,4 +1,4 @@
-import { compare, toNumber } from "../../rudiments/domain/fraction.ts";
+import { compare, toNumber } from "../../../playback/fraction.ts";
 import { midiNoteName, type MidiNote } from "./midi-map.ts";
 import type { KitEvent, KitPattern, Limb } from "./types";
 

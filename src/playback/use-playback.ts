@@ -10,8 +10,8 @@ import {
   retimed,
   type Anchor,
   type Loop,
-} from "../domain/timing";
-import type { Tempo } from "../domain/types";
+  type Tempo,
+} from "./timing";
 
 type PlaybackOptions = {
   timeline: Loop;
@@ -30,7 +30,7 @@ const START_DELAY_MS = 250;
 
 const systemClock = () => performance.now();
 
-export function useRudimentPlayback({
+export function usePlayback({
   timeline,
   tempo,
   clock = systemClock,

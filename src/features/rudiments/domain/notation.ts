@@ -1,6 +1,10 @@
-import { add, fraction, ZERO } from "./fraction.ts";
+import {
+  add,
+  fraction,
+  ZERO,
+  type Fraction,
+} from "../../../playback/fraction.ts";
 import type {
-  Fraction,
   Hand,
   OnsetStroke,
   RudimentPattern,

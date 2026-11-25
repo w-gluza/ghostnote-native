@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
+import { fraction, ONE } from "../../../playback/fraction.ts";
 import {
   achievements,
   durationLabel,

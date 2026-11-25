@@ -14,11 +14,11 @@ import { Button } from "@/components/Button/Button";
 import { SectionHeader } from "@/components/SectionHeader/SectionHeader";
 import { PageTitle } from "@/components/PageTitle/PageTitle";
 import { NoteValuePicker } from "@/features/rudiments/components/NoteValuePicker/NoteValuePicker";
-import { fraction, multiply } from "@/features/rudiments/domain/fraction";
+import { fraction, multiply } from "@/playback/fraction";
 import { findEntry } from "@/features/library/domain/catalogue";
 import { resolvePattern } from "@/features/rudiments/domain/library";
 import { evenStep, scaleToStep } from "@/features/rudiments/domain/timeline";
-import { MAX_BPM, MIN_BPM } from "@/features/rudiments/domain/timing";
+import { MAX_BPM, MIN_BPM } from "@/playback/timing";
 import {
   formatDuration,
   MAX_ROUND_SECONDS,

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { hitsOf } from "./hits.ts";
-import { leadMs } from "./timing.ts";
+import { leadMs } from "../../../playback/timing.ts";
 
 const tap = { accent: false, bounce: false, grace: [] };
 

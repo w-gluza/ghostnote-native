@@ -1,4 +1,5 @@
-import type { Fraction, Tempo } from "../../rudiments/domain/types";
+import type { Fraction } from "../../../playback/fraction";
+import type { Tempo } from "../../../playback/timing";
 import type { MidiNote, Velocity } from "./midi-map";
 
 export type Limb = "right-hand" | "left-hand" | "right-foot" | "left-foot";

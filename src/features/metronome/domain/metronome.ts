@@ -3,7 +3,7 @@ import {
   multiply,
   toNumber,
   type Fraction,
-} from "../../rudiments/domain/fraction.ts";
+} from "../../../playback/fraction.ts";
 
 export type BeatKind = "accent" | "normal" | "skipped";
 export type ClickKind = "accent" | "normal" | "soft" | "silent";

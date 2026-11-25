@@ -1,5 +1,5 @@
-import type { Chokes } from "@/features/rudiments/domain/choke";
-import { useSampler } from "@/features/rudiments/hooks/use-stroke-sound";
+import type { Chokes } from "@/playback/choke";
+import { useSampler } from "@/playback/use-sampler";
 
 const kitSamples = {
   36: require("@/assets/sounds/kit/kick/hit.wav"),

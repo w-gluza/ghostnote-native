@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
+import { fraction, ONE } from "../../../playback/fraction.ts";
 import { decode, encode } from "../../../storage/envelope.ts";
 import { validItems } from "../../../storage/validators.ts";
 import { isRoutine } from "./stored.ts";

@@ -17,7 +17,7 @@ import { RudimentPlayer } from "@/features/rudiments/components/RudimentPlayer/R
 import { StrokeVoicePicker } from "@/features/rudiments/components/StrokeVoicePicker/StrokeVoicePicker";
 import { InlineMessage } from "@/components/InlineMessage/InlineMessage";
 import { RoundBar } from "@/features/practice/components/RoundBar/RoundBar";
-import { fraction, multiply } from "@/features/rudiments/domain/fraction";
+import { fraction, multiply } from "@/playback/fraction";
 import { findRudiment } from "@/features/rudiments/domain/library";
 import { usePlayerHeader } from "@/features/practice/hooks/use-player-header";
 import { useFinishRound } from "@/features/practice/hooks/use-finish-round";

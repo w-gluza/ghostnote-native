@@ -1,6 +1,5 @@
-import type { Fraction } from "./fraction";
-
-export type { Fraction };
+import type { Fraction } from "../../../playback/fraction";
+import type { Tempo } from "../../../playback/timing";
 
 export type Hand = "R" | "L";
 
@@ -39,11 +38,6 @@ export type RudimentPattern = {
   cycleDuration: Fraction;
   strokes: Stroke[];
   groups?: StrokeGroup[];
-};
-
-export type Tempo = {
-  bpm: number;
-  pulseQuarterUnits: Fraction;
 };
 
 export type RudimentCategory = "Rolls" | "Diddles" | "Flams" | "Drags";

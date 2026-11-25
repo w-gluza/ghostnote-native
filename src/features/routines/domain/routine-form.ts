@@ -1,4 +1,4 @@
-import { clampBpm } from "../../rudiments/domain/timing.ts";
+import { clampBpm } from "../../../playback/timing.ts";
 
 export const MAX_ROUNDS = 10;
 export const MIN_ROUND_SECONDS = 10;

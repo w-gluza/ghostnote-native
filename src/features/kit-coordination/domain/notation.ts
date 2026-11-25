@@ -1,4 +1,4 @@
-import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
+import { fraction, ONE } from "../../../playback/fraction.ts";
 import type { MidiNote, Velocity } from "./midi-map.ts";
 import type { KitEvent, KitPattern, Limb } from "./types";
 

@@ -1,4 +1,4 @@
-import { ONE } from "../../rudiments/domain/fraction.ts";
+import { ONE } from "../../../playback/fraction.ts";
 import { newId } from "../../rudiments/domain/ids.ts";
 import {
   defaultBpm,
@@ -7,7 +7,7 @@ import {
   findRudiment,
 } from "../../rudiments/domain/library.ts";
 import { scaleToStep } from "../../rudiments/domain/timeline.ts";
-import { quarterTempo } from "../../rudiments/domain/timing.ts";
+import { quarterTempo } from "../../../playback/timing.ts";
 import { findEntry, findKitItem } from "../../library/domain/catalogue.ts";
 import { sessionReference } from "../../kit-coordination/domain/exercises.ts";
 import type { KitExercise } from "../../kit-coordination/domain/types";

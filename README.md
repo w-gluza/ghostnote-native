@@ -70,5 +70,6 @@ To run on a device, set your own Apple development team in Xcode. The repo does 
 | `src/app`        | Routes only, one file per screen                               |
 | `src/features`   | Screens, their components, domain logic and stores, by feature |
 | `src/components` | Shared components, each with its test                          |
+| `src/playback`   | Shared timing, the stroke scheduler and the sample player      |
 | `src/storage`    | Reading and writing saved data, with validation                |
 | `src/theme`      | Colour, typography, spacing and layout tokens                  |

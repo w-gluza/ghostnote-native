@@ -34,7 +34,8 @@ import type {
   PracticeSegment,
   PracticeSession,
 } from "./types";
-import type { Fraction, PatternReference } from "../../rudiments/domain/types";
+import type { Fraction } from "../../../playback/fraction";
+import type { PatternReference } from "../../rudiments/domain/types";
 import type {
   Routine,
   RoutineExercise,

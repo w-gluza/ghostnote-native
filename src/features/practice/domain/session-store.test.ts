@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
+import { fraction, ONE } from "../../../playback/fraction.ts";
 import {
   createSessionStore,
   CURRENT_KEY,
@@ -9,7 +9,7 @@ import {
   HISTORY_KEY,
 } from "./session-store.ts";
 import type { Routine, RoutineExercise } from "../../routines/domain/types.ts";
-import type { Tempo } from "../../rudiments/domain/types.ts";
+import type { Tempo } from "../../../playback/timing.ts";
 
 const tempo: Tempo = { bpm: 80, pulseQuarterUnits: ONE };
 const exercise = (id: string, rudimentId: string): RoutineExercise => ({

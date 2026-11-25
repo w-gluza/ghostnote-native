@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fraction, ONE } from "../../rudiments/domain/fraction.ts";
-import { msPerQuarterUnit } from "../../rudiments/domain/timing.ts";
+import { fraction, ONE } from "../../../playback/fraction.ts";
+import { msPerQuarterUnit } from "../../../playback/timing.ts";
 import {
   buildClicks,
   clampBpm,

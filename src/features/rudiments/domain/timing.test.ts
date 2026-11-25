@@ -1,37 +1,18 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fraction, ONE } from "./fraction.ts";
+import { ONE } from "../../../playback/fraction.ts";
+import { quarterTempo } from "../../../playback/timing.ts";
 import { findRudiment, defaultPattern } from "./library.ts";
-import { buildTimeline, scaleToStep, type Timeline } from "./timeline.ts";
+import { buildTimeline, scaleToStep } from "./timeline.ts";
 import {
-  beatOfOrdinal,
   beatsUntilSameHand,
-  clampBpm,
-  gapBeforeOrdinal,
-  leadMs,
-  msPerQuarterUnit,
   nextIndexOfHand,
-  onsetAt,
-  quarterTempo,
-  retimed,
   scheduleStrokes,
 } from "./timing.ts";
 
 const paradiddlePattern = defaultPattern(findRudiment("single-paradiddle")!);
 const paradiddle = buildTimeline(paradiddlePattern);
-
-const tap = { accent: false, ghost: false, bounce: false, grace: [] };
-const swung: Timeline = {
-  cycleBeats: 2,
-  strokes: [
-    { ...tap, id: "s1", hand: "R", beat: 0 },
-    { ...tap, id: "s2", hand: "L", beat: 2 / 3 },
-    { ...tap, id: "s3", hand: "R", beat: 1 },
-    { ...tap, id: "s4", hand: "L", beat: 5 / 3 },
-  ],
-  phrases: [[0, 1, 2, 3]],
-};
 
 test("single paradiddle sticking is R L R R L R L L", () => {
   const hands = scheduleStrokes(paradiddle, quarterTempo(60), 8).map(
@@ -73,37 +54,10 @@ test("halving the tempo doubles every stroke time", () => {
   });
 });
 
-test("uneven rhythms keep their own spacing across the loop", () => {
-  assert.equal(beatOfOrdinal(swung, 5), 2 + 2 / 3);
-  assert.equal(gapBeforeOrdinal(swung, 1), 2 / 3);
-  assert.ok(Math.abs(gapBeforeOrdinal(swung, 0) - 1 / 3) < 1e-9);
-  assert.ok(Math.abs(gapBeforeOrdinal(swung, 4) - 1 / 3) < 1e-9);
-});
-
 test("next stroke of the same hand wraps around the loop", () => {
   assert.equal(nextIndexOfHand(paradiddle, 2), 3);
   assert.equal(nextIndexOfHand(paradiddle, 5), 0);
   assert.equal(nextIndexOfHand(paradiddle, 7), 1);
-});
-
-test("lead time never exceeds the gap and is capped", () => {
-  assert.equal(leadMs(100), 45);
-  assert.equal(leadMs(1000), 220);
-});
-
-test("tempo helpers", () => {
-  assert.equal(msPerQuarterUnit(quarterTempo(120)), 500);
-  assert.equal(clampBpm(10), 40);
-  assert.equal(clampBpm(500), 200);
-  assert.equal(clampBpm(84.6), 85);
-});
-
-test("a dotted-quarter pulse stretches the quarter-note unit", () => {
-  assert.equal(msPerQuarterUnit({ bpm: 120, pulseQuarterUnits: ONE }), 500);
-  assert.equal(
-    msPerQuarterUnit({ bpm: 80, pulseQuarterUnits: fraction(3, 2) }),
-    500,
-  );
 });
 
 test("time until the same hand plays again follows the sticking", () => {
@@ -127,18 +81,4 @@ test("an even pattern can be stretched to quarter-note strokes", () => {
     [0, 1, 2, 3],
     [4, 5, 6, 7],
   ]);
-});
-
-test("a tempo change keeps strokes already scheduled and retimes the rest", () => {
-  const start = { time: 1000, beat: 0, unitMs: 1000 };
-  assert.equal(onsetAt(start, paradiddle, 2), 1500);
-
-  const faster = retimed(start, paradiddle, 2, 500);
-  assert.equal(onsetAt(faster, paradiddle, 2), 1500);
-  assert.equal(onsetAt(faster, paradiddle, 3), 1625);
-  assert.equal(onsetAt(faster, paradiddle, 10), 2500);
-
-  const slower = retimed(faster, paradiddle, 3, 2000);
-  assert.equal(onsetAt(slower, paradiddle, 3), 1625);
-  assert.equal(onsetAt(slower, paradiddle, 4), 2125);
 });

@@ -49,10 +49,9 @@ import {
   finishFree,
   trackFree,
 } from "@/features/practice/stores/practice-session";
-import { ONE } from "@/features/rudiments/domain/fraction";
-import { clampBpm, MAX_BPM, MIN_BPM } from "@/features/rudiments/domain/timing";
-import type { Tempo } from "@/features/rudiments/domain/types";
-import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
+import { ONE } from "@/playback/fraction";
+import { clampBpm, MAX_BPM, MIN_BPM, type Tempo } from "@/playback/timing";
+import { usePlayback } from "@/playback/use-playback";
 import { layout, layoutStyles, spacing } from "@/theme/layout";
 
 const BPM_STEP = 5;
@@ -129,7 +128,7 @@ function KitPlayer({
     }
   };
 
-  const playback = useRudimentPlayback({
+  const playback = usePlayback({
     timeline,
     tempo,
     clock: sound?.now,

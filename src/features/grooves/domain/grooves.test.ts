@@ -7,7 +7,7 @@ import {
 } from "../../kit-coordination/domain/exercises.ts";
 import { midiNoteName } from "../../kit-coordination/domain/midi-map.ts";
 import { columnCount, rowsOf } from "../../kit-coordination/domain/timeline.ts";
-import { toNumber } from "../../rudiments/domain/fraction.ts";
+import { toNumber } from "../../../playback/fraction.ts";
 import { rudimentLibrary } from "../../rudiments/domain/library.ts";
 import { findGroove, grooves } from "./grooves.ts";
 

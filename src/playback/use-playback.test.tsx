@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
 
-import { useRudimentPlayback } from "./use-rudiment-playback";
+import { usePlayback } from "./use-playback";
 
 jest.mock("expo-keep-awake", () => ({
   activateKeepAwakeAsync: jest.fn(() => Promise.resolve()),
@@ -22,7 +22,7 @@ afterEach(() => {
 test("reports each stroke while playing", async () => {
   const onStroke = jest.fn();
   const { result } = await renderHook(() =>
-    useRudimentPlayback({ timeline, tempo, onStroke }),
+    usePlayback({ timeline, tempo, onStroke }),
   );
 
   await act(async () => result.current.play());
@@ -36,7 +36,7 @@ test("reports each stroke while playing", async () => {
 test("a stroke already due when playback is paused is not reported", async () => {
   const onStroke = jest.fn();
   const { result } = await renderHook(() =>
-    useRudimentPlayback({ timeline, tempo, onStroke }),
+    usePlayback({ timeline, tempo, onStroke }),
   );
 
   await act(async () => result.current.play());
@@ -51,7 +51,7 @@ test("a stroke already due when playback is paused is not reported", async () =>
 
 test("restarting from the top shows no stroke until the first one is due", async () => {
   const { result } = await renderHook(() =>
-    useRudimentPlayback({ timeline, tempo, restartOnPlay: true }),
+    usePlayback({ timeline, tempo, restartOnPlay: true }),
   );
 
   await act(async () => result.current.play());

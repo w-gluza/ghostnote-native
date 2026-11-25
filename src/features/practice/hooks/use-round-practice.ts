@@ -19,19 +19,15 @@ import {
   useActiveSession,
 } from "@/features/practice/stores/practice-session";
 import { useRoutine } from "@/features/routines/stores/saved-routines";
-import { ONE } from "@/features/rudiments/domain/fraction";
+import { ONE, type Fraction } from "@/playback/fraction";
 import {
   defaultBpm,
   defaultPattern,
   resolvePattern,
 } from "@/features/rudiments/domain/library";
 import { scaleToStep } from "@/features/rudiments/domain/timeline";
-import { quarterTempo } from "@/features/rudiments/domain/timing";
-import type {
-  Fraction,
-  Rudiment,
-  Tempo,
-} from "@/features/rudiments/domain/types";
+import { quarterTempo, type Tempo } from "@/playback/timing";
+import type { Rudiment } from "@/features/rudiments/domain/types";
 
 const FALLBACK_BPM = 80;
 

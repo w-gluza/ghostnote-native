@@ -25,18 +25,21 @@ import {
 } from "@/features/rudiments/components/PadAnimation/PadAnimation";
 import { StickingPattern } from "@/features/rudiments/components/StickingPattern/StickingPattern";
 import {
-  beatsUntilSameHand,
   clampBpm,
   gapBeforeOrdinal,
   MAX_BPM,
   MIN_BPM,
   msPerQuarterUnit,
+  type Tempo,
+} from "@/playback/timing";
+import {
+  beatsUntilSameHand,
   nextIndexOfHand,
 } from "@/features/rudiments/domain/timing";
 import { graceOffsetsMs } from "@/features/rudiments/domain/hits";
 import type { Timeline } from "@/features/rudiments/domain/timeline";
-import type { Hand, Tempo } from "@/features/rudiments/domain/types";
-import { useRudimentPlayback } from "@/features/rudiments/hooks/use-rudiment-playback";
+import type { Hand } from "@/features/rudiments/domain/types";
+import { usePlayback } from "@/playback/use-playback";
 import type { StrokeSound } from "@/features/rudiments/hooks/use-stroke-sound";
 import { spacing } from "@/theme/layout";
 
@@ -172,7 +175,7 @@ export function RudimentPlayer({
 
   const isHeard = useRef(false);
 
-  const playback = useRudimentPlayback({
+  const playback = usePlayback({
     timeline,
     tempo,
     clock: sound?.now,

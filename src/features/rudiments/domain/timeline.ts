@@ -5,8 +5,9 @@ import {
   multiply,
   ONE,
   toNumber,
-} from "./fraction.ts";
-import type { Fraction, Hand, RudimentPattern } from "./types";
+  type Fraction,
+} from "../../../playback/fraction.ts";
+import type { Hand, RudimentPattern } from "./types";
 
 export type TimelineStroke = {
   id: string;

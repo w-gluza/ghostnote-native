@@ -1,7 +1,6 @@
+import type { HitLevel } from "../../../playback/hit-level";
+import { leadMs } from "../../../playback/timing.ts";
 import type { TimelineStroke } from "./timeline";
-import { leadMs } from "./timing.ts";
-
-export type HitLevel = "full" | "soft" | "grace";
 
 export type Hit = {
   sample: "tap" | "accent";

@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { toNumber } from "../../rudiments/domain/fraction.ts";
+import { toNumber } from "../../../playback/fraction.ts";
 import {
   beatOfOrdinal,
   gapBeforeOrdinal,
   msPerQuarterUnit,
   onsetAt,
-} from "../../rudiments/domain/timing.ts";
+} from "../../../playback/timing.ts";
 import {
   findKitExercise,
   kitExercises,
